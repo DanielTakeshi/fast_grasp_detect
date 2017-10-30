@@ -64,8 +64,13 @@ class CONFIG(object):
 
 		self.NUM_LABELS = len(self.CLASSES)
 
-		self.FLIPPED = False
+		# Data augmentation configuration options.
+		self.VERT_FLIP = True
+		self.HOR_FLIP = False
 		self.LIGHTING_NOISE = True
+		self.GAUSSIAN_NOISE = False
+		self.SALT_PEPPER_NOISE = False
+		self.HIST_EQUALIZATION = False
 
 
 		self.QUICK_DEBUG = True

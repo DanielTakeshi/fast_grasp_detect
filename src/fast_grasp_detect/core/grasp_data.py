@@ -16,6 +16,7 @@ import IPython
 
 class data_manager(object):
     def __init__(self,options):
+        self.cfg = options
 
         self.rollout_path = cfg.ROLLOUT_PATH
         self.batch_size = cfg.BATCH_SIZE
@@ -28,8 +29,13 @@ class data_manager(object):
         self.output_size = self.dist_size_h*self.dist_size_w
 
         self.class_to_ind = dict(zip(self.classes, xrange(len(self.classes))))
-        self.flipped = cfg.FLIPPED
-        self.noise = cfg.LIGHTING_NOISE 
+        
+        # Removing these for now. The entire config gets passed to the data
+        # augmentation library, which is used to determine what transformations
+        # to apply.
+        # self.flipped = self.cfg.FLIPPED
+        # self.noise = self.cfg.LIGHTING_NOISE 
+        
         self.phase = phase
         self.rebuild = rebuild
         self.cursor = 0
@@ -202,7 +208,7 @@ class data_manager(object):
                     
                     if(count <= self.ss ):
                         count += 1
-                        data_a = augment_data(data)
+                        data_a = augment_data(data, self.cfg)
                         
                         for datum_a in data_a:
                             im_r = self.prep_image(datum_a['c_img'])
