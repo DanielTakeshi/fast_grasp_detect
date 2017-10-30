@@ -7,6 +7,7 @@ from fast_grasp_detect.data_aug.augment_lighting import addGaussianNoise
 from fast_grasp_detect.data_aug.augment_lighting import addSaltPepperNoise
 from fast_grasp_detect.data_aug.augment_lighting import equalizeHistRGB
 from fast_grasp_detect.data_aug.augment_lighting import get_lighting
+from fast_grasp_detect.data_aug.fancy_pca import fancy_pca
 
 import copy
 HALF_LENGTH = 15
@@ -41,7 +42,7 @@ def flip_data_horizontal(img, label, clss):
     return {'c_img': h_img, 'pose': label, 'class': clss}
 
 
-def augment_data(data, cfg):
+def augment_data(data, cfg, cov=None):
     """
     Creates a list of augmented training examples.
     Params:
@@ -49,6 +50,8 @@ def augment_data(data, cfg):
             and a class label.
         cfg: a configuration object that should contain options for which
             data augmentation techniques to apply.
+        cov: optional 3x3 covariance matrix of RGB vectors in the training
+            dataset if we want to apply the Fancy PCA data augmentation technique.
     Returns:
         A list of training examples, consisting of applying various data
         augmentation techniques as specified in the config to the original
@@ -82,6 +85,10 @@ def augment_data(data, cfg):
     # Modifies image to take on full range of values in each channel.
     if cfg.HIST_EQUALIZATION:
         augmented_lighting_imgs.append(equalizeHistRGB(img))
+
+    # Applies Fancy PCA technique proposed by Krizhevsky et al. in 2012 for Alex-Net.
+    if cfg.FANCY_PCA:
+        augmented_lighting_imgs.append(fancy_pca(img, cov, sigma=0.005))
 
     for lighting_img in augmented_lighting_imgs:
         # No orientation changes.

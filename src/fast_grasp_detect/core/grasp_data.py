@@ -189,6 +189,21 @@ class data_manager(object):
         rollouts = glob.glob(os.path.join(self.rollout_path, '*_*'))
 
         count = 0
+
+        # If Fancy PCA data augmentation technique is enabled, we need to
+        # use PCA on the entire dataset to get the RGB directions to use
+        # in the actual data augmentation later on.
+        cov = None
+        if self.cfg.FANCY_PCA:
+            imgs = []
+            for rollout_p in rollouts:
+                rollout = pickle.load(open(rollout_p+'/rollout.p'))
+
+                grasp_rollout = self.cfg.break_up_rollouts(rollout)
+                for grasp_point in grasp_rollout:
+                    for data in grasp_point:
+                        imgs.append(data['c_img'])
+            cov = compute_covariance_matrix(imgs)
         
         for rollout_p in rollouts:
             #rollout_p = rollouts[0]  
@@ -208,7 +223,7 @@ class data_manager(object):
                     
                     if(count <= self.ss ):
                         count += 1
-                        data_a = augment_data(data, self.cfg)
+                        data_a = augment_data(data, self.cfg, cov)
                         
                         for datum_a in data_a:
                             im_r = self.prep_image(datum_a['c_img'])

@@ -71,6 +71,7 @@ class CONFIG(object):
 		self.GAUSSIAN_NOISE = False
 		self.SALT_PEPPER_NOISE = False
 		self.HIST_EQUALIZATION = False
+		self.FANCY_PCA = False
 
 
 		self.QUICK_DEBUG = True
