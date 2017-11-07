@@ -76,6 +76,9 @@ class CONFIG(object):
 		self.HIST_EQUALIZATION = False
 		self.FANCY_PCA = False
 
+		# Percentage of training data to hold out for cross-validation.
+		self.HOLDOUT_PERCENTAGE = 0.1
+
 
 		self.QUICK_DEBUG = True
 
@@ -124,6 +127,7 @@ class CONFIG(object):
 
 		self.SUMMARY_ITER = 10
 		self.TEST_ITER = 20
+		self.VAL_ITER = 20
 		self.SAVE_ITER = 500
 
 		self.VIZ_DEBUG_ITER = 400

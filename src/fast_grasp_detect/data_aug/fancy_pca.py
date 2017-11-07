@@ -37,24 +37,6 @@ def compute_covariance_matrix(dataset):
 
     return cov
 
-def flatten(dataset):
-    """
-    Extracts the 3-dimensional RGB vectors across all images in the dataset.
-    Params:
-        dataset: list of strings of image filenames.
-    Returns:
-        array: N x 3 Numpy array of RGB vectors.
-    """
-    rgb_vectors = np.zeros(shape=(0, 3))
-
-    for image in dataset:
-        img_arr = np.array(cv2.imread(image, 1))
-        m, n, c = img_arr.shape
-        flattened_arr = img_arr.reshape((m * n, 3))
-        rgb_vectors = np.concatenate((rgb_vectors, flattened_arr))
-
-    return rgb_vectors
-
 def fancy_pca(img, cov, sigma=0.1):
     """
     Performs Fancy PCA data augmentation on a single image.

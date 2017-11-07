@@ -73,6 +73,9 @@ class CONFIG(object):
 		self.HIST_EQUALIZATION = False
 		self.FANCY_PCA = False
 
+		# Proportion of training data to hold out for cross-validation.
+		self.HOLDOUT_PERCENTAGE = 0.1
+
 
 		self.QUICK_DEBUG = True
 
@@ -121,6 +124,7 @@ class CONFIG(object):
 
 		self.SUMMARY_ITER = 10
 		self.TEST_ITER = 20
+		self.VAL_ITER = 20
 		self.SAVE_ITER = 500
 
 		self.VIZ_DEBUG_ITER = 400
@@ -155,15 +159,29 @@ class CONFIG(object):
 		return label
 
 
-
-
-	def get_empty_state(self):
-
+	def get_batch_empty_state(self):
+		"""
+		Creates a Numpy array for a batch of training examples.
+		"""
 		return np.zeros((self.BATCH_SIZE, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
 
-	def get_empty_label(self):
-
+	def get_batch_empty_label(self):
+		"""
+		Creates a Numpy array for a batch of training labels. 
+		"""
 		return np.zeros((self.BATCH_SIZE, 2))
+
+	def get_num_empty_state(self, num):
+		"""
+		Creates Numpy array of example inputs with a variable number of examples.
+		"""
+		return np.zeros((num, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
+
+	def get_num_empty_label(self, num):
+		"""
+		Creates Numpy array of example inputs with a variable number of examples.
+		"""
+		return np.zeros((num, 2))
         
 
 	def break_up_rollouts(self,rollout):

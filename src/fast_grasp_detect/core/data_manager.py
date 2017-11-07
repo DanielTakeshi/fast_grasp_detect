@@ -43,6 +43,9 @@ class data_manager(object):
         self.gt_labels = None
         self.test_labels = None
 
+        # Percentange of training examples to hold out for cross-validation.
+        self.holdout_percentage = self.cfg.HOLDOUT_PERCENTAGE
+
 
         self.yc = YOLO_CONV(self.cfg)
         self.yc.load_network()
@@ -53,12 +56,11 @@ class data_manager(object):
         self.load_rollouts()
 
     def get(self, noise=False):
-        images = self.cfg.get_empty_state()
-        labels = self.cfg.get_empty_label()
+        images = self.cfg.get_batch_empty_state()
+        labels = self.cfg.get_batch_empty_label()
         count = 0
         self.recent_batch = []
         while count < self.batch_size:
-
             
             images[count, :, :, :] = self.train_labels[self.cursor]['features']
            
@@ -78,26 +80,32 @@ class data_manager(object):
         return images, labels
 
     def get_test(self):
-        images = self.cfg.get_empty_state()
-        labels = self.cfg.get_empty_label()
+        num_test = len(self.test_labels)
+
+        images = self.cfg.get_num_empty_state(num_test)
+        labels = self.cfg.get_num_empty_label(num_test)
 
         count = 0
 
-        #IPython.embed()
-        while count < self.batch_size:
-           
-            images[count, :, :, :] = self.test_labels[self.t_cursor]['features']
-            labels[count, :] = self.test_labels[self.t_cursor]['label']
-            count += 1
-            # cv2.imshow('debug_test',self.test_labels[self.t_cursor]['c_img'])
-            # cv2.waitKey(300)
-            self.t_cursor += 1
-            if self.t_cursor >= len(self.test_labels):
-                np.random.shuffle(self.test_labels)
-                self.t_cursor = 0
-                self.epoch += 1
+        for i in range(num_test):
+            images[count, :, :, :] = self.test_labels[i]['features']
+            labels[count, :] = self.test_labels[i]['label']
+
         return images, labels
 
+    def get_val(self):
+        num_val = len(self.val_labels)
+
+        images = self.cfg.get_num_empty_state(num_val)
+        labels = self.cfg.get_num_empty_label(num_val)
+
+        count = 0
+
+        for i in range(num_val):
+            images[count, :, :, :] = self.val_labels[i]['features']
+            labels[count, :] = self.val_labels[i]['label']
+        
+        return images, labels
     
     def prep_image(self, image):
         
@@ -210,7 +218,11 @@ class data_manager(object):
                         self.train_labels.append({'c_img': datum_a['c_img'], 'label': label, 'features':features})
                 self.train_data_path.append(rollout_p)
 
-       
+        # Reserve some holdout data for cross-validation.
+        np.random.shuffle(self.train_labels)
+        num_holdout = int(len(self.train_labels) * self.holdout_percentage)
+        self.train_labels = self.train_labels[:num_holdout]
+        self.val_labels = self.train_labels[num_holdout:]
       
         return 
 

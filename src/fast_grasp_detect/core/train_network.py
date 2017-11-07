@@ -28,6 +28,7 @@ class Solver(object):
         self.staircase = self.cfg.STAIRCASE
         self.summary_iter = self.cfg.SUMMARY_ITER
         self.test_iter = self.cfg.TEST_ITER
+        self.val_iter = self.cfg.VAL_ITER
         self.viz_debug_iter = self.cfg.VIZ_DEBUG_ITER
         self.layer = layer
 
@@ -99,6 +100,7 @@ class Solver(object):
         load_timer = Timer()
 
         train_losses = []
+        val_losses = []
         test_losses = []
 
         for step in xrange(1, self.max_iter + 1):
@@ -133,9 +135,22 @@ class Solver(object):
 
                         test_losses.append(test_loss)
                         print("Test loss: " + str(test_loss))
+
+                    if (step % self.val_iter) == 0:
+                        images_v, labels_v = self.data.get_val()
+                     
+                        feed_dict_val = {self.net.images : images_v, self.net.labels: labels_v}
                         
 
-                       
+                        val_loss = self.sess.run(
+                            self.net.class_loss,
+                            feed_dict=feed_dict_val)
+
+
+                        val_losses.append(val_loss)
+                        print("Validation loss: " + str(val_loss))
+                        
+  
 
                     log_str = ('{} Epoch: {}, Step: {}, Learning rate: {},'
                         ' Loss: {:5.3f}\nSpeed: {:.3f}s/iter,'
@@ -183,9 +198,9 @@ class Solver(object):
                                 global_step=self.global_step)
                 loss_dict = {}
                 loss_dict["test"] = test_losses
+                loss_dict["val"] = val_losses
                 loss_dict["train"] = train_losses
                 loss_dict["name"] = self.cfg.CONFIG_NAME
-
                
                 pickle.dump(loss_dict, open(self.cfg.STAT_DIR+self.cfg.CONFIG_NAME+'.p', 'wb'))
 
