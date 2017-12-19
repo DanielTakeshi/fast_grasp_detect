@@ -54,6 +54,7 @@ class GDetector(object):
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
         self.net = GHNet(self.cfg,is_training = False)
+        
         trained_model_file = self.cfg.GRASP_OUTPUT_DIR+ self.net_name
         print 'Restoring weights from: ' + trained_model_file
         self.variable_to_restore = slim.get_variables_to_restore()

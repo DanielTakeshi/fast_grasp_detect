@@ -137,8 +137,9 @@ class data_manager(object):
             #rollout_p = rollouts[0]  
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
 
-
+            print rollout_p
             grasp_rollout = self.cfg.break_up_rollouts(rollout)
+
             for grasp_point in grasp_rollout:
                     print "TEST EXAMPLE", rollout_p
                     

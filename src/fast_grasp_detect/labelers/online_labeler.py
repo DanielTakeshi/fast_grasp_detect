@@ -84,7 +84,7 @@ class QueryLabeler():
         self.parent.bind("w", lambda event: self.class_key_update("w"))
         self.parent.bind("e", lambda event: self.class_key_update("e"))
         self.parent.bind("r", lambda event: self.class_key_update("r"))
-        self.parent.bind("t", lambda event: self.class_key_update("t"))
+        # self.parent.bind("t", lambda event: self.class_key_update("t"))
 
         self.mainPanel.grid(row = 1, column = 1, rowspan = 4, sticky = W+N)
 
@@ -128,6 +128,7 @@ class QueryLabeler():
         self.goBtn = Button(self.ctrPanel, text = 'Go', command = self.gotoImage)
         self.goBtn.pack(side = LEFT)
 
+        self.online = True
 
         # example pannel for illustration
         self.egPanel = Frame(self.frame, border = 10)
@@ -210,7 +211,6 @@ class QueryLabeler():
 
 
     def get_label(self):
-
         if self.image == None:
             self.current_image = self.cam.read_color_data()
         else: 
@@ -236,14 +236,14 @@ class QueryLabeler():
 
     def loadImage(self):
         # load image
+       
         imagepath = self.imageList[self.cur - 1]
-
         self.img = Image.open(imagepath)
+
         self.tkimg = ImageTk.PhotoImage(self.img)
         self.mainPanel.config(width = max(self.tkimg.width(), 400), height = max(self.tkimg.height(), 400))
         self.mainPanel.create_image(0, 0, image = self.tkimg, anchor=NW)
         self.progLabel.config(text = "%04d/%04d" %(self.cur, self.total))
-
         # load labels
         self.clearBBox()
         self.imagename = os.path.split(imagepath)[-1].split('.')[0]
@@ -366,19 +366,16 @@ class QueryLabeler():
     def setClass(self):
     	self.currentLabelclass = self.classcandidate.get()
     	print 'set label class to :',self.currentLabelclass
-
-    def class_key_update(self, class_label):
-        mapping = {"q": ("mustard", 0), "w": ("syrup", 1), "e": ("salad_dressing", 2),
-            "r": ("oatmeal", 3), "t": ("mayoniase", 4)}
+        mapping = {"q": ("grasp", 0), "w": ("singulate", 1), "e": ("suction", 2), "r": ("quit",3)}
         self.currentLabelclass = mapping[class_label][0]
         self.classcandidate.current(mapping[class_label][1])
         print 'set label class to :',self.currentLabelclass
 
     def run(self,cam,image = None):
         #self.parent.resizable(width =  True, height = True)
-
         self.image = image
         self.cam = cam
+    
         #self.current_image = img
         print "running"
         self.parent.mainloop()

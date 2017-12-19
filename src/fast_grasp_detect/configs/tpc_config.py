@@ -1,5 +1,5 @@
 import os
-
+import numpy as np
 #
 # path and dataset parameter
 #
@@ -14,7 +14,7 @@ class CONFIG(object):
 
 		#VARY {0, 4, 9}
 		# SS_DATA = 0
-		self.CONFIG_NAME = 'SS_0'
+		self.CONFIG_NAME = 'grasp_net'
 
 		self.ROOT_DIR = '/media/autolab/1tb/data/'
 
@@ -23,11 +23,6 @@ class CONFIG(object):
 
 		# ROLLOUT_PATH = DATA_PATH+'rollouts/'
 		# BC_HELD_OUT = DATA_PATH+'held_out_bc'
-
-		self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_dart/'
-		self.BC_HELD_OUT = self.DATA_PATH+'held_out_dart'
-
-
 
 		self.IMAGE_PATH = self.DATA_PATH+'images/'
 		self.LABEL_PATH = self.DATA_PATH+'labels/'
@@ -42,10 +37,10 @@ class CONFIG(object):
 		self.TEST_STATS_DIR_T = self.TRAN_OUTPUT_DIR + 'test_stats/'
 
 
-		self.GRASP_OUTPUT_DIR = self.DATA_PATH + 'grasp_output/'
-		self.GRASP_STAT_DIR = self.GRASP_OUTPUT_DIR + 'stats/' 
-		self.TRAIN_STATS_DIR_G = self.GRASP_OUTPUT_DIR + 'train_stats/'
-		self.TEST_STATS_DIR_G = self.GRASP_OUTPUT_DIR + 'test_stats/'
+		self.OUTPUT_DIR = self.DATA_PATH + 'grasp_output/'
+		self.STAT_DIR = self.OUTPUT_DIR + 'stats/' 
+		self.TRAIN_STATS_DIR_G = self.OUTPUT_DIR + 'train_stats/'
+		self.TEST_STATS_DIR_G = self.OUTPUT_DIR + 'test_stats/'
 
 		self.WEIGHTS_DIR = self.DATA_PATH + 'weights/'
 
@@ -58,9 +53,7 @@ class CONFIG(object):
 
 		# WEIGHTS_FILE = os.path.join(DATA_PATH, 'weights', 'YOLO_small.ckpt')
 
-		# self.CLASSES = ['yes','no']
-
-		self.CLASSES = ['grasp', 'singulate', 'suction','quit']
+		self.CLASSES = ['yes','no']
 
 		# #CLASSES = ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus',
 		#            'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse',
@@ -140,3 +133,47 @@ class CONFIG(object):
 		self.FILTER_SIZE_L1 = 7
 
 		self.SIZE_L2 = 50176
+
+
+	def compute_label(self,datum):
+		pose = datum['pose']
+
+		label = np.zeros((2))
+
+		x = pose[0]/self.T_IMAGE_SIZE_W-0.5
+		y = pose[1]/self.T_IMAGE_SIZE_H-0.5
+
+		label = np.array([x,y])
+
+		return label
+
+
+	def get_empty_state(self):
+
+		return np.zeros((self.BATCH_SIZE, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
+
+	def get_empty_label(self):
+
+		return np.zeros((self.BATCH_SIZE, 2))
+
+
+	def break_up_rollouts(self,rollout):
+
+		grasp_point = []
+		grasp_rollout = []
+		for data in rollout:
+
+
+			if type(data) == list:
+				continue
+
+			if(data['type'] == 'grasp'):
+				grasp_point.append(data)
+
+			elif(data['type'] == 'success'):
+				if( len(grasp_point) > 0):
+					grasp_rollout.append(grasp_point)
+					grasp_point = []
+
+		return grasp_rollout
+
