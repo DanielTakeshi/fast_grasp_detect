@@ -20,24 +20,29 @@ def make_rollouts_dir(file_nums, count):
 		os.makedirs(dest)
 
 	for i, arr in enumerate(file_nums):
+		set_id = "bw"
+		if i == 1:
+			set_id = "cal"
 		for num in arr:
 			src = sources[i] + 'rollout_'+str(num)
+			file_dest = dest+'rollout_'+ set_id + '_' +str(num)
 			print(src)
 			print(dest)
-			shutil.copytree(src, dest+'rollout_'+str(num))
+			if os.path.exists(src) and not os.path.exists(file_dest):
+				shutil.copytree(src, file_dest)
 
 	return dest
 
-def make_training_sets(n):
+def make_training_sets(num_cal):
 	tl_training_sets = []
-	tl_set_counter = 0
-	for i in range(n):
-		blue_white_picks = np.random.randint(57, size=28)
-		cal_picks = np.random.randint(49, size=24)
-		new_training_set = make_rollouts_dir([blue_white_picks, cal_picks], tl_set_counter)
-		tl_set_counter += 1
+	# tl_set_counter = 0
+	for i in num_cal:
+		blue_white_picks = np.arange(57) # include ALL the blue-white data
+		cal_picks = np.random.choice(49, size=i)
+		new_training_set = make_rollouts_dir([blue_white_picks, cal_picks], i)
+		# tl_set_counter += 1
 		tl_training_sets.append(new_training_set)
 	return tl_training_sets
 
-ts = make_training_sets(5)
+# ts = make_training_sets([i*5 for i in range(9)])
 

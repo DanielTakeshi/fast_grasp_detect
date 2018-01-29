@@ -189,6 +189,8 @@ class Solver(object):
                
                 pickle.dump(loss_dict, open(self.cfg.STAT_DIR+self.cfg.CONFIG_NAME+'.p', 'wb'))
 
+        return min(test_losses)
+
     def save_cfg(self):
 
         with open(os.path.join(self.output_dir, 'config.txt'), 'w') as f:

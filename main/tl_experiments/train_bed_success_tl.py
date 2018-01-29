@@ -31,3 +31,5 @@ def main():
     print('Start training ...')
     solver.train()
     print('Done training.')
+
+if __name__ == "__main__": main()
