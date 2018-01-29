@@ -9,7 +9,7 @@ class CONFIG(object):
 ###############PARAMETERS TO SWEEP##########
 
 
-	def __init__(self):
+	def __init__(self, rollout_path=None):
 		FIXED_LAYERS = 33
 
 		#VARY {0, 4, 9}
@@ -23,8 +23,10 @@ class CONFIG(object):
 
 		# ROLLOUT_PATH = DATA_PATH+'rollouts/'
 		# BC_HELD_OUT = DATA_PATH+'held_out_bc'
-
-		self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_dart_cal/'
+		if (rollout_path not None):
+			self.ROLLOUT_PATH = rollout_path
+		else:
+			self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_dart_cal/'
 		self.BC_HELD_OUT = self.DATA_PATH+'held_out_cal'
 
 
@@ -36,14 +38,14 @@ class CONFIG(object):
 
 		self.OUTPUT_DIR = self.DATA_PATH +'output/'
 
-		self.TRAN_OUTPUT_DIR = self.DATA_PATH +'transition_output/' 
+		self.TRAN_OUTPUT_DIR = self.DATA_PATH +'transition_output/'
 		self.TRAN_STATS_DIR = self.TRAN_OUTPUT_DIR + 'stats/'
 		self.TRAIN_STATS_DIR_T = self.TRAN_OUTPUT_DIR + 'train_stats/'
 		self.TEST_STATS_DIR_T = self.TRAN_OUTPUT_DIR + 'test_stats/'
 
 
 		self.OUTPUT_DIR = self.DATA_PATH + 'grasp_output/'
-		self.STAT_DIR = self.OUTPUT_DIR + 'stats/' 
+		self.STAT_DIR = self.OUTPUT_DIR + 'stats/'
 		self.TRAIN_STATS_DIR_G = self.OUTPUT_DIR + 'train_stats/'
 		self.TEST_STATS_DIR_G = self.OUTPUT_DIR + 'test_stats/'
 
@@ -102,7 +104,7 @@ class CONFIG(object):
 		self.GPU = ''
 
 		self.LEARNING_RATE = 0.1
-		
+
 
 
 		self.DECAY_STEPS = 30000
@@ -138,7 +140,7 @@ class CONFIG(object):
 		self.FILTER_SIZE_L1 = 7
 
 		self.SIZE_L2 = 50176
-
+		
 
 	def compute_label(self,datum):
 		pose = datum['pose']
@@ -181,4 +183,3 @@ class CONFIG(object):
 					grasp_point = []
 
 		return grasp_rollout
-
