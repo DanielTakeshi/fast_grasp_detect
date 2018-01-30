@@ -10,8 +10,6 @@ from fast_grasp_detect.networks.grasp_net_cs import GHNet
 from fast_grasp_detect.core.data_manager import data_manager
 from fast_grasp_detect.core.train_network import Solver
 
-from fast_grasp_detect.configs.tl_make_rollouts_dir import *
-
 import IPython
 import cPickle as pickle
 slim = tf.contrib.slim
@@ -24,7 +22,7 @@ from fast_grasp_detect.configs.bed_grasp_config import CONFIG
 
 def main():
     num_cal_data = [i*5 for i in range(9)]
-    ts = make_training_sets(num_cal_data)
+    # ts = make_training_sets(num_cal_data)
     test_losses = []
 
     for trial in num_cal_data:

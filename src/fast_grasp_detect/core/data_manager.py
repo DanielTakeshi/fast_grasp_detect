@@ -177,10 +177,11 @@ class data_manager(object):
             
             
                 count = 0
-                
+                                
                 for data in grasp_point:
                     
-                    data_a = augment_data(data)
+                    # data_a = augment_data(data)
+                    data_a = [data]
                     
                     for datum_a in data_a:
                         

@@ -19,10 +19,10 @@ class CONFIG(object):
 		self.ROOT_DIR = '/media/autolab/1tb/data/'
 
 		self.NET_NAME = '08_28_01_37_11save.ckpt-30300'
-		self.DATA_PATH = self.ROOT_DIR + 'bed_rcnn/'
+		self.DATA_PATH = self.ROOT_DIR + 'tpc_rollouts/'
 
-		# ROLLOUT_PATH = DATA_PATH+'rollouts/'
-		# BC_HELD_OUT = DATA_PATH+'held_out_bc'
+		self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/'
+		self.BC_HELD_OUT = self.DATA_PATH+'held_out_bc/'
 
 		self.IMAGE_PATH = self.DATA_PATH+'images/'
 		self.LABEL_PATH = self.DATA_PATH+'labels/'
@@ -134,19 +134,26 @@ class CONFIG(object):
 
 		self.SIZE_L2 = 50176
 
+		self.OBJECT_SCALE = 1.0
+		self.NOOBJECT_SCALE = 1.0
+		self.CLASS_SCALE = 2.0
+		self.COORD_SCALE = 5.0
 
 	def compute_label(self,datum):
-		pose = datum['pose']
+		# pose = datum['pose']
 
-		label = np.zeros((2))
+		# label = np.zeros((2))
 
-		x = pose[0]/self.T_IMAGE_SIZE_W-0.5
-		y = pose[1]/self.T_IMAGE_SIZE_H-0.5
+		# x = pose[0]/self.T_IMAGE_SIZE_W-0.5
+		# y = pose[1]/self.T_IMAGE_SIZE_H-0.5
 
-		label = np.array([x,y])
+		# label = np.array([x,y])
 
-		return label
+		# return label
 
+		#need to fix label format here?
+
+		return np.array([datum['bbox'], datum['classnum']])
 
 	def get_empty_state(self):
 
@@ -159,21 +166,22 @@ class CONFIG(object):
 
 	def break_up_rollouts(self,rollout):
 
-		grasp_point = []
-		grasp_rollout = []
-		for data in rollout:
+		# grasp_point = []
+		# grasp_rollout = []
+		# for data in rollout:
 
 
-			if type(data) == list:
-				continue
+		# 	if type(data) == list:
+		# 		continue
 
-			if(data['type'] == 'grasp'):
-				grasp_point.append(data)
+		# 	if(data['type'] == 'grasp'):
+		# 		grasp_point.append(data)
 
-			elif(data['type'] == 'success'):
-				if( len(grasp_point) > 0):
-					grasp_rollout.append(grasp_point)
-					grasp_point = []
+		# 	elif(data['type'] == 'success'):
+		# 		if( len(grasp_point) > 0):
+		# 			grasp_rollout.append(grasp_point)
+		# 			grasp_point = []
 
-		return grasp_rollout
+		# return grasp_rollout
 
+		return [[r] for r in rollout]

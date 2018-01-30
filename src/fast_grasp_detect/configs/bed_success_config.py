@@ -24,7 +24,7 @@ class CONFIG(object):
 
 		# ROLLOUT_PATH = DATA_PATH+'rollouts/'
 		# BC_HELD_OUT = DATA_PATH+'held_out_bc'
-		if (rollout_path not None):
+		if rollout_path:
 			self.ROLLOUT_PATH = rollout_path
 		else:
 			self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_dart_cal/'

@@ -15,6 +15,14 @@ class GHNet(object):
         self.classes = self.cfg.CLASSES
         self.num_class = len(self.classes)
         self.image_size = self.cfg.IMAGE_SIZE
+
+        self.cell_size = self.cfg.CELL_SIZE
+        self.boxes_per_cell = self.cfg.BOXES_PER_CELL
+        self.output_size = (self.cell_size * self.cell_size) * (self.num_class + self.boxes_per_cell * 5)
+        self.scale = 1.0 * self.image_size / self.cell_size
+        self.boundary1 = self.cell_size * self.cell_size * self.num_class
+        self.boundary2 = self.boundary1 + self.cell_size * self.cell_size * self.boxes_per_cell
+
         self.dist_size_w = self.cfg.T_IMAGE_SIZE_W/cfg.RESOLUTION
         self.dist_size_h = self.cfg.T_IMAGE_SIZE_H/cfg.RESOLUTION
         self.output_size = 2
@@ -24,6 +32,15 @@ class GHNet(object):
         self.learning_rate = self.cfg.LEARNING_RATE
         self.batch_size = self.cfg.BATCH_SIZE
         self.alpha = self.cfg.ALPHA
+
+        self.object_scale = cfg.OBJECT_SCALE
+        self.noobject_scale = cfg.NOOBJECT_SCALE
+        self.class_scale = cfg.CLASS_SCALE
+        self.coord_scale = cfg.COORD_SCALE
+
+        self.offset = np.transpose(np.reshape(np.array(
+                [np.arange(self.cell_size)] * self.cell_size * self.boxes_per_cell),
+                (self.boxes_per_cell, self.cell_size, self.cell_size)), (1, 2, 0))
 
         if self.layers == 0:
             self.images = tf.placeholder(tf.float32, [None, self.cfg.FILTER_SIZE, self.cfg.FILTER_SIZE, self.cfg.NUM_FILTERS], name='images')
@@ -36,7 +53,7 @@ class GHNet(object):
 
         if is_training:
             
-            self.labels = tf.placeholder(tf.float32, [None, 2])
+            self.labels = tf.placeholder(tf.float32, [None, self.cell_size, self.cell_size, 5 + self.num_class])
             self.loss_layer(self.logits, self.labels)
             self.total_loss = tf.losses.get_total_loss()
             tf.summary.scalar('total_loss', self.total_loss)
@@ -84,7 +101,7 @@ class GHNet(object):
 
 
 
-     def calc_iou(self, boxes1, boxes2, scope='iou'):
+    def calc_iou(self, boxes1, boxes2, scope='iou'):
         """calculate ious
         Args:
           boxes1: 4-D tensor [CELL_SIZE, CELL_SIZE, BOXES_PER_CELL, 4]  ====> (x_center, y_center, w, h)
@@ -179,7 +196,8 @@ class GHNet(object):
             tf.losses.add_loss(object_loss)
             tf.losses.add_loss(noobject_loss)
             tf.losses.add_loss(coord_loss)
-
+            #temp
+            self.class_loss = class_loss
           
 
 

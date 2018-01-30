@@ -20,15 +20,34 @@ def make_rollouts_dir(file_nums, count):
 		os.makedirs(dest)
 
 	for i, arr in enumerate(file_nums):
-		set_id = "bw"
+		if i == 0:
+			# Add all data from blue white set
+			set_id = "bw"
+			bw_data_files = os.listdir(sources[i])
+			for filename in bw_data_files:
+				full_filename = sources[i] + '/' + filename
+				num = filename[8:]
+				file_dest = dest+'rollout_'+ set_id + '_' +str(num)
+				shutil.copytree(full_filename, file_dest)
+
 		if i == 1:
+			# Add only "count" points from cal data set
 			set_id = "cal"
-		for num in arr:
-			src = sources[i] + 'rollout_'+str(num)
-			file_dest = dest+'rollout_'+ set_id + '_' +str(num)
-			print(src)
-			print(dest)
-			if os.path.exists(src) and not os.path.exists(file_dest):
+			for num in arr:
+				src = sources[i] + 'rollout_'+str(num)
+				file_dest = dest+'rollout_'+ set_id + '_' +str(num)
+
+				while not os.path.exists(src) or os.path.exists(file_dest):
+					if (i == 0):
+						num = np.random.randint(57)
+					else:
+						num = np.random.randint(49)
+					src = sources[i] + 'rollout_'+str(num)
+					file_dest = dest+'rollout_'+ set_id + '_' +str(num)
+			
+				print("Src: " + str(src))
+				print("Dest: " + str(file_dest))
+				# if os.path.exists(src) and not os.path.exists(file_dest):
 				shutil.copytree(src, file_dest)
 
 	return dest
@@ -44,5 +63,6 @@ def make_training_sets(num_cal):
 		tl_training_sets.append(new_training_set)
 	return tl_training_sets
 
-# ts = make_training_sets([i*5 for i in range(9)])
+num_cal_data = [i*5 for i in range(9)]
+ts = make_training_sets(num_cal_data)
 
