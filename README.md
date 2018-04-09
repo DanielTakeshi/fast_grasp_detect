@@ -1,9 +1,13 @@
 # fast_grasp_detect
 
+## install 
+python setup.py develop
+
 ## main
 Contains scripts that can be run to train the networks.
 'train_bed_grasp.py' - trains the grasping network
 'train_bed_success.py' - trains the network that identifies successful rollouts
+
 
 ## src
 	• CONFIG
