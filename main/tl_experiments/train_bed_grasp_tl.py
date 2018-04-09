@@ -21,7 +21,7 @@ rollout_parent_path = '/media/autolab/1tb/data/bed_rcnn/rollouts_tl/'
 from fast_grasp_detect.configs.bed_grasp_config import CONFIG
 
 def main():
-    num_cal_data = [i*5 for i in range(9)]
+    num_cal_data = [15]#[i*5 for i in range(9)]
     # ts = make_training_sets(num_cal_data)
     test_losses = []
 
@@ -30,23 +30,28 @@ def main():
 
         assert os.path.exists(rollout_dir), "\nNo such rollout directory.\n"
         bed_grasp_options = CONFIG(rollout_path=rollout_dir)
+        bed_grasp_options.CONFIG_NAME = 'grasp_net_tl_' + str(trial)
         pascal = data_manager(bed_grasp_options)
         yolo = GHNet(bed_grasp_options)
-
+	
         solver = Solver(bed_grasp_options,yolo,pascal)
 
         print('Start training ...')
-        best_test_loss = solver.train()
+        best_test_loss, ckpt = solver.train()
         test_losses.append(best_test_loss)
+        print("Saved to: " + str(ckpt))
         print('Done training.')
+        tf.reset_default_graph()
 
     print("\n\n\nTest losses:")
     print(test_losses)
 
+    fig = plt.figure()
     plt.plot(num_cal_data, test_losses)
     plt.xlabel('Number of Cal Training Points')
-    plt.ylabel('Minimum Test Loss')
-    plt.show()
+    plt.ylabel('Minimum Test Loss - Grasp Net')
+    # plt.show()
+    fig.savefig('grasp_tl.png')
 
 
 if __name__ == "__main__": main()

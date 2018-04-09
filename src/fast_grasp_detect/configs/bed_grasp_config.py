@@ -18,7 +18,7 @@ class CONFIG(object):
 
 		self.ROOT_DIR = '/media/autolab/1tb/data/'
 
-		self.NET_NAME = '08_28_01_37_11save.ckpt-30300'
+		self.NET_NAME = '02_10_17_29_27_CS_0_save.ckpt-1000'
 		self.DATA_PATH = self.ROOT_DIR + 'bed_rcnn/'
 
 		# ROLLOUT_PATH = DATA_PATH+'rollouts/'

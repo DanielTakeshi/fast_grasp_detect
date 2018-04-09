@@ -60,9 +60,11 @@ class Solver(object):
 
 
 
-
-        self.global_step = tf.get_variable(
+        # self.global_step = tf.Variable([], trainable=False)
+	# init = tf.constant_initializer(0)
+	self.global_step = tf.get_variable(
             'global_step', [], initializer=tf.constant_initializer(0), trainable=False)
+
         self.learning_rate = tf.train.exponential_decay(
             self.initial_learning_rate, self.global_step, self.decay_steps,
             self.decay_rate, self.staircase, name='learning_rate')
@@ -185,11 +187,12 @@ class Solver(object):
                 loss_dict["test"] = test_losses
                 loss_dict["train"] = train_losses
                 loss_dict["name"] = self.cfg.CONFIG_NAME
+                loss_dict["real_ckpt"] = real_ckpt
 
                
                 pickle.dump(loss_dict, open(self.cfg.STAT_DIR+self.cfg.CONFIG_NAME+'.p', 'wb'))
 
-        return min(test_losses)
+        return min(test_losses), real_ckpt
 
     def save_cfg(self):
 
