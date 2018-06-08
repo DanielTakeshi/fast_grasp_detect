@@ -153,6 +153,7 @@ class QueryLabeler():
 ##        self.setImage()
 ##        self.loadDir()
 
+
     def loadDir(self, dbg = False):
         s = 000
 ##        if not os.path.isdir(s):
@@ -215,13 +216,10 @@ class QueryLabeler():
             self.current_image = self.cam.read_color_data()
         else: 
             self.current_image = self.image
-
         self.tkimg = ImageTk.PhotoImage(Image.fromarray(self.current_image))
-        
         self.mainPanel.config(width = max(self.tkimg.width(), 400), height = max(self.tkimg.height(), 400))
         self.mainPanel.create_image(0, 0, image = self.tkimg, anchor=NW)
         self.progLabel.config(text = "%04d/%04d" %(self.cur, self.total))
-
         # load labels
         self.clearBBox()
         self.imagename = 'frame_'+str(self.label_count)
@@ -230,9 +228,6 @@ class QueryLabeler():
         bbox_cnt = 0
         self.lock = True
         
-        
-
-
 
     def loadImage(self):
         # load image
@@ -260,7 +255,6 @@ class QueryLabeler():
                 curr_bbox.append(self.cfg.CLASSES[obj['num_class_label']])
                 tmp = curr_bbox
                 self.bboxList.append(tuple(curr_bbox))
-
                 tmpId = self.mainPanel.create_rectangle(int(tmp[0]), int(tmp[1]), \
                                                         int(tmp[2]), int(tmp[3]), \
                                                         width = 2, \
@@ -273,21 +267,36 @@ class QueryLabeler():
           
 
     def saveImage(self):
+        """Updates `self.label_data` which is provided to the online labeler
+        when we do data collection for the bed. 
+        
+        Specifically, returns a dictionary s.t. label_data['objects'] is a list
+        of dictionaries, each dict representring one of the bounding boxes we've
+        drawn (usually only one). See the config file:
 
+        https://github.com/DanielTakeshi/fast_grasp_detect/blob/master/src/fast_grasp_detect/configs/config.py
+
+        for what these mean, but the classes here originally represented "yes"
+        or "no" but now they are four things ... but in the `check_success`
+        file, we call `if (result['class'] == 0)` for success, so as long as the
+        _index_ of the class from `bbox[4]` is 0, we know it's a success and
+        then we can transition the HSR to the other side.
+
+        For bboxList, it gets appended from `loadImage()` and `mouseClick()`.
+        It's clear that for both, the format is (x1,y1,x2,y2,class_label).
+        """
         label_data = {}
         label_data['num_labels'] = len(self.bboxList)
         objects = []
         for bbox in self.bboxList:
             obj = {}
-
             obj['box'] = bbox[0:4]
             obj['class'] = self.cfg.CLASSES.index(bbox[4])
             objects.append(obj)
-
         label_data['objects'] = objects
-
         self.label_data = label_data
         print 'Image No. %d saved' %(self.cur)
+
 
     def mouseClick(self, event):
         if self.STATE['click'] == 0:
@@ -301,6 +310,7 @@ class QueryLabeler():
             self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(self.currentLabelclass,x1, y1, x2, y2))
             self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
         self.STATE['click'] = 1 - self.STATE['click']
+
 
     def mouseMove(self, event):
         self.disp.config(text = 'x: %d, y: %d' %(event.x, event.y))
@@ -319,12 +329,14 @@ class QueryLabeler():
                                                             width = 2, \
                                                             outline = COLORS[len(self.bboxList) % len(COLORS)])
 
+
     def cancelBBox(self, event):
         if 1 == self.STATE['click']:
             if self.bboxId:
                 self.mainPanel.delete(self.bboxId)
                 self.bboxId = None
                 self.STATE['click'] = 0
+
 
     def delBBox(self):
         sel = self.listbox.curselection()
@@ -336,6 +348,7 @@ class QueryLabeler():
         self.bboxList.pop(idx)
         self.listbox.delete(idx)
 
+
     def clearBBox(self):
         for idx in range(len(self.bboxIdList)):
             self.mainPanel.delete(self.bboxIdList[idx])
@@ -343,11 +356,13 @@ class QueryLabeler():
         self.bboxIdList = []
         self.bboxList = []
 
+
     def prevImage(self, event = None):
         self.saveImage()
         if self.cur > 1:
             self.cur -= 1
             self.loadImage()
+
 
     def sendCommand(self, event = None):
         self.saveImage()
@@ -356,6 +371,7 @@ class QueryLabeler():
             self.cur += 1
             self.loadImage()
 
+
     def gotoImage(self):
         idx = int(self.idxEntry.get())
         if 1 <= idx and idx <= self.total:
@@ -363,7 +379,11 @@ class QueryLabeler():
             self.cur = idx
             self.loadImage()
 
+
     def setClass(self):
+        """TODO: outdated mapping, but use (grasp,0) to indicate a SUCCESS,
+        anything else is a failure.
+        """
     	self.currentLabelclass = self.classcandidate.get()
     	print 'set label class to :',self.currentLabelclass
         mapping = {"q": ("grasp", 0), "w": ("singulate", 1), "e": ("suction", 2), "r": ("quit",3)}
@@ -371,15 +391,14 @@ class QueryLabeler():
         self.classcandidate.current(mapping[class_label][1])
         print 'set label class to :',self.currentLabelclass
 
+
     def run(self,cam,image = None):
         #self.parent.resizable(width =  True, height = True)
         self.image = image
         self.cam = cam
-    
         #self.current_image = img
         print "running"
         self.parent.mainloop()
-
 
 
 if __name__ == '__main__':
