@@ -381,12 +381,13 @@ class QueryLabeler():
 
 
     def setClass(self):
-        """TODO: outdated mapping, but use (grasp,0) to indicate a SUCCESS,
+        """Originally an outdated mapping. Use index 0 to indicate a SUCCESS,
         anything else is a failure.
         """
     	self.currentLabelclass = self.classcandidate.get()
     	print 'set label class to :',self.currentLabelclass
-        mapping = {"q": ("grasp", 0), "w": ("singulate", 1), "e": ("suction", 2), "r": ("quit",3)}
+        #mapping = {"q": ("grasp", 0), "w": ("singulate", 1), "e": ("suction", 2), "r": ("quit",3)}
+        mapping = {"q": ("success", 0), "w": ("failure", 1), "e": ("failure", 2), "r": ("failure",3)}
         self.currentLabelclass = mapping[class_label][0]
         self.classcandidate.current(mapping[class_label][1])
         print 'set label class to :',self.currentLabelclass

@@ -1,12 +1,27 @@
 # fast_grasp_detect
 
 ## install 
+
+```
 python setup.py develop
+```
+
+(Or `pip install -e .` in this directory ... that might be better)
 
 ## main
-Contains scripts that can be run to train the networks.
-'train_bed_grasp.py' - trains the grasping network
-'train_bed_success.py' - trains the network that identifies successful rollouts
+
+Contains scripts that can be run to train the networks. We use two networks, one
+for the grasping ("grasp network") and one for the transition policy ("success
+network").
+
+- `train_bed_grasp.py` - trains the grasping network ([hyperparameters here][1])
+- `train_bed_success.py` - trains the network that identifies successful
+  rollouts ([hyperparameters here][2])
+
+Both of these call `solver = Solver(bed_grasp_options,yolo,pascal)` and then
+`solver.train()` to train the network, based on `core/train_network.py`. The
+difference is that `yolo` can be the output from `networks/grasp_net_cs.py` or
+`networks/success_net.py`.
 
 
 ## src
@@ -39,3 +54,7 @@ Contains scripts that can be run to train the networks.
 		○ Success_net.py = builds the success net (whether the bed is made or not)
 	• VISUALIZERS
 		○ Draw_cross_hair.py = used to draw an x on top of some location on the given image
+
+
+[1]:https://github.com/DanielTakeshi/fast_grasp_detect/blob/master/src/fast_grasp_detect/configs/bed_grasp_config.py
+[2]:https://github.com/DanielTakeshi/fast_grasp_detect/blob/master/src/fast_grasp_detect/configs/bed_success_config.py
