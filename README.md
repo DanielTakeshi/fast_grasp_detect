@@ -21,7 +21,13 @@ network").
 Both of these call `solver = Solver(bed_grasp_options,yolo,pascal)` and then
 `solver.train()` to train the network, based on `core/train_network.py`. The
 difference is that `yolo` can be the output from `networks/grasp_net_cs.py` or
-`networks/success_net.py`.
+`networks/success_net.py`. The `pascal` portion handles the YOLO pre-trained
+features, so that the two networks can simply fine-tune.
+
+The networks use TF slim. [Documentation here][3].
+
+I think Michael may have trained the YOLO network end-to-end, also using
+`train_network.py`, which appears to be flexible enough to handle both.
 
 
 ## src
@@ -58,3 +64,4 @@ difference is that `yolo` can be the output from `networks/grasp_net_cs.py` or
 
 [1]:https://github.com/DanielTakeshi/fast_grasp_detect/blob/master/src/fast_grasp_detect/configs/bed_grasp_config.py
 [2]:https://github.com/DanielTakeshi/fast_grasp_detect/blob/master/src/fast_grasp_detect/configs/bed_success_config.py
+[3]:https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/slim

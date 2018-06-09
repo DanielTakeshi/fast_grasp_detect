@@ -3,17 +3,17 @@ import tensorflow as tf
 import IPython
 import os
 import cv2
-
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
-
-
 slim = tf.contrib.slim
 
 
 class YOLO_CONV(object):
+    """Create the bulk of the YOLO network for fixed, pre-trained weights.
+    Then define fine-tuned weights in `grasp_net_cs.py` and `success_net.py`.
+    """
 
-    def __init__(self,options, is_training=True,layer = 0):
+    def __init__(self, options, is_training=True, layer=0):
         self.cfg = options
         self.classes = self.cfg.CLASSES
         self.num_class = len(self.classes)
@@ -24,20 +24,20 @@ class YOLO_CONV(object):
         self.scale = 1.0 * self.image_size / self.cell_size
         self.boundary1 = self.cell_size * self.cell_size * self.num_class
         self.boundary2 = self.boundary1 + self.cell_size * self.cell_size * self.boxes_per_cell
-
         self.alpha = self.cfg.ALPHA
-
         self.layers = layer
 
         self.offset = np.transpose(np.reshape(np.array(
             [np.arange(self.cell_size)] * self.cell_size * self.boxes_per_cell),
             (self.boxes_per_cell, self.cell_size, self.cell_size)), (1, 2, 0))
 
+        # Get logits from the input, which are (448,448) for each channel.
         self.images = tf.placeholder(tf.float32, [None, self.image_size, self.image_size, 3], name='images')
         self.logits = self.build_network(self.images, num_outputs=self.output_size, alpha=self.alpha, is_training=is_training)
 
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
+
 
     def build_network(self,
                       images,
@@ -77,9 +77,10 @@ class YOLO_CONV(object):
                 net = slim.conv2d(net, 1024, 3, scope='conv_23')
                 net = slim.conv2d(net, 512, 1, scope='conv_24')
                 net = slim.conv2d(net, 1024, 3, scope='conv_25')
-                net= slim.conv2d(net, 1024, 3, scope='conv_26')
+                net = slim.conv2d(net, 1024, 3, scope='conv_26')
                 self.conv_layer = net
 
+                # Add more layers if desired, but by default just keep first 26.
                 if self.layers >= 1:
                     net = tf.pad(net, np.array([[0, 0], [1, 1], [1, 1], [0, 0]]), name='pad_27')
                     net = slim.conv2d(net, 1024, 3, 2, padding='VALID', scope='conv_28')
@@ -95,8 +96,8 @@ class YOLO_CONV(object):
                 return net
 
 
-
     def load_network(self):
+        """Load network using slim's helpers and the standard `tf.train.Saver`."""
         self.weights_file = self.cfg.PRE_TRAINED_DIR+"YOLO_small.ckpt"
         print 'Restoring weights for conv from: ' + self.weights_file
         self.variable_to_restore = slim.get_variables_to_restore()
@@ -115,25 +116,21 @@ class YOLO_CONV(object):
         #tf.global_variables_initializer()
         self.saver = tf.train.Saver(self.variables_to_restore, max_to_keep=None)
         #self.saver = tf.train.Saver()
-
         self.saver.restore(self.sess, self.weights_file)
 
 
-
     def extract_conv_features(self, img):
-
+        """Critical!! Runs original camera images through YOLO stem to get
+        features. Then we later pass them to task-specific networks.
+        """
         img_h, img_w, _ = img.shape
         inputs = cv2.resize(img, (self.image_size, self.image_size))
         #inputs = cv2.cvtColor(inputs, cv2.COLOR_BGR2RGB).astype(np.float32)
-        
         inputs = (inputs / 255.0) * 2.0 - 1.0
         inputs = np.reshape(inputs, (1, self.image_size, self.image_size, 3))
-        
-        net_output = self.sess.run(self.conv_layer,
-                                   feed_dict={self.images: inputs})
-        
-        
+        net_output = self.sess.run(self.conv_layer, feed_dict={self.images: inputs})
         return net_output
+
 
 def leaky_relu(alpha):
     def op(inputs):
@@ -141,14 +138,8 @@ def leaky_relu(alpha):
     return op
 
 
-
-
 if __name__ == '__main__':
-
     yc = YOLO_CONV()
-
     yc.load_network()
-
     img = cv2.imread('test.png')
-
     features = yc.extract_conv_features(img)

@@ -1,3 +1,7 @@
+""" 
+I think this is deprecated or ignored, since the training script for grasping
+actually uses `core/data_manager.py`, just as the success network does.
+"""
 import os
 import xml.etree.ElementTree as ET
 import numpy as np
