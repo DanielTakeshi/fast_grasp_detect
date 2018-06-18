@@ -2,7 +2,7 @@ import os
 import shutil
 import numpy as np
 
-ROOT_DIR = '/media/autolab/1tb/data/'
+ROOT_DIR = '/media/autolab/1tb/daniel-bed-make/'
 DATA_PATH = ROOT_DIR + 'bed_rcnn/'
 
 sources = [DATA_PATH+'rollouts_dart/', DATA_PATH+'rollouts_dart_cal/']

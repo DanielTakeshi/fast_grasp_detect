@@ -9,6 +9,7 @@
 from __future__ import division
 from Tkinter import *
 import tkMessageBox
+
 from PIL import Image, ImageTk
 import ttk
 import os
@@ -94,7 +95,7 @@ class QueryLabeler():
         self.classcandidate.grid(row=1,column=2)
 
         self.cla_can_temp = self.cfg.CLASSES
-        print self.cla_can_temp
+        print("classes in python labeler: {}".format(self.cla_can_temp))
 
         self.classcandidate['values'] = self.cla_can_temp
         self.classcandidate.current(0)
@@ -398,7 +399,7 @@ class QueryLabeler():
         self.image = image
         self.cam = cam
         #self.current_image = img
-        print "running"
+        print("running `run()` in `fast_grasp_detect/labelers/online_labeler.py`")
         self.parent.mainloop()
 
 

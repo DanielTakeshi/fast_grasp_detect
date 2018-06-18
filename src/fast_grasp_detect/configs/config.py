@@ -16,7 +16,7 @@ class CONFIG(object):
 		# SS_DATA = 0
 		self.CONFIG_NAME = 'SS_0'
 
-		self.ROOT_DIR = '/media/autolab/1tb/data/'
+		self.ROOT_DIR = '/media/autolab/1tb/daniel-bed-make/'
 
 		self.NET_NAME = '08_28_01_37_11save.ckpt-30300'
 		self.DATA_PATH = self.ROOT_DIR + 'bed_rcnn/'
@@ -58,9 +58,7 @@ class CONFIG(object):
 
 		# WEIGHTS_FILE = os.path.join(DATA_PATH, 'weights', 'YOLO_small.ckpt')
 
-		# self.CLASSES = ['yes','no']
-
-		self.CLASSES = ['grasp', 'singulate', 'suction','quit']
+		self.CLASSES = ['yes','no']
 
 		# #CLASSES = ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus',
 		#            'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse',
