@@ -13,7 +13,7 @@ class CONFIG(object):
         # SS_DATA = 0
 
         self.CONFIG_NAME = 'grasp_net' # Daniel: ? should be success net?
-        self.ROOT_DIR    = '/media/autolab/1tb/data/'
+        self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'
         self.NET_NAME    = '08_28_01_37_11save.ckpt-30300'
         self.DATA_PATH   = self.ROOT_DIR + 'bed_rcnn/'
         # ROLLOUT_PATH = DATA_PATH+'rollouts/'
