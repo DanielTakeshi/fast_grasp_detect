@@ -46,7 +46,7 @@ class CONFIG(object):
         # WEIGHTS_FILE = os.path.join(DATA_PATH, 'weights', 'YOLO_small.ckpt')
 
         # Classes, labels, data augmentation
-        self.CLASSES = ['yes','no']
+        self.CLASSES = ['success_grasp','fail_grasp']
         # #CLASSES = ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus',
         #            'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse',
         #            'motorbike', 'person', 'pottedplant', 'sheep', 'sofa',

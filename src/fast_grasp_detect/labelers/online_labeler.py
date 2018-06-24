@@ -3,13 +3,10 @@
 # Purpose:     Label object bboxes for ImageNet Detection data
 # Author:      Michael Laskey
 # Created:     07/05/2017
-
-#
 #-------------------------------------------------------------------------------
 from __future__ import division
 from Tkinter import *
 import tkMessageBox
-
 from PIL import Image, ImageTk
 import ttk
 import os
@@ -25,9 +22,12 @@ COLORS = ['red', 'blue', 'cyan', 'green', 'black']
 # image sizes for the examples
 SIZE = 256, 256
 
+
 class QueryLabeler():
+
     def __init__(self):
-        # set up the main frame
+        # set up the main frame (Daniel: the standard way we start Tkinter)
+        # http://effbot.org/tkinterbook/tkinter-hello-tkinter.htm
         self.parent = Tk()
         self.parent.title("LabelTool")
         self.frame = Frame(self.parent)
@@ -78,7 +78,6 @@ class QueryLabeler():
         self.mainPanel.bind("<Motion>", self.mouseMove)
         self.parent.bind("<Escape>", self.cancelBBox)  # press <Espace> to cancel current bbox
   
-
         # for ease of use
         self.parent.bind("f", lambda event: self.delBBox())
         self.parent.bind("q", lambda event: self.class_key_update("q"))
@@ -89,19 +88,19 @@ class QueryLabeler():
 
         self.mainPanel.grid(row = 1, column = 1, rowspan = 4, sticky = W+N)
 
-        # choose class
+        # choose class (Daniel: https://docs.python.org/2/library/ttk.html)
         self.classname = StringVar()
-        self.classcandidate = ttk.Combobox(self.frame,state='readonly',textvariable=self.classname)
+        self.classcandidate = ttk.Combobox(self.frame, state='readonly', textvariable=self.classname)
         self.classcandidate.grid(row=1,column=2)
-
         self.cla_can_temp = self.cfg.CLASSES
-        print("classes in python labeler: {}".format(self.cla_can_temp))
+        print("QueryLabeler.__init__(). Classes in it: {}".format(self.cla_can_temp))
 
         self.classcandidate['values'] = self.cla_can_temp
         self.classcandidate.current(0)
         self.currentLabelclass = self.classcandidate.get() #init
         self.btnclass = Button(self.frame, text = 'ComfirmClass', command = self.setClass)
         self.btnclass.grid(row=2,column=2,sticky = W+E)
+        print("QueryLabeler.__init__(). self.classcandidate.get(): {}".format(self.classcandidate.get()))
 
         # showing bbox info & delete bbox
         self.lb1 = Label(self.frame, text = 'Bounding boxes:')
@@ -157,9 +156,6 @@ class QueryLabeler():
 
     def loadDir(self, dbg = False):
         s = 000
-##        if not os.path.isdir(s):
-##            tkMessageBox.showerror("Error!", message = "The specified dir doesn't exist!")
-##            return
         # get image list
         self.imageDir = self.cfg.IMAGE_PATH
         # print self.imageDir
@@ -184,14 +180,12 @@ class QueryLabeler():
         # default to the 1st image in the collection
         self.cur = 1
         self.total = len(self.imageList)
-        print("total is " + str(self.total))
          # set up output dir
         self.outDir = self.cfg.LABEL_PATH
 
         # load example bboxes
         #self.egDir = os.path.join(r'./Examples', '%03d' %(self.category))
         self.egDir = os.path.join(r'./Examples/demo')
-        # print os.path.exists(self.egDir)
         if not os.path.exists(self.egDir):
             return
         filelist = glob.glob(os.path.join(self.egDir, '*.png'))
@@ -231,8 +225,6 @@ class QueryLabeler():
         
 
     def loadImage(self):
-        # load image
-       
         imagepath = self.imageList[self.cur - 1]
         self.img = Image.open(imagepath)
 
@@ -262,6 +254,7 @@ class QueryLabeler():
                                                         outline = COLORS[(len(self.bboxList)-1) % len(COLORS)])
                 # print tmpId
                 self.bboxIdList.append(tmpId)
+                #print("in `QueryLabeler.loadImage()` putting listbox with class {}".format(tmp[4]))
                 self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(tmp[4],int(tmp[0]), int(tmp[1]), \
                 												  int(tmp[2]), int(tmp[3])))
                 self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
@@ -296,7 +289,7 @@ class QueryLabeler():
             objects.append(obj)
         label_data['objects'] = objects
         self.label_data = label_data
-        print 'Image No. %d saved' %(self.cur)
+        print("QueryLabeler.saveImage(), image no. {} saved, objects: {}".format(self.cur, objects))
 
 
     def mouseClick(self, event):
@@ -359,6 +352,7 @@ class QueryLabeler():
 
 
     def prevImage(self, event = None):
+        #print("QueryLabeler.prevImage(), self.cur {}, event {}, calling `saveImage()` ...".format(self.cur, event))
         self.saveImage()
         if self.cur > 1:
             self.cur -= 1
@@ -366,6 +360,7 @@ class QueryLabeler():
 
 
     def sendCommand(self, event = None):
+        #print("QueryLabeler.sendCommand(), self.cur {}, event {}, calling `saveImage()` ...".format(self.cur, event))
         self.saveImage()
         self.lock = False
         if self.cur < self.total:
@@ -374,8 +369,9 @@ class QueryLabeler():
 
 
     def gotoImage(self):
+        #print("QueryLabeler.gotoImage(), calling `saveImage()` ...")
         idx = int(self.idxEntry.get())
-        if 1 <= idx and idx <= self.total:
+        if 1 <= idx <= self.total:
             self.saveImage()
             self.cur = idx
             self.loadImage()
@@ -385,26 +381,26 @@ class QueryLabeler():
         """Originally an outdated mapping. Use index 0 to indicate a SUCCESS,
         anything else is a failure.
         """
+    	#print("In QueryLabeler.setClass(), starting `self.currentLabelclass`: {}".format(self.currentLabelclass))
     	self.currentLabelclass = self.classcandidate.get()
-    	print 'set label class to :',self.currentLabelclass
         #mapping = {"q": ("grasp", 0), "w": ("singulate", 1), "e": ("suction", 2), "r": ("quit",3)}
         mapping = {"q": ("success", 0), "w": ("failure", 1), "e": ("failure", 2), "r": ("failure",3)}
         self.currentLabelclass = mapping[class_label][0]
         self.classcandidate.current(mapping[class_label][1])
-        print 'set label class to :',self.currentLabelclass
+        #print("    now, self.currentLabelClass: {}".format(self.currentLabelclass))
+        #print("    now, class_label: {}".format(class_label))
 
 
-    def run(self,cam,image = None):
-        #self.parent.resizable(width =  True, height = True)
+    def run(self, cam, image=None):
+        #self.parent.resizable(width=True, height=True)
         self.image = image
         self.cam = cam
         #self.current_image = img
-        print("running `run()` in `fast_grasp_detect/labelers/online_labeler.py`")
         self.parent.mainloop()
 
 
 if __name__ == '__main__':
     root = Tk()
-    tool = LabelTool(root)
-    root.resizable(width =  True, height = True)
+    #tool = LabelTool(root) # Daniel: ? doesn't seem to be in TKinter library.
+    root.resizable(width=True, height=True)
     root.mainloop()
