@@ -3,8 +3,6 @@ import tensorflow as tf
 import IPython
 import os
 import cv2
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
 slim = tf.contrib.slim
 
 
@@ -46,7 +44,7 @@ class YOLO_CONV(object):
                       keep_prob=0.5,
                       is_training=True,
                       scope='yolo'):
-       
+
         with tf.variable_scope(scope):
             with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                 activation_fn=leaky_relu(alpha),
@@ -105,12 +103,12 @@ class YOLO_CONV(object):
         for var in self.variable_to_restore:
             print str(count) + " "+ var.name
             count += 1
-        
+
         if self.layers == 0:
             self.variables_to_restore = self.variable_to_restore[0:45]
         elif self.layers == 1:
             self.variables_to_restore = self.variable_to_restore[0:46]
-        elif self.layers == 2: 
+        elif self.layers == 2:
             self.variables_to_restore = self.variable_to_restore[0:48]
 
         #tf.global_variables_initializer()

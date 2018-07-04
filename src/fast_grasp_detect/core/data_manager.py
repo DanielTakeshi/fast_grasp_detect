@@ -1,15 +1,10 @@
-import os
+import os, cv2, sys, copy, glob, IPython
 import xml.etree.ElementTree as ET
 import numpy as np
 from numpy.random import random
-import cv2
-import cPickle
-import copy
-import glob
 from fast_grasp_detect.core.yolo_conv_features_cs import YOLO_CONV
 from fast_grasp_detect.data_aug.data_augment import augment_data
 import cPickle as pickle
-import IPython
 
 
 class data_manager(object):
@@ -23,7 +18,7 @@ class data_manager(object):
         self.image_size = self.cfg.IMAGE_SIZE
         self.class_to_ind = dict(zip(self.classes, xrange(len(self.classes))))
         self.flipped = self.cfg.FLIPPED
-        self.noise = self.cfg.LIGHTING_NOISE 
+        self.noise = self.cfg.LIGHTING_NOISE
         self.cursor = 0
         self.t_cursor = 0
         self.epoch = 1
@@ -31,9 +26,11 @@ class data_manager(object):
         self.test_labels = None
 
         # Load YOLO network and set up its pre-trained weights from known file
+        print("\n`data_manager` class, now calling YOLO_CONV and loading network...")
         self.yc = YOLO_CONV(self.cfg)
         self.yc.load_network()
 
+        print("\n`data_manager` class, now loading test set and (train) rollouts")
         self.recent_batch = []
         self.load_test_set()
         self.load_rollouts()
@@ -85,7 +82,7 @@ class data_manager(object):
                 self.epoch += 1
         return images, labels
 
-    
+
     def prep_image(self, image):
         image = cv2.resize(image, (self.image_size, self.image_size))
         image = (image / 255.0) * 2.0 - 1.0
@@ -109,52 +106,56 @@ class data_manager(object):
 
     def load_test_set(self):
         """ Assigns to `self.test_labels`, each element a dict w/relevant info."""
+        print("\ndata_manager.load_test_set(), path: {}".format(self.cfg.BC_HELD_OUT))
         self.test_labels = []
         self.train_data_path = []
         self.test_data_path = []
         rollouts = glob.glob(os.path.join(self.cfg.BC_HELD_OUT, '*_*'))
-        count = 0
-        
+
         for rollout_p in rollouts:
-            #rollout_p = rollouts[0]  
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
-            print rollout_p
+            print(rollout_p)
             grasp_rollout = self.cfg.break_up_rollouts(rollout)
             for grasp_point in grasp_rollout:
-                print "TEST EXAMPLE", rollout_p
+                print("TEST EXAMPLE {}".format(rollout_p))
                 # Run the YOLO network w/pre-trained weights!!
                 features = self.yc.extract_conv_features(grasp_point[0]['c_img'])
                 label = self.cfg.compute_label(grasp_point[0])
-                self.test_labels.append({'c_img': grasp_point[0]['c_img'], 'label': label, 'features':features})
+                self.test_labels.append({'c_img': grasp_point[0]['c_img'], 'label': label, 'features': features})
                 self.test_data_path.append(rollout_p)
 
 
     def load_rollouts(self):
-        """ Assigns to `self.train_labels`, each element a dict w/relevant info."""
+        """ Assigns to `self.train_labels`, each element a dict w/relevant info.
+
+        Each rollout in the designated directory is broken up into 'grasp_point' dicts, which are
+        like the data dicts we used for collecting data (though w/out 'd_img'). Then for each, we
+        augment the data and then run the YOLO network on that to get pre-extracted features.
+        """
+        print("\ndata_manager.load_rollouts(), path: {}".format(self.rollout_path))
         self.train_labels = []
         self.train_data_path = []
         self.test_data_path = []
         rollouts = glob.glob(os.path.join(self.rollout_path, '*_*'))
-        count = 0
-        
+
         for rollout_p in rollouts:
-            #rollout_p = rollouts[0]  
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
-            print rollout_p
-            print len(rollout)
             grasp_rollout = self.cfg.break_up_rollouts(rollout)
+            print("{}, len(grasp_rollout)={}".format(rollout_p, len(grasp_rollout)))
 
             for grasp_point in grasp_rollout:
-                count = 0
                 for data in grasp_point:
-                    data_a = augment_data(data)
-                    for datum_a in data_a:
-                        # Run the YOLO network w/pre-trained weights!!
+                    data_a = augment_data(data) # data augmentation magic.
+                    for d_idx,datum_a in enumerate(data_a):
+                        # run the YOLO network w/pre-trained weights! 
+                        # features.shape: (1, 14, 14, 1024)
+                        # labels: for grasps, alternate between (x,y) and (-x,y)
                         features = self.yc.extract_conv_features(datum_a['c_img'])
                         label = self.cfg.compute_label(datum_a)
-                        self.train_labels.append({'c_img': datum_a['c_img'], 'label': label, 'features':features})
+                        self.train_labels.append({'c_img': datum_a['c_img'], 'label': label, 'features': features})
+                        print(label)
                 self.train_data_path.append(rollout_p)
-        return 
+        return
 
 
     def compute_label(self, pose):

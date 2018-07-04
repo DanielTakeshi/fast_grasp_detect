@@ -12,14 +12,30 @@ class CONFIG(object):
         # SS_DATA = 0
 
         self.CONFIG_NAME = 'grasp_net'
-        self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'
+        #self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'
+        self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'
         self.NET_NAME    = '08_28_01_37_11save.ckpt-30300'
-        self.DATA_PATH   = self.ROOT_DIR+'bed_rcnn/'
-        # ROLLOUT_PATH = DATA_PATH+'rollouts/'
-        # BC_HELD_OUT  = DATA_PATH+'held_out_bc'
+        #self.DATA_PATH   = self.ROOT_DIR+'bed_rcnn/'
+        self.DATA_PATH   = self.ROOT_DIR+''
 
-        # Various data paths
-        self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_dart_cal/'
+        # New, use for cross validation. Got this by randomly arranging numbers in a range.
+        self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/'
+        self.CV_GROUPS = [
+                [34,  7, 39, 37, 46],
+                [16,  6,  8, 36, 26],
+                [24, 11, 51, 38, 29],
+                [32, 27,  9, 43, 19],
+                [12, 35, 31,  4, 22],
+                [13, 42,  5, 14, 25],
+                [20, 40, 18, 21, 47],
+                [23, 52, 28, 49, 45],
+                [44, 48, 50, 15, 17],
+                [ 3, 41, 10, 30, 33],
+        ]
+        self.CV_HELD_OUT_INDEX = 0
+        self.PERFORM_CV = True
+
+        # Various data paths.
         self.BC_HELD_OUT  = self.DATA_PATH+'held_out_cal'
         self.IMAGE_PATH   = self.DATA_PATH+'images/'
         self.LABEL_PATH   = self.DATA_PATH+'labels/'
@@ -27,21 +43,21 @@ class CONFIG(object):
         self.OUTPUT_DIR   = self.DATA_PATH+'output/'
 
         # Based on transitions
-        self.TRAN_OUTPUT_DIR   = self.DATA_PATH+'transition_output/' 
+        self.TRAN_OUTPUT_DIR   = self.DATA_PATH+'transition_output/'
         self.TRAN_STATS_DIR    = self.TRAN_OUTPUT_DIR+'stats/'
         self.TRAIN_STATS_DIR_T = self.TRAN_OUTPUT_DIR+'train_stats/'
         self.TEST_STATS_DIR_T  = self.TRAN_OUTPUT_DIR+'test_stats/'
 
         # Based on grasping (NOTE: order matters, OUTPUT_DIR is updated)
         self.OUTPUT_DIR        = self.DATA_PATH+'grasp_output/'
-        self.STAT_DIR          = self.OUTPUT_DIR+'stats/' 
+        self.STAT_DIR          = self.OUTPUT_DIR+'stats/'
         self.TRAIN_STATS_DIR_G = self.OUTPUT_DIR+'train_stats/'
         self.TEST_STATS_DIR_G  = self.OUTPUT_DIR+'test_stats/'
 
         # Weights
         self.WEIGHTS_DIR = self.DATA_PATH+'weights/'
-        self.PRE_TRAINED_DIR = \
-            '/home/autolab/Workspaces/michael_working/yolo_tensorflow/data/pascal_voc/weights/'
+        #self.PRE_TRAINED_DIR = '/home/autolab/Workspaces/michael_working/yolo_tensorflow/data/pascal_voc/weights/'
+        self.PRE_TRAINED_DIR = '/nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/'
         self.WEIGHTS_FILE = None
         # WEIGHTS_FILE = os.path.join(DATA_PATH, 'weights', 'YOLO_small.ckpt')
 
@@ -98,6 +114,7 @@ class CONFIG(object):
 
 
     def compute_label(self,datum):
+        """Labels scaled in [-1,1], as described in paper."""
         pose = datum['pose']
         label = np.zeros((2))
         x = pose[0]/self.T_IMAGE_SIZE_W-0.5

@@ -10,8 +10,6 @@ from utils.pascal_voc import pascal_voc
 import IPython
 import cPickle as pickle
 slim = tf.contrib.slim
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 class Solver(object):
 

@@ -10,16 +10,13 @@ from fast_grasp_detect.configs.config import CONFIG
 from utils.timer import Timer
 import IPython
 import sys, os
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
 slim = tf.contrib.slim
 from fast_grasp_detect.visualizers.draw_cross_hair import DrawPrediction
+
 
 class GDetector(object):
 
     def __init__(self,net_name):
-        
-        
         self.cfg = CONFIG()
         self.yc = YOLO_CONV(self.cfg,is_training = False)
 

@@ -12,15 +12,31 @@ class CONFIG(object):
         #VARY {0, 4, 9}
         # SS_DATA = 0
 
-        self.CONFIG_NAME = 'grasp_net' # Daniel: ? should be success net?
-        self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'
+        self.CONFIG_NAME = 'success_net'
+        #self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'
+        self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'
         self.NET_NAME    = '08_28_01_37_11save.ckpt-30300'
-        self.DATA_PATH   = self.ROOT_DIR + 'bed_rcnn/'
-        # ROLLOUT_PATH = DATA_PATH+'rollouts/'
-        # BC_HELD_OUT  = DATA_PATH+'held_out_bc'
+        #self.DATA_PATH   = self.ROOT_DIR+'bed_rcnn/'
+        self.DATA_PATH   = self.ROOT_DIR+''
+
+        # New, use for cross validation. Got this by randomly arranging numbers in a range.
+        self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/'
+        self.CV_GROUPS = [
+                [34,  7, 39, 37, 46],
+                [16,  6,  8, 36, 26],
+                [24, 11, 51, 38, 29],
+                [32, 27,  9, 43, 19],
+                [12, 35, 31,  4, 22],
+                [13, 42,  5, 14, 25],
+                [20, 40, 18, 21, 47],
+                [23, 52, 28, 49, 45],
+                [44, 48, 50, 15, 17],
+                [ 3, 41, 10, 30, 33],
+        ]
+        self.CV_HELD_OUT_INDEX = 0
+        self.PERFORM_CV = False
 
         # Various data paths
-        self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_dart_cal/'
         self.BC_HELD_OUT  = self.DATA_PATH+'held_out_cal'
         self.IMAGE_PATH   = self.DATA_PATH+'images/'
         self.LABEL_PATH   = self.DATA_PATH+'labels/'
@@ -29,14 +45,14 @@ class CONFIG(object):
 
         # Based on transitions
         self.OUTPUT_DIR        = self.DATA_PATH+'transition_output/'
-        self.STAT_DIR          = self.OUTPUT_DIR+'stats/' 
+        self.STAT_DIR          = self.OUTPUT_DIR+'stats/'
         self.TRAIN_STATS_DIR_G = self.OUTPUT_DIR+'train_stats/'
         self.TEST_STATS_DIR_G  = self.OUTPUT_DIR+'test_stats/'
 
         # Weights
         self.WEIGHTS_DIR = self.DATA_PATH+'weights/'
-        self.PRE_TRAINED_DIR = \
-            '/home/autolab/Workspaces/michael_working/yolo_tensorflow/data/pascal_voc/weights/'
+        #self.PRE_TRAINED_DIR = '/home/autolab/Workspaces/michael_working/yolo_tensorflow/data/pascal_voc/weights/'
+        self.PRE_TRAINED_DIR = '/nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/'
         self.WEIGHTS_FILE = None
         # WEIGHTS_FILE = os.path.join(DATA_PATH, 'weights', 'YOLO_small.ckpt')
 
@@ -93,7 +109,7 @@ class CONFIG(object):
 
 
     def compute_label(self,datum):
-        #IPython.embed()
+        """Interesting, we actually make it 0.99? TODO need to find out why..."""
         clss = datum['class']
         label = np.zeros(2)
         label[clss] = 0.99
@@ -106,7 +122,7 @@ class CONFIG(object):
 
     def get_empty_label(self):
         return np.zeros((self.BATCH_SIZE, 2))
-        
+
 
     def break_up_rollouts(self,rollout):
         success_point = []

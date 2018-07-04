@@ -8,8 +8,6 @@ from fast_grasp_detect.core.train_network import Solver
 import IPython
 import cPickle as pickle
 slim = tf.contrib.slim
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
 from fast_grasp_detect.configs.bed_success_config import CONFIG
 
 bed_success_options = CONFIG()
@@ -17,6 +15,11 @@ pascal = data_manager(bed_success_options)
 yolo = SNet(bed_success_options)
 solver = Solver(bed_success_options,yolo,pascal)
 
-print('Start training ...')
+print('\nJust before training, here are all the TF variables we have:')
+variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+for vv in variables:
+    print(vv)
+
+print('\nStart training ...')
 solver.train()
 print('Done training.')

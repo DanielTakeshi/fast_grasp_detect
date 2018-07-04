@@ -7,8 +7,6 @@ from fast_grasp_detect.core.timer import Timer
 import IPython
 import cPickle as pickle
 slim = tf.contrib.slim
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 
 class Solver(object):
@@ -42,7 +40,7 @@ class Solver(object):
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
         self.save_cfg()
-        
+
         # Restoring variables.
         self.variable_to_restore = slim.get_variables_to_restore()
         self.variables_to_restore = self.variable_to_restore[42:52]
@@ -61,7 +59,7 @@ class Solver(object):
         self.learning_rate = tf.train.exponential_decay(
             self.initial_learning_rate, self.global_step, self.decay_steps,
             self.decay_rate, self.staircase, name='learning_rate')
-       
+
         # Loss function from `self.net`. But why grad descent, not Adam?
         self.optimizer = tf.train.GradientDescentOptimizer(
             learning_rate=self.learning_rate).minimize(
@@ -83,7 +81,7 @@ class Solver(object):
             print('Restoring weights for net from: ' + self.weights_file)
             self.saver.restore(self.sess, self.weights_file)
 
-       
+
     def variables_to_restore(self):
         return
 
@@ -101,7 +99,7 @@ class Solver(object):
             images, labels = self.data.get()
             load_timer.toc()
             feed_dict = {self.net.images: images, self.net.labels: labels}
-            
+
             if step % self.summary_iter == 0:
                 if step % (self.summary_iter * 10) == 0:
                     train_timer.tic()
