@@ -38,11 +38,14 @@ def augment_data(data, depth_data=False):
     if label is None:
         label = [0,0]
 
+    # Usually we use c_img. Get six different lighting changes.
     if depth_data:
         light_imgs = get_depth_aug(img)
     else:
         light_imgs = get_lighting(img)
 
+    # For each of the lighting changes (assuming c_img) we do normal, then a flip about vertical
+    # axis. Thus, we adjust the label (i.e., (x,y) pose for gripper) by flipping the x value.
     for l_imgs in light_imgs:
         p_n = {'c_img': l_imgs, 'pose': label, 'class': clss}
         #p_h = flip_data_horizontal(l_imgs,np.copy(label))

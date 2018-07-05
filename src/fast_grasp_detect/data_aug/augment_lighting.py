@@ -105,7 +105,6 @@ def get_lighting(img_src):
     trans_img.append(img_src)
 
     # LUT変換
-    trans_img.append(img_src)
     for i, LUT in enumerate(LUTs):
         trans_img.append( cv2.LUT(img_src, LUT))
     return trans_img
