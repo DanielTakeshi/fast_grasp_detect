@@ -32,13 +32,12 @@ def augment_data(data, depth_data=False):
         img = data['d_img']
     else:
         img = data['c_img']
-
     label = data['pose']
     clss = data['class']
     if label is None:
         label = [0,0]
 
-    # Usually we use c_img. Get six different lighting changes.
+    # Usually we use c_img. Get different lighting changes here.
     if depth_data:
         light_imgs = get_depth_aug(img)
     else:
