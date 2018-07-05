@@ -4,6 +4,7 @@ import numpy as np
 from numpy.random import random
 from fast_grasp_detect.core.yolo_conv_features_cs import YOLO_CONV
 from fast_grasp_detect.data_aug.data_augment import augment_data
+from fast_grasp_detect.data_aug.depth_preprocess import datum_to_net_dim
 import cPickle as pickle
 
 
@@ -114,10 +115,11 @@ class data_manager(object):
 
         for rollout_p in rollouts:
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
-            print(rollout_p)
             grasp_rollout = self.cfg.break_up_rollouts(rollout)
             for grasp_point in grasp_rollout:
                 print("TEST EXAMPLE {}".format(rollout_p))
+                if cfg.USE_DEPTH:
+                    grasp_point = datum_to_net_dim(grasp_point)
                 # Run the YOLO network w/pre-trained weights!!
                 features = self.yc.extract_conv_features(grasp_point[0]['c_img'])
                 label = self.cfg.compute_label(grasp_point[0])
@@ -145,7 +147,9 @@ class data_manager(object):
 
             for grasp_point in grasp_rollout:
                 for data in grasp_point:
-                    data_a = augment_data(data) # data augmentation magic.
+                    if cfg.USE_DEPTH:
+                        data = datum_to_net_dim(data)
+                    data_a = augment_data(data, self.cfg.USE_DEPTH) # data augmentation magic.
                     for d_idx,datum_a in enumerate(data_a):
                         # run the YOLO network w/pre-trained weights! 
                         # features.shape: (1, 14, 14, 1024)

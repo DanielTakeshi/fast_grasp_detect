@@ -51,6 +51,16 @@ def addSaltPepperNoise(src):
     out[coords[:-1]] = (0,0,0)
     return out
 
+
+# https://github.com/mdlaskey/fast_grasp_detect/commit/2f85441c86fa7eed089cafb638f0a5bb2fa1eddb
+def get_depth_aug(img_src):
+    trans_img = []
+    trans_img.append(img_src)
+    trans_img.append(addGaussianNoise(img_src))
+    trans_img.appned(addSaltPepperNoise(img_src))
+    return trans_img
+
+
 def get_lighting(img_src):
     # ルックアップテーブルの生成
     min_table = 50
@@ -98,10 +108,8 @@ def get_lighting(img_src):
     trans_img.append(img_src)
     for i, LUT in enumerate(LUTs):
         trans_img.append( cv2.LUT(img_src, LUT))
-
-   
-
     return trans_img
+
 
 if __name__ == '__main__':
     img_name = "frame_29.png"

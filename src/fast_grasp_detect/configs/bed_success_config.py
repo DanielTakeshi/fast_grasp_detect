@@ -78,6 +78,7 @@ class CONFIG(object):
         self.ALPHA = 0.1
         self.DISP_CONSOLE = True
         self.RESOLUTION = 10
+        self.USE_DEPTH = False
 
         # solver parameter
 
