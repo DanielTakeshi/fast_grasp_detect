@@ -116,12 +116,15 @@ class data_manager(object):
         for rollout_p in rollouts:
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
             grasp_rollout = self.cfg.break_up_rollouts(rollout)
+
             for grasp_point in grasp_rollout:
                 print("TEST EXAMPLE {}".format(rollout_p))
-                if self.cfg.USE_DEPTH:
-                    grasp_point = datum_to_net_dim(grasp_point)
                 # Run the YOLO network w/pre-trained weights!!
-                features = self.yc.extract_conv_features(grasp_point[0]['c_img'])
+                if self.cfg.USE_DEPTH:
+                    grasp_point[0] = datum_to_net_dim(grasp_point[0])
+                    features = self.yc.extract_conv_features(grasp_point[0]['d_img'])
+                else:
+                    features = self.yc.extract_conv_features(grasp_point[0]['c_img'])
                 label = self.cfg.compute_label(grasp_point[0])
                 self.test_labels.append({'c_img': grasp_point[0]['c_img'], 'label': label, 'features': features})
                 self.test_data_path.append(rollout_p)

@@ -207,7 +207,7 @@ class QueryLabeler():
 
 
     def get_label(self):
-        if self.image == None:
+        if self.image.any() == None:
             self.current_image = self.cam.read_color_data()
         else: 
             self.current_image = self.image

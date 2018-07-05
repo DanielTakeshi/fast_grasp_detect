@@ -31,7 +31,7 @@ class SNet(object):
             self.total_loss = tf.losses.get_total_loss()
             tf.summary.scalar('total_loss', self.total_loss)
         #self.images = tf.placeholder(tf.float32, [None, self.cfg.FILTER_SIZE, self.cfg.FILTER_SIZE, self.cfg.NUM_FILTERS], name='images')
-     
+
 
     def build_network(self,
                       images,
@@ -40,8 +40,8 @@ class SNet(object):
                       keep_prob=1.0,
                       is_training=True,
                       scope='yolo'):
-       
-        with tf.variable_scope(scope):
+
+        with tf.variable_scope(scope, reuse=tf.AUTO_REUSE):
             with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                 activation_fn=leaky_relu(alpha),
                                 weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
@@ -67,10 +67,10 @@ class SNet(object):
         with tf.variable_scope(scope):
             predict_classes = tf.reshape(predicts, [self.batch_size,2])
             class_delta = (predict_classes - classes)
-            self.class_loss = tf.reduce_mean(tf.reduce_sum(tf.square(class_delta), axis=[1]), name='class_loss') 
+            self.class_loss = tf.reduce_mean(tf.reduce_sum(tf.square(class_delta), axis=[1]), name='class_loss')
             tf.losses.add_loss(self.class_loss)
             tf.summary.scalar('class_loss', self.class_loss)
-          
+
 
 def leaky_relu(alpha):
     def op(inputs):
