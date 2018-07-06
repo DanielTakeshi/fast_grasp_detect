@@ -76,10 +76,9 @@ class GHNet(object):
         return net
 
 
-    def loss_layer(self, predicts, classes, scope='loss_layer'):
+    def loss_layer(self, predict_classes, classes, scope='loss_layer'):
         """Despite the names here, this should be standard mean square error (L2) loss."""
         with tf.variable_scope(scope):
-            predict_classes = tf.reshape(predicts, [self.batch_size,2])
             class_delta = (predict_classes - classes) # not `class` but just error
             self.class_loss = tf.reduce_mean(tf.reduce_sum(tf.square(class_delta), axis=[1]), name='class_loss') 
             tf.losses.add_loss(self.class_loss)

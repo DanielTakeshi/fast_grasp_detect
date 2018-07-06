@@ -30,7 +30,7 @@ class CONFIG(object):
                 [44, 48, 50, 15, 17],
                 [ 3, 41, 10, 30, 33],
         ]
-        self.CV_HELD_OUT_INDEX = 0
+        self.CV_HELD_OUT_INDEX = 1
         self.PERFORM_CV = True
 
         # Various data paths. Note: BC_HELD_OUT is ignored if PERFORM_CV=True.
@@ -82,7 +82,6 @@ class CONFIG(object):
         self.USE_DEPTH = False
 
         # solver parameter
-        self.GPU = ''
         self.LEARNING_RATE = 0.1
         self.DECAY_STEPS = 30000
         self.DECAY_RATE = 0.1

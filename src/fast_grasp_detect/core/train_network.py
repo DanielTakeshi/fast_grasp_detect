@@ -70,6 +70,7 @@ class Solver(object):
         self.averages_op = self.ema.apply(tf.trainable_variables())
         with tf.control_dependencies([self.optimizer]):
             self.train_op = tf.group(self.averages_op)
+        #self.train_op = tf.train.AdamOptimizer(learning_rate=1e-5).minimize(self.net.class_loss, global_step=self.global_step)
 
         gpu_options = tf.GPUOptions()
         config = tf.ConfigProto(gpu_options=gpu_options)

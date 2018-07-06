@@ -30,7 +30,6 @@ class SNet(object):
             self.loss_layer(self.logits, self.labels)
             self.total_loss = tf.losses.get_total_loss()
             tf.summary.scalar('total_loss', self.total_loss)
-        #self.images = tf.placeholder(tf.float32, [None, self.cfg.FILTER_SIZE, self.cfg.FILTER_SIZE, self.cfg.NUM_FILTERS], name='images')
 
 
     def build_network(self,
@@ -56,18 +55,25 @@ class SNet(object):
                 net = slim.fully_connected(net, 4096, scope='fc_34')
                 net = slim.dropout(net, keep_prob=keep_prob, is_training=is_training, scope='dropout_35')
                 net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='fc_36')
-                net = tf.nn.softmax(net) # Note the softmax here!
+                #net = tf.nn.softmax(net) # Note the softmax here! NOT present in the grasping network.
         return net
 
 
-    def loss_layer(self, predicts, classes, scope='loss_layer'):
+    def loss_layer(self, predict_classes, classes, scope='loss_layer'):
         """ For transitions, the loss is also L2 (actually the paper says
         absolute loss, need to fixx that ...). Should we do cross entropy?
         """
         with tf.variable_scope(scope):
-            predict_classes = tf.reshape(predicts, [self.batch_size,2])
-            class_delta = (predict_classes - classes)
-            self.class_loss = tf.reduce_mean(tf.reduce_sum(tf.square(class_delta), axis=[1]), name='class_loss')
+            # Daniel: originally we had this loss, mean L2^2 (same for grasping). If we want to use
+            # this, then don't forget to change the target class to have label 1.0 in the config,
+            # and to re-insert the softmax layer at the end.
+
+            #class_delta = (predict_classes - classes)
+            #self.class_loss = tf.reduce_mean(tf.reduce_sum(tf.square(class_delta), axis=[1]), name='class_loss')
+            self.class_loss = tf.reduce_mean(
+                tf.nn.softmax_cross_entropy_with_logits_v2(logits=predict_classes,labels=classes)
+            )
+
             tf.losses.add_loss(self.class_loss)
             tf.summary.scalar('class_loss', self.class_loss)
 

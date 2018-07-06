@@ -8,9 +8,7 @@ class CONFIG(object):
 
     def __init__(self):
         FIXED_LAYERS = 33
-
         #VARY {0, 4, 9}
-        # SS_DATA = 0
 
         self.CONFIG_NAME = 'success_net'
         #self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'
@@ -34,7 +32,7 @@ class CONFIG(object):
                 [ 3, 41, 10, 30, 33],
         ]
         self.CV_HELD_OUT_INDEX = 0
-        self.PERFORM_CV = False
+        self.PERFORM_CV = True
 
         # Various data paths
         self.BC_HELD_OUT  = self.DATA_PATH+'held_out_cal'
@@ -68,8 +66,6 @@ class CONFIG(object):
         self.QUICK_DEBUG = True
 
         # model parameter
-
-        #IMAGE_SIZE = 250
         self.T_IMAGE_SIZE_H = 480
         self.T_IMAGE_SIZE_W = 640
         self.IMAGE_SIZE = 448
@@ -81,26 +77,21 @@ class CONFIG(object):
         self.USE_DEPTH = False
 
         # solver parameter
-
-        self.GPU = ''
         self.LEARNING_RATE = 0.1
         self.DECAY_STEPS = 30000
         self.DECAY_RATE = 0.1
         self.STAIRCASE = True
-        self.BATCH_SIZE = 45
-        self.MAX_ITER = 1000#30000
+        self.BATCH_SIZE = 32
+        self.MAX_ITER = 2000#30000
         self.SUMMARY_ITER = 10
         self.TEST_ITER = 20
         self.SAVE_ITER = 500
         self.VIZ_DEBUG_ITER = 400
 
         # test parameter
-
-        #THRESHOLD = 0.0008
         self.PICK_THRESHOLD = 0.4
         self.THRESHOLD = 0.4
         self.IOU_THRESHOLD = 0.5
-        #IOU_THRESHOLD = 0.0001
 
         # fast params
         self.FILTER_SIZE = 14
@@ -113,16 +104,25 @@ class CONFIG(object):
         """Interesting, we actually make it 0.99? TODO need to find out why..."""
         clss = datum['class']
         label = np.zeros(2)
-        label[clss] = 0.99
+        #label[clss] = 0.99
+        label[clss] = 1.0
         return label
 
 
-    def get_empty_state(self):
-        return np.zeros((self.BATCH_SIZE, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
+    def get_empty_state(self, batchdim=None):
+        """Each time we call a batch during training/testing, initialize with this."""
+        if batchdim is not None:
+            return np.zeros((batchdim, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
+        else:
+            return np.zeros((self.BATCH_SIZE, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
 
 
-    def get_empty_label(self):
-        return np.zeros((self.BATCH_SIZE, 2))
+    def get_empty_label(self, batchdim=None):
+        """Each time we call a batch during training/testing, initialize with this."""
+        if batchdim is not None:
+            return np.zeros((batchdim, 2))
+        else:
+            return np.zeros((self.BATCH_SIZE, 2))
 
 
     def break_up_rollouts(self,rollout):
