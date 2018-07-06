@@ -26,6 +26,10 @@ class data_manager(object):
         self.gt_labels = None
         self.test_labels = None
 
+        # For cross-validation
+        self.held_out_list = self.cfg.CV_GROUPS[self.cfg.CV_HELD_OUT_INDEX]
+        self.held_out_rollouts = [os.path.join(self.rollout_path,'rollout_'+str(rr)) for rr in self.held_out_list]
+
         # Load YOLO network and set up its pre-trained weights from known file
         print("\n`data_manager` class, now calling YOLO_CONV and loading network...")
         self.yc = YOLO_CONV(self.cfg)
@@ -106,19 +110,28 @@ class data_manager(object):
 
 
     def load_test_set(self):
-        """ Assigns to `self.test_labels`, each element a dict w/relevant info."""
-        print("\ndata_manager.load_test_set(), path: {}".format(self.cfg.BC_HELD_OUT))
+        """ Assigns to `self.test_labels`, each element a dict w/relevant info.
+
+        If we are doing cross validation to evaluate different training criteria before hand, we'll
+        use cross validation groups and set the appropriate held-out dataset with our config file.
+        """
+        if self.cfg.PERFORM_CV:
+            print("\ndata_manager.load_test_set(), held-out rollouts: {} (cv index {}) from {}".format(
+                    self.held_out_list, self.cfg.CV_HELD_OUT_INDEX, self.rollout_path))
+            rollouts = list(self.held_out_rollouts)
+        else:
+            print("\ndata_manager.load_test_set(), path: {}".format(self.cfg.BC_HELD_OUT))
+            rollouts = glob.glob(os.path.join(self.cfg.BC_HELD_OUT, '*_*'))
+
         self.test_labels = []
-        self.train_data_path = []
         self.test_data_path = []
-        rollouts = glob.glob(os.path.join(self.cfg.BC_HELD_OUT, '*_*'))
 
         for rollout_p in rollouts:
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
             grasp_rollout = self.cfg.break_up_rollouts(rollout)
+            print("{}, len(grasp_rollout)={} [TEST]".format(rollout_p, len(grasp_rollout)))
 
             for grasp_point in grasp_rollout:
-                print("TEST EXAMPLE {}".format(rollout_p))
                 # Run the YOLO network w/pre-trained weights!!
                 if self.cfg.USE_DEPTH:
                     grasp_point[0] = datum_to_net_dim(grasp_point[0])
@@ -137,11 +150,17 @@ class data_manager(object):
         like the data dicts we used for collecting data (though w/out 'd_img'). Then for each, we
         augment the data and then run the YOLO network on that to get pre-extracted features.
         """
-        print("\ndata_manager.load_rollouts(), path: {}".format(self.rollout_path))
+        if self.cfg.PERFORM_CV:
+            print("\ndata_manager.load_rollouts(), path {} (but w/held-out ignored: {}, index {})".format(
+                    self.rollout_path, self.held_out_list, self.cfg.CV_HELD_OUT_INDEX))
+            rollouts = [rr for rr in glob.glob(os.path.join(self.rollout_path, '*_*')) 
+                        if rr not in self.held_out_rollouts]
+        else:
+            print("\ndata_manager.load_rollouts(), path: {}".format(self.rollout_path))
+            rollouts = glob.glob(os.path.join(self.rollout_path, '*_*'))
+
         self.train_labels = []
         self.train_data_path = []
-        self.test_data_path = []
-        rollouts = glob.glob(os.path.join(self.rollout_path, '*_*'))
 
         for rollout_p in rollouts:
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
@@ -160,18 +179,14 @@ class data_manager(object):
                         features = self.yc.extract_conv_features(datum_a['c_img'])
                         label = self.cfg.compute_label(datum_a)
                         self.train_labels.append({'c_img': datum_a['c_img'], 'label': label, 'features': features})
-                        print(label)
                 self.train_data_path.append(rollout_p)
         return
 
 
     def compute_label(self, pose):
-        """
-        Load image and bounding boxes info from XML file in the PASCAL VOC
-        format.
-        """
+        """Load image and bounding boxes info from XML file in the PASCAL VOC format."""
         label = np.zeros((2))
-        x = pose[0]/cfg.T_IMAGE_SIZE_W-0.5
-        y = pose[1]/cfg.T_IMAGE_SIZE_H-0.5
+        x = pose[0]/cfg.T_IMAGE_SIZE_W - 0.5
+        y = pose[1]/cfg.T_IMAGE_SIZE_H - 0.5
         label = np.array([x,y])
         return label

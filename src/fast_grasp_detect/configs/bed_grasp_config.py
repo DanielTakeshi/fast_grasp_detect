@@ -12,11 +12,11 @@ class CONFIG(object):
         # SS_DATA = 0
 
         self.CONFIG_NAME = 'grasp_net'
-        #self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'
-        self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'
+        #self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'   # Michael
+        self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'   # Tritons
         self.NET_NAME    = '08_28_01_37_11save.ckpt-30300'
-        #self.DATA_PATH   = self.ROOT_DIR+'bed_rcnn/'
-        self.DATA_PATH   = self.ROOT_DIR+''
+        #self.DATA_PATH   = self.ROOT_DIR+'bed_rcnn/'   # Michael
+        self.DATA_PATH   = self.ROOT_DIR+''     # Tritons
 
         # New, use for cross validation. Got this by randomly arranging numbers in a range.
         self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/'
@@ -35,7 +35,7 @@ class CONFIG(object):
         self.CV_HELD_OUT_INDEX = 0
         self.PERFORM_CV = True
 
-        # Various data paths.
+        # Various data paths. Note: BC_HELD_OUT is ignored if PERFORM_CV=True.
         self.BC_HELD_OUT  = self.DATA_PATH+'held_out_cal'
         self.IMAGE_PATH   = self.DATA_PATH+'images/'
         self.LABEL_PATH   = self.DATA_PATH+'labels/'
