@@ -7,9 +7,7 @@ class CONFIG(object):
 
     def __init__(self):
         FIXED_LAYERS = 33
-
         #VARY {0, 4, 9}
-        # SS_DATA = 0
 
         self.CONFIG_NAME = 'grasp_net'
         #self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'   # Michael
@@ -73,8 +71,6 @@ class CONFIG(object):
         self.QUICK_DEBUG = True
 
         # model parameter
-
-        #IMAGE_SIZE = 250
         self.T_IMAGE_SIZE_H = 480
         self.T_IMAGE_SIZE_W = 640
         self.IMAGE_SIZE = 448
@@ -86,26 +82,22 @@ class CONFIG(object):
         self.USE_DEPTH = False
 
         # solver parameter
-
         self.GPU = ''
         self.LEARNING_RATE = 0.1
         self.DECAY_STEPS = 30000
         self.DECAY_RATE = 0.1
         self.STAIRCASE = True
-        self.BATCH_SIZE = 45
-        self.MAX_ITER = 1000#30000
+        self.BATCH_SIZE = 32
+        self.MAX_ITER = 2000#30000
         self.SUMMARY_ITER = 10
-        self.TEST_ITER = 20
+        self.TEST_ITER = 10
         self.SAVE_ITER = 500
         self.VIZ_DEBUG_ITER = 400
 
         # test parameter
-
-        #THRESHOLD = 0.0008
         self.PICK_THRESHOLD = 0.4
         self.THRESHOLD = 0.4
         self.IOU_THRESHOLD = 0.5
-        #IOU_THRESHOLD = 0.0001
 
         # fast params
         self.FILTER_SIZE = 14
@@ -118,18 +110,26 @@ class CONFIG(object):
         """Labels scaled in [-1,1], as described in paper."""
         pose = datum['pose']
         label = np.zeros((2))
-        x = pose[0]/self.T_IMAGE_SIZE_W-0.5
-        y = pose[1]/self.T_IMAGE_SIZE_H-0.5
+        x = pose[0]/self.T_IMAGE_SIZE_W - 0.5
+        y = pose[1]/self.T_IMAGE_SIZE_H - 0.5
         label = np.array([x,y])
         return label
 
 
-    def get_empty_state(self):
-        return np.zeros((self.BATCH_SIZE, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
+    def get_empty_state(self, batchdim=None):
+        """Each time we call a batch during training/testing, initialize with this."""
+        if batchdim is not None:
+            return np.zeros((batchdim, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
+        else:
+            return np.zeros((self.BATCH_SIZE, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
 
 
-    def get_empty_label(self):
-        return np.zeros((self.BATCH_SIZE, 2))
+    def get_empty_label(self, batchdim=None):
+        """Each time we call a batch during training/testing, initialize with this."""
+        if batchdim is not None:
+            return np.zeros((batchdim, 2))
+        else:
+            return np.zeros((self.BATCH_SIZE, 2))
 
 
     def break_up_rollouts(self,rollout):

@@ -35,8 +35,10 @@ class data_manager(object):
         self.yc = YOLO_CONV(self.cfg)
         self.yc.load_network()
 
-        print("\n`data_manager` class, now loading test set and (train) rollouts")
+        # Load test set and training rollouts. Also make test set batch fixed (shouldn't be re-shuffling).
         self.recent_batch = []
+        self.test_batch_images = None
+        self.test_batch_labels = None
         self.load_test_set()
         self.load_rollouts()
 
@@ -44,6 +46,8 @@ class data_manager(object):
     def get(self, noise=False):
         """Creates and returns images/labels for training, where the images are
         features from the pre-trained YOLO network.
+
+        `count` ensures we match batch size, `cursor` since it may overlap w/end of the epoch.
         """
         images = self.cfg.get_empty_state()
         labels = self.cfg.get_empty_label()
@@ -58,6 +62,7 @@ class data_manager(object):
             if (count == self.batch_size):
                 break
             self.cursor += 1
+            # After we've gone through the data, re-shuffle it.
             if self.cursor >= len(self.train_labels):
                 np.random.shuffle(self.train_labels)
                 self.cursor = 0
@@ -68,24 +73,11 @@ class data_manager(object):
     def get_test(self):
         """Creates and returns images/labels for testing, where the images are
         features from the pre-trained YOLO network.
-        """
-        images = self.cfg.get_empty_state()
-        labels = self.cfg.get_empty_label()
-        count = 0
-        #IPython.embed()
 
-        while count < self.batch_size:
-            images[count, :, :, :] = self.test_labels[self.t_cursor]['features']
-            labels[count, :] = self.test_labels[self.t_cursor]['label']
-            count += 1
-            # cv2.imshow('debug_test',self.test_labels[self.t_cursor]['c_img'])
-            # cv2.waitKey(300)
-            self.t_cursor += 1
-            if self.t_cursor >= len(self.test_labels):
-                np.random.shuffle(self.test_labels)
-                self.t_cursor = 0
-                self.epoch += 1
-        return images, labels
+        Unlike the training case, here we should just take the entire test data in one batch.
+        """
+        assert self.test_batch_images is not None and self.test_batch_labels is not None
+        return (self.test_batch_images, self.test_batch_labels)
 
 
     def prep_image(self, image):
@@ -114,6 +106,9 @@ class data_manager(object):
 
         If we are doing cross validation to evaluate different training criteria before hand, we'll
         use cross validation groups and set the appropriate held-out dataset with our config file.
+
+        Also, form the test batch at the end. It won't be large with the data we have and we
+        shouldn't keep re-computing and re-shuffling since it's a test (or validation) batch.
         """
         if self.cfg.PERFORM_CV:
             print("\ndata_manager.load_test_set(), held-out rollouts: {} (cv index {}) from {}".format(
@@ -124,7 +119,6 @@ class data_manager(object):
             rollouts = glob.glob(os.path.join(self.cfg.BC_HELD_OUT, '*_*'))
 
         self.test_labels = []
-        self.test_data_path = []
 
         for rollout_p in rollouts:
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
@@ -140,7 +134,18 @@ class data_manager(object):
                     features = self.yc.extract_conv_features(grasp_point[0]['c_img'])
                 label = self.cfg.compute_label(grasp_point[0])
                 self.test_labels.append({'c_img': grasp_point[0]['c_img'], 'label': label, 'features': features})
-                self.test_data_path.append(rollout_p)
+
+        # Form and investigate the testing images and labels in their batch.
+        K = len(self.test_labels)
+        print("len(self.test_labels): {}".format(K))
+        assert K <= 500
+        self.test_batch_images = self.cfg.get_empty_state(batchdim=K)
+        self.test_batch_labels = self.cfg.get_empty_label(batchdim=K)
+        for count in range(K):
+            self.test_batch_images[count, :, :, :] = self.test_labels[count]['features']
+            self.test_batch_labels[count, :]       = self.test_labels[count]['label']
+        print("test_batch_images.shape: {}".format(self.test_batch_images.shape))
+        print("test_batch_labels.shape: {}".format(self.test_batch_labels.shape))
 
 
     def load_rollouts(self):
@@ -160,7 +165,6 @@ class data_manager(object):
             rollouts = glob.glob(os.path.join(self.rollout_path, '*_*'))
 
         self.train_labels = []
-        self.train_data_path = []
 
         for rollout_p in rollouts:
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
@@ -179,8 +183,9 @@ class data_manager(object):
                         features = self.yc.extract_conv_features(datum_a['c_img'])
                         label = self.cfg.compute_label(datum_a)
                         self.train_labels.append({'c_img': datum_a['c_img'], 'label': label, 'features': features})
-                self.train_data_path.append(rollout_p)
-        return
+
+        np.random.shuffle(self.train_labels)
+        print("len(self.train_labels): {}. Also, just shuffled them!".format(len(self.train_labels)))
 
 
     def compute_label(self, pose):

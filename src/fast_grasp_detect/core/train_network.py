@@ -45,10 +45,10 @@ class Solver(object):
         self.variable_to_restore = slim.get_variables_to_restore()
         self.variables_to_restore = self.variable_to_restore[42:52]
         count = 0
+        print("\nSolver.__init__(), self.variables_to_restore:")
         for var in self.variables_to_restore:
-            print str(count) + " "+ var.name
+            print("{} {}".format(count, var.name)) 
             count += 1
-        #tf.global_variables_initializer()
         self.saver = tf.train.Saver(self.variables_to_restore, max_to_keep=None)
         self.all_saver = tf.train.Saver()
         self.ckpt_file = os.path.join(self.output_dir, 'save.ckpt')
@@ -75,11 +75,13 @@ class Solver(object):
         config = tf.ConfigProto(gpu_options=gpu_options)
         self.sess = tf.Session(config=config)
         self.sess.run(tf.global_variables_initializer())
-        #IPython.embed()
 
+        # Daniel: what is this?
         if self.weights_file is not None:
-            print('Restoring weights for net from: ' + self.weights_file)
+            print('\n(after tf initializer) Solver.__init__(), restoring weights for net from: ' + self.weights_file)
             self.saver.restore(self.sess, self.weights_file)
+        else:
+            print('\n(after tf initializer) self.weights_file is None, so not restoring here.')
 
 
     def variables_to_restore(self):
@@ -94,7 +96,7 @@ class Solver(object):
         test_losses = []
 
         for step in xrange(1, self.max_iter+1):
-            # Get images (which are actually features from YOLO) and labels.
+            # Get minibatch of images (usually, features from YOLO) and labels.
             load_timer.tic()
             images, labels = self.data.get()
             load_timer.toc()
@@ -109,15 +111,15 @@ class Solver(object):
                     train_timer.toc()
                     train_losses.append(loss)
 
-                    if(step % self.test_iter) == 0:
+                    if step % self.test_iter == 0:
                         images_t, labels_t = self.data.get_test()
                         feed_dict_test = {self.net.images : images_t, self.net.labels: labels_t}
                         test_loss = self.sess.run(self.net.class_loss, feed_dict=feed_dict_test)
                         test_losses.append(test_loss)
-                        print("Test loss: " + str(test_loss))
+                        print("Test loss: {:.6f}".format(test_loss))
 
-                    log_str = ('{} Epoch: {}, Step: {}, Learning rate: {},'
-                        ' Loss: {:5.3f}\nSpeed: {:.3f}s/iter,'
+                    log_str = ('{} Epoch: {}, Step: {}, L-Rate: {},'
+                        ' Loss: {:.6f}\nSpeed: {:.3f}s/iter,'
                         ' Load: {:.3f}s/iter, Remain: {}').format(
                         datetime.datetime.now().strftime('%m/%d %H:%M:%S'),
                         self.data.epoch,
@@ -139,19 +141,19 @@ class Solver(object):
                 self.sess.run(self.train_op, feed_dict=feed_dict)
                 train_timer.toc()
 
+            # Save the actual model using standard `tf.Saver`s, also record train/test losses.
             if step % self.save_iter == 0:
-                # # print('{} Saving checkpoint file to: {}'.format(
-                #     datetime.datetime.now().strftime('%m/%d %H:%M:%S'),
-                #     self.output_dir))
                 curr_time = datetime.datetime.now().strftime('%m_%d_%H_%M_%S')
                 real_out = self.cfg.OUTPUT_DIR
                 real_ckpt = real_out + curr_time + "_CS_"+str(self.layer)+ "_save.ckpt"
-                print("saving to " + str(real_out))
+                print("    saving tf checkpoint to {}".format(real_ckpt))
                 self.all_saver.save(self.sess, real_ckpt, global_step=self.global_step)
                 loss_dict = {}
                 loss_dict["test"] = test_losses
                 loss_dict["train"] = train_losses
                 loss_dict["name"] = self.cfg.CONFIG_NAME
+                # TODO: maybe change this to reflect the time it was run? If we re-run training, we
+                # overwrite the older file ...
                 pickle.dump(loss_dict, open(self.cfg.STAT_DIR+self.cfg.CONFIG_NAME+'.p', 'wb'))
 
 

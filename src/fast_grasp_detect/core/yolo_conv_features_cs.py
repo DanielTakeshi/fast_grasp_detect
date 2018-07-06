@@ -97,7 +97,7 @@ class YOLO_CONV(object):
     def load_network(self):
         """Load network using slim's helpers and the standard `tf.train.Saver`."""
         self.weights_file = self.cfg.PRE_TRAINED_DIR+"YOLO_small.ckpt"
-        print 'Restoring weights for conv from: ' + self.weights_file
+        print('\nIn YOLO_CONV.load_network(), restoring weights from: {}'.format(self.weights_file))
         self.variable_to_restore = slim.get_variables_to_restore()
         count = 0
         for var in self.variable_to_restore:
@@ -105,10 +105,13 @@ class YOLO_CONV(object):
             count += 1
 
         if self.layers == 0:
+            print("self.layers = 0 so self.variables_to_restore: 0:45")
             self.variables_to_restore = self.variable_to_restore[0:45]
         elif self.layers == 1:
+            print("self.layers = 1 so self.variables_to_restore: 0:46")
             self.variables_to_restore = self.variable_to_restore[0:46]
         elif self.layers == 2:
+            print("self.layers = 2 so self.variables_to_restore: 0:48")
             self.variables_to_restore = self.variable_to_restore[0:48]
 
         #tf.global_variables_initializer()
