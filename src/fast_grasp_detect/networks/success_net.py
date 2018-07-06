@@ -20,8 +20,7 @@ class SNet(object):
         self.alpha = self.cfg.ALPHA
         self.layers = layers
 
-        # Like with the grasp net, these images are features. Also, logits is
-        # the output _after_ a softmax operation (so it's not log probs).
+        # Like with the grasp net, these images are features. Also, logits _might_ be output AFTER a softmax op.
         self.images = tf.placeholder(tf.float32, [None, self.cfg.FILTER_SIZE, self.cfg.FILTER_SIZE, self.cfg.NUM_FILTERS], name='images')
         self.logits = self.build_network(self.images, num_outputs=self.output_size, alpha=self.alpha, is_training=is_training)
 
@@ -32,14 +31,8 @@ class SNet(object):
             tf.summary.scalar('total_loss', self.total_loss)
 
 
-    def build_network(self,
-                      images,
-                      num_outputs,
-                      alpha,
-                      keep_prob=1.0,
-                      is_training=True,
-                      scope='yolo'):
-
+    def build_network(self, images, num_outputs, alpha, keep_prob=1.0, is_training=True, scope='yolo'):
+        """Extra layers built on _top_ of the YOLO stem (first 26 layers)."""
         with tf.variable_scope(scope, reuse=tf.AUTO_REUSE):
             with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                 activation_fn=leaky_relu(alpha),
@@ -55,25 +48,22 @@ class SNet(object):
                 net = slim.fully_connected(net, 4096, scope='fc_34')
                 net = slim.dropout(net, keep_prob=keep_prob, is_training=is_training, scope='dropout_35')
                 net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='fc_36')
-                #net = tf.nn.softmax(net) # Note the softmax here! NOT present in the grasping network.
+                if not self.cfg.CROSS_ENT_LOSS:
+                    # Note the softmax, which is NOT in grasping network. Ignore if using cross ent.
+                    net = tf.nn.softmax(net)
         return net
 
 
     def loss_layer(self, predict_classes, classes, scope='loss_layer'):
-        """ For transitions, the loss is also L2 (actually the paper says
-        absolute loss, need to fixx that ...). Should we do cross entropy?
-        """
+        """ For transitions, the loss is also L2, or we can do cross entropy which I added."""
         with tf.variable_scope(scope):
-            # Daniel: originally we had this loss, mean L2^2 (same for grasping). If we want to use
-            # this, then don't forget to change the target class to have label 1.0 in the config,
-            # and to re-insert the softmax layer at the end.
-
-            #class_delta = (predict_classes - classes)
-            #self.class_loss = tf.reduce_mean(tf.reduce_sum(tf.square(class_delta), axis=[1]), name='class_loss')
-            self.class_loss = tf.reduce_mean(
-                tf.nn.softmax_cross_entropy_with_logits_v2(logits=predict_classes,labels=classes)
-            )
-
+            if self.cfg.CROSS_ENT_LOSS:
+                self.class_loss = tf.reduce_mean(
+                    tf.nn.softmax_cross_entropy_with_logits_v2(logits=predict_classes, labels=classes)
+                )
+            else:
+                class_delta = (predict_classes - classes)
+                self.class_loss = tf.reduce_mean(tf.reduce_sum(tf.square(class_delta), axis=[1]), name='class_loss')
             tf.losses.add_loss(self.class_loss)
             tf.summary.scalar('class_loss', self.class_loss)
 

@@ -6,6 +6,8 @@ import argparse
 from fast_grasp_detect.core.timer import Timer
 import IPython
 import cPickle as pickle
+import numpy as np
+np.set_printoptions(suppress=True, precision=6)
 slim = tf.contrib.slim
 
 
@@ -47,7 +49,7 @@ class Solver(object):
         count = 0
         print("\nSolver.__init__(), self.variables_to_restore:")
         for var in self.variables_to_restore:
-            print("{} {}".format(count, var.name)) 
+            print("{} {}".format(count, var.name))
             count += 1
         self.saver = tf.train.Saver(self.variables_to_restore, max_to_keep=None)
         self.all_saver = tf.train.Saver()
@@ -70,7 +72,7 @@ class Solver(object):
         self.averages_op = self.ema.apply(tf.trainable_variables())
         with tf.control_dependencies([self.optimizer]):
             self.train_op = tf.group(self.averages_op)
-        #self.train_op = tf.train.AdamOptimizer(learning_rate=1e-5).minimize(self.net.class_loss, global_step=self.global_step)
+        #self.train_op = tf.train.AdamOptimizer(learning_rate=1e-4).minimize(self.net.class_loss, global_step=self.global_step)
 
         gpu_options = tf.GPUOptions()
         config = tf.ConfigProto(gpu_options=gpu_options)
@@ -114,10 +116,15 @@ class Solver(object):
 
                     if step % self.test_iter == 0:
                         images_t, labels_t = self.data.get_test()
-                        feed_dict_test = {self.net.images : images_t, self.net.labels: labels_t}
-                        test_loss = self.sess.run(self.net.class_loss, feed_dict=feed_dict_test)
+                        feed_dict_test = {self.net.images: images_t, self.net.labels: labels_t}
+                        test_loss, test_logits = self.sess.run([self.net.class_loss, self.net.logits], feed_dict=feed_dict_test)
                         test_losses.append(test_loss)
-                        print("Test loss: {:.6f}".format(test_loss))
+                        correctness = np.argmax(test_logits,axis=1) == np.argmax(labels_t,axis=1)
+                        print("Test logits:\n{}".format(test_logits))
+                        print("Test labels:\n{}".format(labels_t))
+                        print("Correctnes:\n{}".format(correctness))
+                        print("Test loss: {:.6f}, acc: {}/{} = {:.2f}".format(test_loss, np.sum(correctness),
+                                len(correctness), float(np.sum(correctness))/len(correctness)))
 
                     log_str = ('{} Epoch: {}, Step: {}, L-Rate: {},'
                         ' Loss: {:.6f}\nSpeed: {:.3f}s/iter,'

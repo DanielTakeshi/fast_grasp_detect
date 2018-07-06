@@ -31,11 +31,12 @@ class CONFIG(object):
                 [44, 48, 50, 15, 17],
                 [ 3, 41, 10, 30, 33],
         ]
-        self.CV_HELD_OUT_INDEX = 0
+        self.CV_HELD_OUT_INDEX = 2
         self.PERFORM_CV = True
 
-        # Various data paths
-        self.BC_HELD_OUT  = self.DATA_PATH+'held_out_cal'
+        # Various data paths. Note: BC_HELD_OUT is ignored if PERFORM_CV=True.
+        #self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_dart/' # comment out if doing cross valid!!
+        self.BC_HELD_OUT  = self.DATA_PATH+'held_out_dart/'
         self.IMAGE_PATH   = self.DATA_PATH+'images/'
         self.LABEL_PATH   = self.DATA_PATH+'labels/'
         self.CACHE_PATH   = self.DATA_PATH+'cache/'
@@ -82,11 +83,12 @@ class CONFIG(object):
         self.DECAY_RATE = 0.1
         self.STAIRCASE = True
         self.BATCH_SIZE = 32
-        self.MAX_ITER = 2000#30000
+        self.MAX_ITER = 2000
         self.SUMMARY_ITER = 10
         self.TEST_ITER = 20
         self.SAVE_ITER = 500
         self.VIZ_DEBUG_ITER = 400
+        self.CROSS_ENT_LOSS = False
 
         # test parameter
         self.PICK_THRESHOLD = 0.4
@@ -101,11 +103,14 @@ class CONFIG(object):
 
 
     def compute_label(self,datum):
-        """Interesting, we actually make it 0.99? TODO need to find out why..."""
+        """Interesting, Michael smoothed the label for his loss (L2^2, NOT the cross ent)."""
         clss = datum['class']
         label = np.zeros(2)
-        #label[clss] = 0.99
-        label[clss] = 1.0
+        if self.CROSS_ENT_LOSS:
+            label[clss] = 1.0
+            label[1-clss] = 0.0
+        else:
+            label[clss] = 0.99
         return label
 
 

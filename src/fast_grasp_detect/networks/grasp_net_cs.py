@@ -39,20 +39,14 @@ class GHNet(object):
             tf.summary.scalar('total_loss', self.total_loss)
 
 
-    def build_network(self,
-                      images,
-                      num_outputs,
-                      alpha,
-                      keep_prob=1.0,
-                      is_training=True,
-                      scope='yolo'):
-       
+    def build_network(self, images, num_outputs, alpha, keep_prob=1.0, is_training=True, scope='yolo'):
+        """Extra layers built on _top_ of the YOLO stem (first 26 layers)."""
         with tf.variable_scope(scope):
             with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                 activation_fn=leaky_relu(alpha),
                                 weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
                                 weights_regularizer=slim.l2_regularizer(0.0005)):
-                
+
                 if self.layers == 0:
                     net = tf.pad(images, np.array([[0, 0], [1, 1], [1, 1], [0, 0]]), name='pad_27')
                     net = slim.conv2d(net, 1024, 3, 2, padding='VALID', scope='conv_28')
@@ -68,7 +62,7 @@ class GHNet(object):
 
                 elif self.layers == 2:
                     net = slim.flatten(images, scope='flat_32')
-                
+
                 net = slim.fully_connected(net, 512, scope='fc_33')
                 net = slim.fully_connected(net, 4096, scope='fc_34')
                 net = slim.dropout(net, keep_prob=keep_prob, is_training=is_training, scope='dropout_35')
@@ -80,10 +74,10 @@ class GHNet(object):
         """Despite the names here, this should be standard mean square error (L2) loss."""
         with tf.variable_scope(scope):
             class_delta = (predict_classes - classes) # not `class` but just error
-            self.class_loss = tf.reduce_mean(tf.reduce_sum(tf.square(class_delta), axis=[1]), name='class_loss') 
+            self.class_loss = tf.reduce_mean(tf.reduce_sum(tf.square(class_delta), axis=[1]), name='class_loss')
             tf.losses.add_loss(self.class_loss)
             tf.summary.scalar('class_loss', self.class_loss)
-          
+
 
 def leaky_relu(alpha):
     def op(inputs):

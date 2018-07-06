@@ -158,7 +158,7 @@ class data_manager(object):
         if self.cfg.PERFORM_CV:
             print("\ndata_manager.load_rollouts(), path {} (but w/held-out ignored: {}, index {})".format(
                     self.rollout_path, self.held_out_list, self.cfg.CV_HELD_OUT_INDEX))
-            rollouts = [rr for rr in glob.glob(os.path.join(self.rollout_path, '*_*')) 
+            rollouts = [rr for rr in glob.glob(os.path.join(self.rollout_path, '*_*'))
                         if rr not in self.held_out_rollouts]
         else:
             print("\ndata_manager.load_rollouts(), path: {}".format(self.rollout_path))
