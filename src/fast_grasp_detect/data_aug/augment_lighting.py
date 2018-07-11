@@ -52,6 +52,29 @@ def addSaltPepperNoise(src):
     return out
 
 
+# Daniel: uniform noise
+def addUniformNoise(src):
+    row,col,ch = src.shape
+    low = -2.0
+    high = 2.0
+    unif_noise = np.random.uniform(low=low, high=high, size=(row,col,ch))
+    noisy = src + unif_noise
+    return noisy
+
+# Daniel: salt only
+def addSaltOnlyNoise(src):
+    row,col,ch = src.shape
+    s_vs_p = 0.5
+    amount = 0.004
+    out = src.copy()
+    # Salt mode
+    num_salt = np.ceil(amount * src.size * s_vs_p)
+    coords = [np.random.randint(0, i-1 , int(num_salt))
+                 for i in src.shape]
+    out[coords[:-1]] = (255,255,255)
+    return out
+
+
 # https://github.com/mdlaskey/fast_grasp_detect/commit/2f85441c86fa7eed089cafb638f0a5bb2fa1eddb
 def get_depth_aug(img_src):
     """
@@ -60,8 +83,10 @@ def get_depth_aug(img_src):
     """
     trans_img = []
     trans_img.append(img_src)
+    trans_img.append(addUniformNoise(img_src))
     trans_img.append(addGaussianNoise(img_src))
     trans_img.append(addSaltPepperNoise(img_src))
+    trans_img.append(addSaltOnlyNoise(img_src))
     return trans_img
 
 
