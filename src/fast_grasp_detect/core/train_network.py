@@ -109,8 +109,7 @@ class Solver(object):
                 if step % (self.summary_iter * 10) == 0:
                     train_timer.tic()
                     summary_str, loss, _ = self.sess.run(
-                        [self.summary_op, self.net.class_loss, self.train_op],
-                        feed_dict=feed_dict)
+                        [self.summary_op, self.net.class_loss, self.train_op], feed_dict=feed_dict)
                     train_timer.toc()
                     train_losses.append(loss)
 
@@ -119,12 +118,20 @@ class Solver(object):
                         feed_dict_test = {self.net.images: images_t, self.net.labels: labels_t}
                         test_loss, test_logits = self.sess.run([self.net.class_loss, self.net.logits], feed_dict=feed_dict_test)
                         test_losses.append(test_loss)
-                        correctness = np.argmax(test_logits,axis=1) == np.argmax(labels_t,axis=1)
-                        print("Test logits:\n{}".format(test_logits))
-                        print("Test labels:\n{}".format(labels_t))
-                        print("Correctnes:\n{}".format(correctness))
-                        print("Test loss: {:.6f}, acc: {}/{} = {:.2f}".format(test_loss, np.sum(correctness),
-                                len(correctness), float(np.sum(correctness))/len(correctness)))
+
+                        # Can use useful to get the test loss in the **pixels**, not scaled version.
+                        test_loss_raw = self.cfg.compare_preds_labels(
+                                preds=test_logits, labels=labels_t, doprint=False)
+
+                        if self.cfg.CONFIG_NAME == 'grasp_net':
+                            print("Test loss: {:.6f} (raw: {:.2f})".format(test_loss, test_loss_raw))
+                        elif self.cfg.CONFIG_NAME == 'success_net':
+                            correctness = np.argmax(test_logits,axis=1) == np.argmax(labels_t,axis=1)
+                            print("Correctness:\n{}".format(correctness))
+                            print("Test loss: {:.6f}, acc: {}/{} = {:.2f}".format(test_loss, np.sum(correctness),
+                                    len(correctness), float(np.sum(correctness))/len(correctness)))
+                        else:
+                            raise ValueError(self.cfg.CONFIG_NAME)
 
                     log_str = ('{} Epoch: {}, Step: {}, L-Rate: {},'
                         ' Loss: {:.6f}\nSpeed: {:.3f}s/iter,'

@@ -86,21 +86,6 @@ class data_manager(object):
         return image
 
 
-    def break_up_rollouts(self,rollout):
-        grasp_point = []
-        grasp_rollout = []
-        for data in rollout:
-            if type(data) == list:
-                continue
-            if(data['type'] == 'grasp'):
-                grasp_point.append(data)
-            elif(data['type'] == 'success'):
-                if( len(grasp_point) > 0):
-                    grasp_rollout.append(grasp_point)
-                    grasp_point = []
-        return grasp_rollout
-
-
     def load_test_set(self):
         """ Assigns to `self.test_labels`, each element a dict w/relevant info.
 
@@ -123,7 +108,8 @@ class data_manager(object):
         for rollout_p in rollouts:
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
             grasp_rollout = self.cfg.break_up_rollouts(rollout)
-            print("{}, len(grasp_rollout)={} [TEST]".format(rollout_p, len(grasp_rollout)))
+            print("{},  len(grasp_rollout)={},  w/len(rollout)={} [TEST]".format(
+                    rollout_p, len(grasp_rollout), len(rollout)))
 
             for grasp_point in grasp_rollout:
                 # Run the YOLO network w/pre-trained weights!!
@@ -146,6 +132,11 @@ class data_manager(object):
             self.test_batch_labels[count, :]       = self.test_labels[count]['label']
         print("test_batch_images.shape: {}".format(self.test_batch_images.shape))
         print("test_batch_labels.shape: {}".format(self.test_batch_labels.shape))
+        print("test_batch_labels:\n{}".format(self.test_batch_labels))
+        if self.cfg.CONFIG_NAME == 'grasp_net':
+            W, H = self.cfg.T_IMAGE_SIZE_W, self.cfg.T_IMAGE_SIZE_H
+            raw_labels = (self.test_batch_labels + 0.5) * np.array([W,H])
+            print("(raw) test_batch_labels:\n{}".format(raw_labels))
 
 
     def load_rollouts(self):
@@ -169,7 +160,8 @@ class data_manager(object):
         for rollout_p in rollouts:
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
             grasp_rollout = self.cfg.break_up_rollouts(rollout)
-            print("{}, len(grasp_rollout)={}".format(rollout_p, len(grasp_rollout)))
+            print("{},  len(grasp_rollout)={},  w/len(rollout)={} [TEST]".format(
+                    rollout_p, len(grasp_rollout), len(rollout)))
 
             for grasp_point in grasp_rollout:
                 for data in grasp_point:

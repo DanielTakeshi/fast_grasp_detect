@@ -32,11 +32,11 @@ class CONFIG(object):
                 [ 3, 41, 10, 30, 33],
         ]
         self.CV_HELD_OUT_INDEX = 2
-        self.PERFORM_CV = True
+        self.PERFORM_CV = False
 
         # Various data paths. Note: BC_HELD_OUT is ignored if PERFORM_CV=True.
-        #self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_dart/' # comment out if doing cross valid!!
-        self.BC_HELD_OUT  = self.DATA_PATH+'held_out_dart/'
+        self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_nytimes/' # comment out if doing cross valid!!
+        self.BC_HELD_OUT  = self.DATA_PATH+'held_out_nytimes/'
         self.IMAGE_PATH   = self.DATA_PATH+'images/'
         self.LABEL_PATH   = self.DATA_PATH+'labels/'
         self.CACHE_PATH   = self.DATA_PATH+'cache/'
@@ -131,6 +131,9 @@ class CONFIG(object):
 
 
     def break_up_rollouts(self,rollout):
+        print("TODO: must check this method.")
+        sys.exit()
+
         success_point = []
         success_rollout = []
         for data in rollout:

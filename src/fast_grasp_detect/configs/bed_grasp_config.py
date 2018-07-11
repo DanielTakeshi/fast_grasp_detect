@@ -1,4 +1,4 @@
-import os
+import os, sys
 import numpy as np
 
 
@@ -17,7 +17,7 @@ class CONFIG(object):
         self.DATA_PATH   = self.ROOT_DIR+''     # Tritons
 
         # New, use for cross validation. Got this by randomly arranging numbers in a range.
-        self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/'
+        self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/' # Overridden later if we are not doing CV
         self.CV_GROUPS = [
                 [34,  7, 39, 37, 46],
                 [16,  6,  8, 36, 26],
@@ -31,10 +31,11 @@ class CONFIG(object):
                 [ 3, 41, 10, 30, 33],
         ]
         self.CV_HELD_OUT_INDEX = 1
-        self.PERFORM_CV = True
+        self.PERFORM_CV = False # True for my data, False for others, though I could easily change that ...
 
         # Various data paths. Note: BC_HELD_OUT is ignored if PERFORM_CV=True.
-        self.BC_HELD_OUT  = self.DATA_PATH+'held_out_cal'
+        self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_nytimes/' # comment out if doing cross valid!!
+        self.BC_HELD_OUT  = self.DATA_PATH+'held_out_nytimes/'
         self.IMAGE_PATH   = self.DATA_PATH+'images/'
         self.LABEL_PATH   = self.DATA_PATH+'labels/'
         self.CACHE_PATH   = self.DATA_PATH+'cache/'
@@ -66,9 +67,9 @@ class CONFIG(object):
         #            'motorbike', 'person', 'pottedplant', 'sheep', 'sofa',
         #           'train', 'tvmonitor']
         self.NUM_LABELS = len(self.CLASSES)
-        self.FLIPPED = False
-        self.LIGHTING_NOISE = True
-        self.QUICK_DEBUG = True
+        self.FLIPPED = False # I don't think used?
+        self.LIGHTING_NOISE = True # Is this used?
+        self.QUICK_DEBUG = True # Is this used?
 
         # model parameter
         self.T_IMAGE_SIZE_H = 480
@@ -87,7 +88,7 @@ class CONFIG(object):
         self.DECAY_RATE = 0.1
         self.STAIRCASE = True
         self.BATCH_SIZE = 32
-        self.MAX_ITER = 2000#30000
+        self.MAX_ITER = 3000#30000
         self.SUMMARY_ITER = 10
         self.TEST_ITER = 10
         self.SAVE_ITER = 500
@@ -115,6 +116,22 @@ class CONFIG(object):
         return label
 
 
+    def compare_preds_labels(self, preds, labels, doprint=False):
+        """Try to get losses in the original pixel space for interpretability."""
+        xx = np.array([self.T_IMAGE_SIZE_W, self.T_IMAGE_SIZE_H])
+        raw_preds  = (0.5 + preds) * xx
+        raw_labels = (0.5 + labels) * xx
+        assert np.min(raw_labels) > 0.0
+        delta = raw_preds - raw_labels
+        test_loss_raw = np.linalg.norm(delta)
+        if doprint:
+            print("grasp test preds:\n{}".format(preds))
+            print("grasp test labels:\n{}".format(labels))
+            print("(raw) grasp test preds:\n{}".format(raw_preds))
+            print("(raw) grasp test labels:\n{}".format(raw_labels))
+        return test_loss_raw
+
+
     def get_empty_state(self, batchdim=None):
         """Each time we call a batch during training/testing, initialize with this."""
         if batchdim is not None:
@@ -132,15 +149,23 @@ class CONFIG(object):
 
 
     def break_up_rollouts(self,rollout):
-        grasp_point = []
+        """I changed it to a way that makes more sense, a list of one-item lists."""
+
+        #grasp_point = []
+        #grasp_rollout = []
+        #for data in rollout:
+        #    if type(data) == list:
+        #        continue
+        #    if(data['type'] == 'grasp'):
+        #        grasp_point.append(data)
+        #    elif(data['type'] == 'success'):
+        #        if( len(grasp_point) > 0):
+        #            grasp_rollout.append(grasp_point)
+        #            grasp_point = []
+        #return grasp_rollout
+
         grasp_rollout = []
         for data in rollout:
-            if type(data) == list:
-                continue
-            if(data['type'] == 'grasp'):
-                grasp_point.append(data)
-            elif(data['type'] == 'success'):
-                if( len(grasp_point) > 0):
-                    grasp_rollout.append(grasp_point)
-                    grasp_point = []
+            if data['type'] == 'grasp':
+                grasp_rollout.append( [data] )
         return grasp_rollout
