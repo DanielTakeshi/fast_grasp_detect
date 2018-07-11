@@ -55,10 +55,11 @@ def addSaltPepperNoise(src):
 # Daniel: uniform noise
 def addUniformNoise(src):
     row,col,ch = src.shape
-    low = -2.0
-    high = 2.0
+    low = -4.0
+    high = 4.0
     unif_noise = np.random.uniform(low=low, high=high, size=(row,col,ch))
     noisy = src + unif_noise
+    noisy = np.maximum(noisy, 0.0)
     return noisy
 
 # Daniel: salt only
