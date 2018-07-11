@@ -30,11 +30,11 @@ class CONFIG(object):
                 [44, 48, 50, 15, 17],
                 [ 3, 41, 10, 30, 33],
         ]
-        self.CV_HELD_OUT_INDEX = 1
-        self.PERFORM_CV = False # True for my data, False for others, though I could easily change that ...
+        self.CV_HELD_OUT_INDEX = 2
+        self.PERFORM_CV = True # True for my data, False for others, though I could easily change that ...
 
         # Various data paths. Note: BC_HELD_OUT is ignored if PERFORM_CV=True.
-        self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_nytimes/' # comment out if doing cross valid!!
+        #self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_nytimes/' # comment out if doing cross valid!!
         self.BC_HELD_OUT  = self.DATA_PATH+'held_out_nytimes/'
         self.IMAGE_PATH   = self.DATA_PATH+'images/'
         self.LABEL_PATH   = self.DATA_PATH+'labels/'
@@ -83,15 +83,22 @@ class CONFIG(object):
         self.USE_DEPTH = False
 
         # solver parameter
-        self.LEARNING_RATE = 0.1
-        self.DECAY_STEPS = 30000
+        self.USE_EXP_MOV_AVG = False
+        self.OPT_ALGO = 'ADAM'
+        if self.OPT_ALGO == 'ADAM':
+            self.LEARNING_RATE = 0.00010
+        elif self.OPT_ALGO == 'SGD':
+            self.LEARNING_RATE = 0.1
+        else:
+            raise ValueError(self.OPT_ALGO)
+        self.DECAY_STEPS = 10000 # Decay every k steps
         self.DECAY_RATE = 0.1
         self.STAIRCASE = True
-        self.BATCH_SIZE = 32
-        self.MAX_ITER = 3000#30000
-        self.SUMMARY_ITER = 10
-        self.TEST_ITER = 10
-        self.SAVE_ITER = 500
+        self.BATCH_SIZE = 64
+        self.MAX_ITER = 1000
+        self.SUMMARY_ITER = 1
+        self.TEST_ITER = 1
+        self.SAVE_ITER = 100
         self.VIZ_DEBUG_ITER = 400
 
         # test parameter
@@ -166,6 +173,8 @@ class CONFIG(object):
 
         grasp_rollout = []
         for data in rollout:
+            if type(data) is list:
+                continue
             if data['type'] == 'grasp':
                 grasp_rollout.append( [data] )
         return grasp_rollout

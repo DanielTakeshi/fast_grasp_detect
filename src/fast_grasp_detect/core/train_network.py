@@ -57,22 +57,38 @@ class Solver(object):
         self.summary_op = tf.summary.merge_all()
 
         self.global_step = tf.get_variable(
-            'global_step', [], initializer=tf.constant_initializer(0), trainable=False)
+                'global_step', [], initializer=tf.constant_initializer(0), trainable=False)
         self.learning_rate = tf.train.exponential_decay(
-            self.initial_learning_rate, self.global_step, self.decay_steps,
-            self.decay_rate, self.staircase, name='learning_rate')
+                self.initial_learning_rate, self.global_step, self.decay_steps,
+                self.decay_rate, self.staircase, name='learning_rate')
 
-        # Loss function from `self.net`. But why grad descent, not Adam?
-        self.optimizer = tf.train.GradientDescentOptimizer(
-            learning_rate=self.learning_rate).minimize(
-                self.net.class_loss, global_step=self.global_step)
+        # Loss function from `self.net`. Also adding the variable list. TODO must check!!
+        # TODO: also check if there was prior weight initialization somewhere for YOLO
+        var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+        #var_list = [x for x in var_list if 'conv_28' in x.name or 'conv_29' in x.name or 'conv_30' in x.name or 'fc_33' in x.name or 'fc_34' in x.name] # lol... fix
+
+        if self.cfg.OPT_ALGO == 'SGD':
+            self.optimizer = tf.train.GradientDescentOptimizer(learning_rate=self.learning_rate).minimize(
+                    self.net.class_loss,
+                    global_step=self.global_step,
+                    var_list=var_list)
+        elif self.cfg.OPT_ALGO == 'ADAM':
+            self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(
+                    self.net.class_loss,
+                    global_step=self.global_step,
+                    var_list=var_list)
+        else:
+            raise ValueError(self.cfg.OPT_ALGO)
 
         # Define the training operation and set all params via a moving average.
-        self.ema = tf.train.ExponentialMovingAverage(decay=0.9999)
-        self.averages_op = self.ema.apply(tf.trainable_variables())
-        with tf.control_dependencies([self.optimizer]):
-            self.train_op = tf.group(self.averages_op)
-        #self.train_op = tf.train.AdamOptimizer(learning_rate=1e-4).minimize(self.net.class_loss, global_step=self.global_step)
+        # https://www.tensorflow.org/api_docs/python/tf/train/ExponentialMovingAverage
+        if self.cfg.USE_EXP_MOV_AVG:
+            self.ema = tf.train.ExponentialMovingAverage(decay=0.9999)
+            self.averages_op = self.ema.apply(tf.trainable_variables())
+            with tf.control_dependencies([self.optimizer]):
+                self.train_op = tf.group(self.averages_op)
+        else:
+            self.train_op = self.optimizer
 
         gpu_options = tf.GPUOptions()
         config = tf.ConfigProto(gpu_options=gpu_options)
@@ -97,6 +113,7 @@ class Solver(object):
         load_timer = Timer()
         train_losses = []
         test_losses = []
+        raw_test_losses = []
 
         for step in xrange(1, self.max_iter+1):
             # Get minibatch of images (usually, features from YOLO) and labels.
@@ -122,6 +139,7 @@ class Solver(object):
                         # Can use useful to get the test loss in the **pixels**, not scaled version.
                         test_loss_raw = self.cfg.compare_preds_labels(
                                 preds=test_logits, labels=labels_t, doprint=False)
+                        raw_test_losses.append(test_loss_raw)
 
                         if self.cfg.CONFIG_NAME == 'grasp_net':
                             print("Test loss: {:.6f} (raw: {:.2f})".format(test_loss, test_loss_raw))
@@ -165,11 +183,13 @@ class Solver(object):
                 self.all_saver.save(self.sess, real_ckpt, global_step=self.global_step)
                 loss_dict = {}
                 loss_dict["test"] = test_losses
+                loss_dict["raw_test"] = raw_test_losses
                 loss_dict["train"] = train_losses
                 loss_dict["name"] = self.cfg.CONFIG_NAME
-                # TODO: maybe change this to reflect the time it was run? If we re-run training, we
-                # overwrite the older file ...
-                pickle.dump(loss_dict, open(self.cfg.STAT_DIR+self.cfg.CONFIG_NAME+'.p', 'wb'))
+                loss_dict["epoch"] = self.data.epoch
+                # Use this for plotting.
+                name = os.path.join(self.cfg.STAT_DIR, '{}_{}.p'.format(self.cfg.CONFIG_NAME, curr_time))
+                pickle.dump(loss_dict, open(name, 'wb'))
 
 
     def save_cfg(self):
