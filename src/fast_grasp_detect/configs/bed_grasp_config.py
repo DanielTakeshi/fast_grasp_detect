@@ -17,25 +17,31 @@ class CONFIG(object):
         self.DATA_PATH   = self.ROOT_DIR+''     # Tritons
 
         # New, use for cross validation. Got this by randomly arranging numbers in a range.
-        self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/' # Overridden later if we are not doing CV
-        self.CV_GROUPS = [
-                [34,  7, 39, 37, 46],
-                [16,  6,  8, 36, 26],
-                [24, 11, 51, 38, 29],
-                [32, 27,  9, 43, 19],
-                [12, 35, 31,  4, 22],
-                [13, 42,  5, 14, 25],
-                [20, 40, 18, 21, 47],
-                [23, 52, 28, 49, 45],
-                [44, 48, 50, 15, 17],
-                [ 3, 41, 10, 30, 33],
-        ]
-        self.CV_HELD_OUT_INDEX = 2
-        self.PERFORM_CV = True # True for my data, False for others, though I could easily change that ...
+        # Do this for my data, and comment out if otherwise.
+        self.PERFORM_CV = False
 
-        # Various data paths. Note: BC_HELD_OUT is ignored if PERFORM_CV=True.
-        #self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_nytimes/' # comment out if doing cross valid!!
-        self.BC_HELD_OUT  = self.DATA_PATH+'held_out_nytimes/'
+        if self.PERFORM_CV:
+            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/'
+            self.CV_GROUPS = [
+                    [34,  7, 39, 37, 46],
+                    [16,  6,  8, 36, 26],
+                    [24, 11, 51, 38, 29],
+                    [32, 27,  9, 43, 19],
+                    [12, 35, 31,  4, 22],
+                    [13, 42,  5, 14, 25],
+                    [20, 40, 18, 21, 47],
+                    [23, 52, 28, 49, 45],
+                    [44, 48, 50, 15, 17],
+                    [ 3, 41, 10, 30, 33],
+            ]
+            self.CV_HELD_OUT_INDEX = 2 # Adjust!
+        else:
+            # Now do this if I have a fixed held-out directory, as with Michael's data.
+            # Note: BC_HELD_OUT is not used if PERFORM_CV=True.
+            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_nytimes/'
+            self.BC_HELD_OUT  = self.DATA_PATH+'held_out_nytimes/'
+
+        # Other paths now.
         self.IMAGE_PATH   = self.DATA_PATH+'images/'
         self.LABEL_PATH   = self.DATA_PATH+'labels/'
         self.CACHE_PATH   = self.DATA_PATH+'cache/'
@@ -62,16 +68,12 @@ class CONFIG(object):
 
         # Classes, labels, data augmentation
         self.CLASSES = ['success_grasp','fail_grasp']
-        # #CLASSES = ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus',
-        #            'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse',
-        #            'motorbike', 'person', 'pottedplant', 'sheep', 'sofa',
-        #           'train', 'tvmonitor']
         self.NUM_LABELS = len(self.CLASSES)
         self.FLIPPED = False # I don't think used?
         self.LIGHTING_NOISE = True # Is this used?
         self.QUICK_DEBUG = True # Is this used?
 
-        # model parameter
+        # Model parameters. The USE_DEPTH is a critical one to test!
         self.T_IMAGE_SIZE_H = 480
         self.T_IMAGE_SIZE_W = 640
         self.IMAGE_SIZE = 448
@@ -80,9 +82,10 @@ class CONFIG(object):
         self.ALPHA = 0.1
         self.DISP_CONSOLE = True
         self.RESOLUTION = 10
-        self.USE_DEPTH = False
+        self.USE_DEPTH = True
 
         # solver parameter
+        self.FIX_PRETRAINED_LAYERS = True
         self.USE_EXP_MOV_AVG = False
         self.OPT_ALGO = 'ADAM'
         if self.OPT_ALGO == 'ADAM':

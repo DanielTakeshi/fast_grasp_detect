@@ -48,8 +48,10 @@ class Solver(object):
         self.variables_to_restore = self.variable_to_restore[42:52]
         count = 0
         print("\nSolver.__init__(), self.variables_to_restore:")
+        vars_restored = []
         for var in self.variables_to_restore:
             print("{} {}".format(count, var.name))
+            vars_restored.append(var.name)
             count += 1
         self.saver = tf.train.Saver(self.variables_to_restore, max_to_keep=None)
         self.all_saver = tf.train.Saver()
@@ -62,10 +64,13 @@ class Solver(object):
                 self.initial_learning_rate, self.global_step, self.decay_steps,
                 self.decay_rate, self.staircase, name='learning_rate')
 
-        # Loss function from `self.net`. Also adding the variable list. TODO must check!!
-        # TODO: also check if there was prior weight initialization somewhere for YOLO
+        # Loss function from `self.net`. Also adding the variable list we want to optimize over.
         var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
-        #var_list = [x for x in var_list if 'conv_28' in x.name or 'conv_29' in x.name or 'conv_30' in x.name or 'fc_33' in x.name or 'fc_34' in x.name] # lol... fix
+        if self.cfg.FIX_PRETRAINED_LAYERS:
+            var_list = [x for x in var_list if x.name in vars_restored]
+        print("\ncfg.FIX_PRETRAINED_LAYERS={}. Our optimizer will adjust:".format(self.cfg.FIX_PRETRAINED_LAYERS))
+        for item in var_list:
+            print(item)
 
         if self.cfg.OPT_ALGO == 'SGD':
             self.optimizer = tf.train.GradientDescentOptimizer(learning_rate=self.learning_rate).minimize(
@@ -95,7 +100,7 @@ class Solver(object):
         self.sess = tf.Session(config=config)
         self.sess.run(tf.global_variables_initializer())
 
-        # Daniel: what is this?
+        # Daniel: by default, it's None. We've already restored earlier in the data manager class.
         if self.weights_file is not None:
             print('\n(after tf initializer) Solver.__init__(), restoring weights for net from: ' + self.weights_file)
             self.saver.restore(self.sess, self.weights_file)
@@ -188,7 +193,10 @@ class Solver(object):
                 loss_dict["name"] = self.cfg.CONFIG_NAME
                 loss_dict["epoch"] = self.data.epoch
                 # Use this for plotting.
-                name = os.path.join(self.cfg.STAT_DIR, '{}_{}.p'.format(self.cfg.CONFIG_NAME, curr_time))
+                lrate = round(self.learning_rate.eval(session=self.sess), 6)
+                suffix = '{}_{}_depth_{}_optim_{}_fixed_{}_lrate_{}.p'.format(self.cfg.CONFIG_NAME,
+                        curr_time, self.cfg.USE_DEPTH, self.cfg.OPT_ALGO, self.FIX_PRETRAINED_LAYERS, lrate)
+                name = os.path.join(self.cfg.STAT_DIR, suffix)
                 pickle.dump(loss_dict, open(name, 'wb'))
 
 

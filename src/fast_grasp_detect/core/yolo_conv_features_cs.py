@@ -37,14 +37,9 @@ class YOLO_CONV(object):
         self.sess.run(tf.global_variables_initializer())
 
 
-    def build_network(self,
-                      images,
-                      num_outputs,
-                      alpha,
-                      keep_prob=0.5,
-                      is_training=True,
-                      scope='yolo'):
-
+    def build_network(self, images, num_outputs, alpha, keep_prob=0.5, is_training=True, scope='yolo'):
+        """Builds the YOLO net. We use the last layer (self.conv_layer) for pre-trained features.
+        """
         with tf.variable_scope(scope):
             with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                 activation_fn=leaky_relu(alpha),
@@ -97,7 +92,8 @@ class YOLO_CONV(object):
     def load_network(self):
         """Load network using slim's helpers and the standard `tf.train.Saver`."""
         self.weights_file = self.cfg.PRE_TRAINED_DIR+"YOLO_small.ckpt"
-        print('\nIn YOLO_CONV.load_network(), restoring weights from: {}'.format(self.weights_file))
+        print('\nYOLO_CONV.load_network(), restoring pre-trained weights from: {}'.format(self.weights_file))
+        print("The variables we are restoring in `tf.train.Saver(variables_to_restore)`:")
         self.variable_to_restore = slim.get_variables_to_restore()
         count = 0
         for var in self.variable_to_restore:
@@ -114,15 +110,16 @@ class YOLO_CONV(object):
             print("self.layers = 2 so self.variables_to_restore: 0:48")
             self.variables_to_restore = self.variable_to_restore[0:48]
 
-        #tf.global_variables_initializer()
         self.saver = tf.train.Saver(self.variables_to_restore, max_to_keep=None)
-        #self.saver = tf.train.Saver()
         self.saver.restore(self.sess, self.weights_file)
 
 
     def extract_conv_features(self, img):
-        """Critical!! Runs original camera images through YOLO stem to get
-        features. Then we later pass them to task-specific networks.
+        """Critical!! Runs original camera images through YOLO stem to get features.
+
+        Then we later pass them to task-specific networks.  For inputs, we divide by 255 and then
+        scale to get pixel values in [-1,1]. This gets called for _all_ the training and data points
+        before training begins, so they are all held to the same scaling constraints.
         """
         img_h, img_w, _ = img.shape
         inputs = cv2.resize(img, (self.image_size, self.image_size))
