@@ -194,8 +194,8 @@ class Solver(object):
                 loss_dict["epoch"] = self.data.epoch
                 # Use this for plotting.
                 lrate = round(self.learning_rate.eval(session=self.sess), 6)
-                suffix = '{}_{}_depth_{}_optim_{}_fixed_{}_lrate_{}.p'.format(self.cfg.CONFIG_NAME,
-                        curr_time, self.cfg.USE_DEPTH, self.cfg.OPT_ALGO, self.FIX_PRETRAINED_LAYERS, lrate)
+                suffix = '{}_{}_depth_{}_optim_{}_fixed_{}_lrate_{}.p'.format(self.cfg.CONFIG_NAME, curr_time,
+                        self.cfg.USE_DEPTH, self.cfg.OPT_ALGO, self.cfg.FIX_PRETRAINED_LAYERS, lrate)
                 name = os.path.join(self.cfg.STAT_DIR, suffix)
                 pickle.dump(loss_dict, open(name, 'wb'))
 

@@ -86,12 +86,13 @@ class CONFIG(object):
 
         # solver parameter
         self.FIX_PRETRAINED_LAYERS = True
-        self.USE_EXP_MOV_AVG = False
         self.OPT_ALGO = 'ADAM'
         if self.OPT_ALGO == 'ADAM':
             self.LEARNING_RATE = 0.00010
+            self.USE_EXP_MOV_AVG = False
         elif self.OPT_ALGO == 'SGD':
             self.LEARNING_RATE = 0.1
+            self.USE_EXP_MOV_AVG = True
         else:
             raise ValueError(self.OPT_ALGO)
         self.DECAY_STEPS = 10000 # Decay every k steps

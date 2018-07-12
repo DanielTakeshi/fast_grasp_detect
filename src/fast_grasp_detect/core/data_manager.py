@@ -27,8 +27,9 @@ class data_manager(object):
         self.test_labels = None
 
         # For cross-validation
-        self.held_out_list = self.cfg.CV_GROUPS[self.cfg.CV_HELD_OUT_INDEX]
-        self.held_out_rollouts = [os.path.join(self.rollout_path,'rollout_'+str(rr)) for rr in self.held_out_list]
+        if self.cfg.PERFORM_CV:
+            self.held_out_list = self.cfg.CV_GROUPS[self.cfg.CV_HELD_OUT_INDEX]
+            self.held_out_rollouts = [os.path.join(self.rollout_path,'rollout_'+str(rr)) for rr in self.held_out_list]
 
         # Load YOLO network and set up its pre-trained weights from known file
         print("\n`data_manager` class, now calling YOLO_CONV and loading network...")
