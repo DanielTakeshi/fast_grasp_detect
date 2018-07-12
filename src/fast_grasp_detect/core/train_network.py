@@ -192,9 +192,10 @@ class Solver(object):
                 loss_dict["train"] = train_losses
                 loss_dict["name"] = self.cfg.CONFIG_NAME
                 loss_dict["epoch"] = self.data.epoch
-                # Use this for plotting.
+                # Use this for plotting. It should overwrite the older files saved. Careful, move
+                # these to another directory ASAP; e.g. if I switch datasets these overwrite.
                 lrate = round(self.learning_rate.eval(session=self.sess), 6)
-                suffix = '{}_{}_depth_{}_optim_{}_fixed_{}_lrate_{}.p'.format(self.cfg.CONFIG_NAME, curr_time,
+                suffix = '{}_depth_{}_optim_{}_fixed_{}_lrate_{}.p'.format(self.cfg.CONFIG_NAME,
                         self.cfg.USE_DEPTH, self.cfg.OPT_ALGO, self.cfg.FIX_PRETRAINED_LAYERS, lrate)
                 name = os.path.join(self.cfg.STAT_DIR, suffix)
                 pickle.dump(loss_dict, open(name, 'wb'))

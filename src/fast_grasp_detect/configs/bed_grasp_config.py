@@ -18,7 +18,7 @@ class CONFIG(object):
 
         # New, use for cross validation. Got this by randomly arranging numbers in a range.
         # Do this for my data, and comment out if otherwise.
-        self.PERFORM_CV = False
+        self.PERFORM_CV = True
 
         if self.PERFORM_CV:
             self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/'
@@ -34,7 +34,7 @@ class CONFIG(object):
                     [44, 48, 50, 15, 17],
                     [ 3, 41, 10, 30, 33],
             ]
-            self.CV_HELD_OUT_INDEX = 2 # Adjust!
+            self.CV_HELD_OUT_INDEX = 0 # Adjust!
         else:
             # Now do this if I have a fixed held-out directory, as with Michael's data.
             # Note: BC_HELD_OUT is not used if PERFORM_CV=True.
@@ -82,16 +82,16 @@ class CONFIG(object):
         self.ALPHA = 0.1
         self.DISP_CONSOLE = True
         self.RESOLUTION = 10
-        self.USE_DEPTH = True
+        self.USE_DEPTH = True # False means RGB
 
         # solver parameter
-        self.FIX_PRETRAINED_LAYERS = True
+        self.FIX_PRETRAINED_LAYERS = False # False means train everything after weight init
         self.OPT_ALGO = 'ADAM'
         if self.OPT_ALGO == 'ADAM':
             self.LEARNING_RATE = 0.00010
             self.USE_EXP_MOV_AVG = False
         elif self.OPT_ALGO == 'SGD':
-            self.LEARNING_RATE = 0.1
+            self.LEARNING_RATE = 0.01
             self.USE_EXP_MOV_AVG = True
         else:
             raise ValueError(self.OPT_ALGO)
