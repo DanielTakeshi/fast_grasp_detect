@@ -8,6 +8,7 @@ class CONFIG(object):
     def __init__(self):
         FIXED_LAYERS = 33
         #VARY {0, 4, 9}
+        self.SEED = 1
 
         self.CONFIG_NAME = 'success_net'
         #self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'   # Michael
@@ -18,7 +19,7 @@ class CONFIG(object):
 
         # New, use for cross validation. Got this by randomly arranging numbers in a range.
         # Do this for my data, and comment out if otherwise.
-        self.PERFORM_CV = True
+        self.PERFORM_CV = False
 
         if self.PERFORM_CV:
             self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/'
@@ -76,7 +77,7 @@ class CONFIG(object):
         self.ALPHA = 0.1
         self.DISP_CONSOLE = True
         self.RESOLUTION = 10
-        self.USE_DEPTH = True # False means RGB
+        self.USE_DEPTH = False # False means RGB
 
         # solver parameter
         self.FIX_PRETRAINED_LAYERS = False # False means train everything after weight init

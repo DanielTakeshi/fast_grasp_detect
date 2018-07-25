@@ -8,6 +8,7 @@ class CONFIG(object):
     def __init__(self):
         FIXED_LAYERS = 33
         #VARY {0, 4, 9}
+        self.SEED = 0
 
         self.CONFIG_NAME = 'grasp_net'
         #self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'   # Michael
