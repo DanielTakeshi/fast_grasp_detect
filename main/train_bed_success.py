@@ -15,7 +15,11 @@ pascal = data_manager(bed_success_options)
 yolo = SNet(bed_success_options)
 solver = Solver(bed_success_options,yolo,pascal)
 
-print('\nJust before training, here are all the TF variables we have:')
+print('\nJust before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:')
+variables = tf.trainable_variables()#get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+for vv in variables:
+    print(vv)
+print('\nAnd here is `tf.GraphKeys.GLOBAL_VARIABLES`:')
 variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
 for vv in variables:
     print(vv)

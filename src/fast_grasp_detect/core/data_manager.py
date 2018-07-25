@@ -106,6 +106,7 @@ class data_manager(object):
 
         self.test_labels = []
 
+        # Oops, bad naming, `grasp_rollout` could also contain the success, but w/e.
         for rollout_p in rollouts:
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
             grasp_rollout = self.cfg.break_up_rollouts(rollout)

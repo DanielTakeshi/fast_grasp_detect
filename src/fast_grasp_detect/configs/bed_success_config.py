@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import IPython
 
 
 class CONFIG(object):
@@ -11,38 +10,44 @@ class CONFIG(object):
         #VARY {0, 4, 9}
 
         self.CONFIG_NAME = 'success_net'
-        #self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'
-        self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'
+        #self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'   # Michael
+        self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'   # Tritons
         self.NET_NAME    = '08_28_01_37_11save.ckpt-30300'
-        #self.DATA_PATH   = self.ROOT_DIR+'bed_rcnn/'
-        self.DATA_PATH   = self.ROOT_DIR+''
+        #self.DATA_PATH   = self.ROOT_DIR+'bed_rcnn/'  # Michael
+        self.DATA_PATH   = self.ROOT_DIR+''   # Tritons
 
         # New, use for cross validation. Got this by randomly arranging numbers in a range.
-        self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/'
-        self.CV_GROUPS = [
-                [34,  7, 39, 37, 46],
-                [16,  6,  8, 36, 26],
-                [24, 11, 51, 38, 29],
-                [32, 27,  9, 43, 19],
-                [12, 35, 31,  4, 22],
-                [13, 42,  5, 14, 25],
-                [20, 40, 18, 21, 47],
-                [23, 52, 28, 49, 45],
-                [44, 48, 50, 15, 17],
-                [ 3, 41, 10, 30, 33],
-        ]
-        self.CV_HELD_OUT_INDEX = 2
-        self.PERFORM_CV = False
+        # Do this for my data, and comment out if otherwise.
+        self.PERFORM_CV = True
 
-        # Various data paths. Note: BC_HELD_OUT is ignored if PERFORM_CV=True.
-        self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_nytimes/' # comment out if doing cross valid!!
-        self.BC_HELD_OUT  = self.DATA_PATH+'held_out_nytimes/'
+        if self.PERFORM_CV:
+            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/'
+            self.CV_GROUPS = [
+                    [34,  7, 39, 37, 46],
+                    [16,  6,  8, 36, 26],
+                    [24, 11, 51, 38, 29],
+                    [32, 27,  9, 43, 19],
+                    [12, 35, 31,  4, 22],
+                    [13, 42,  5, 14, 25],
+                    [20, 40, 18, 21, 47],
+                    [23, 52, 28, 49, 45],
+                    [44, 48, 50, 15, 17],
+                    [ 3, 41, 10, 30, 33],
+            ]
+            self.CV_HELD_OUT_INDEX = 0 # Adjust!
+        else:
+            # Now do this if I have a fixed held-out directory, as with Michael's data.
+            # Note: BC_HELD_OUT is not used if PERFORM_CV=True.
+            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_nytimes/'
+            self.BC_HELD_OUT  = self.DATA_PATH+'held_out_nytimes/'
+
+        # Other paths now.
         self.IMAGE_PATH   = self.DATA_PATH+'images/'
         self.LABEL_PATH   = self.DATA_PATH+'labels/'
         self.CACHE_PATH   = self.DATA_PATH+'cache/'
         self.OUTPUT_DIR   = self.DATA_PATH+'output/'
 
-        # Based on transitions
+        # If training success net, info goes here. Order matters, OUTPUT_DIR is updated.
         self.OUTPUT_DIR        = self.DATA_PATH+'transition_output/'
         self.STAT_DIR          = self.OUTPUT_DIR+'stats/'
         self.TRAIN_STATS_DIR_G = self.OUTPUT_DIR+'train_stats/'
@@ -57,16 +62,12 @@ class CONFIG(object):
 
         # Classes, labels, data augmentation
         self.CLASSES = ['success','failure']
-        # #CLASSES = ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus',
-        #            'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse',
-        #            'motorbike', 'person', 'pottedplant', 'sheep', 'sofa',
-        #           'train', 'tvmonitor']
         self.NUM_LABELS = len(self.CLASSES)
         self.FLIPPED = False
         self.LIGHTING_NOISE = True
         self.QUICK_DEBUG = True
 
-        # model parameter
+        # Model parameters. The USE_DEPTH is a critical one to test!
         self.T_IMAGE_SIZE_H = 480
         self.T_IMAGE_SIZE_W = 640
         self.IMAGE_SIZE = 448
@@ -75,20 +76,29 @@ class CONFIG(object):
         self.ALPHA = 0.1
         self.DISP_CONSOLE = True
         self.RESOLUTION = 10
-        self.USE_DEPTH = False
+        self.USE_DEPTH = True # False means RGB
 
         # solver parameter
-        self.LEARNING_RATE = 0.1
-        self.DECAY_STEPS = 30000
+        self.FIX_PRETRAINED_LAYERS = False # False means train everything after weight init
+        self.OPT_ALGO = 'ADAM'
+        if self.OPT_ALGO == 'ADAM':
+            self.LEARNING_RATE = 0.00010
+            self.USE_EXP_MOV_AVG = False
+        elif self.OPT_ALGO == 'SGD':
+            self.LEARNING_RATE = 0.01
+            self.USE_EXP_MOV_AVG = True
+        else:
+            raise ValueError(self.OPT_ALGO)
+        self.DECAY_STEPS = 10000 # Decay every k steps
         self.DECAY_RATE = 0.1
         self.STAIRCASE = True
-        self.BATCH_SIZE = 32
-        self.MAX_ITER = 2000
-        self.SUMMARY_ITER = 10
-        self.TEST_ITER = 20
-        self.SAVE_ITER = 500
-        self.VIZ_DEBUG_ITER = 400
-        self.CROSS_ENT_LOSS = False
+        self.BATCH_SIZE = 64
+        self.MAX_ITER = 200
+        self.SUMMARY_ITER = 1
+        self.TEST_ITER = 1
+        self.SAVE_ITER = 100
+        self.VIZ_DEBUG_ITER = 400 # ?
+        self.CROSS_ENT_LOSS = True # Unique to success net since Michael did L2 earlier
 
         # test parameter
         self.PICK_THRESHOLD = 0.4
@@ -114,6 +124,14 @@ class CONFIG(object):
         return label
 
 
+    def compare_preds_labels(self, preds, labels, correctness, doprint=False):
+        """For success, we have correctness to consider instead."""
+        if doprint:
+            print("success test preds:\n{}".format(preds))
+            print("success test labels:\n{}".format(labels))
+        print("correctness:\n{}".format(correctness))
+
+
     def get_empty_state(self, batchdim=None):
         """Each time we call a batch during training/testing, initialize with this."""
         if batchdim is not None:
@@ -131,19 +149,11 @@ class CONFIG(object):
 
 
     def break_up_rollouts(self,rollout):
-        print("TODO: must check this method.")
-        sys.exit()
-
-        success_point = []
+        """I changed it to a way that makes more sense, a list of one-item lists."""
         success_rollout = []
         for data in rollout:
-            if type(data) == list:
+            if type(data) is list:
                 continue
-            if(data['type'] == 'success'):
-                success_point.append(data)
-            elif(data['type'] == 'grasp'):
-                if( len(success_point) > 0):
-                    success_rollout.append(success_point)
-                    success_point = []
-        success_rollout.append(success_point)
+            if data['type'] == 'success':
+                success_rollout.append( [data] )
         return success_rollout

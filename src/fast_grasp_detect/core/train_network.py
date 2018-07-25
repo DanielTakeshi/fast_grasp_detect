@@ -118,7 +118,9 @@ class Solver(object):
         load_timer = Timer()
         train_losses = []
         test_losses = []
-        raw_test_losses = []
+        raw_test_losses = []  # for grasp net
+        raw_test_correct = [] # for success net
+        raw_test_total = []   # for success net
 
         for step in xrange(1, self.max_iter+1):
             # Get minibatch of images (usually, features from YOLO) and labels.
@@ -141,18 +143,22 @@ class Solver(object):
                         test_loss, test_logits = self.sess.run([self.net.class_loss, self.net.logits], feed_dict=feed_dict_test)
                         test_losses.append(test_loss)
 
-                        # Can use useful to get the test loss in the **pixels**, not scaled version.
-                        test_loss_raw = self.cfg.compare_preds_labels(
-                                preds=test_logits, labels=labels_t, doprint=False)
-                        raw_test_losses.append(test_loss_raw)
-
                         if self.cfg.CONFIG_NAME == 'grasp_net':
+                            # Useful to get test loss in the **pixels**, not scaled version.
+                            test_loss_raw = self.cfg.compare_preds_labels(
+                                    preds=test_logits, labels=labels_t, doprint=True)
+                            raw_test_losses.append(test_loss_raw)
                             print("Test loss: {:.6f} (raw: {:.2f})".format(test_loss, test_loss_raw))
                         elif self.cfg.CONFIG_NAME == 'success_net':
                             correctness = np.argmax(test_logits,axis=1) == np.argmax(labels_t,axis=1)
-                            print("Correctness:\n{}".format(correctness))
-                            print("Test loss: {:.6f}, acc: {}/{} = {:.2f}".format(test_loss, np.sum(correctness),
-                                    len(correctness), float(np.sum(correctness))/len(correctness)))
+                            correct = float(np.sum(correctness))
+                            K = len(correctness)
+                            raw_acc = correct / K
+                            raw_test_correct.append(correct)
+                            raw_test_total.append(K)
+                            self.cfg.compare_preds_labels(preds=test_logits, labels=labels_t,
+                                    correctness=correctness, doprint=True)
+                            print("Test loss: {:.6f}, acc: {}/{} = {:.2f}".format(test_loss, correct, K, raw_acc))
                         else:
                             raise ValueError(self.cfg.CONFIG_NAME)
 
@@ -189,6 +195,8 @@ class Solver(object):
                 loss_dict = {}
                 loss_dict["test"] = test_losses
                 loss_dict["raw_test"] = raw_test_losses
+                loss_dict["success_test_correct"] = raw_test_correct
+                loss_dict["success_test_total"] = raw_test_total
                 loss_dict["train"] = train_losses
                 loss_dict["name"] = self.cfg.CONFIG_NAME
                 loss_dict["epoch"] = self.data.epoch

@@ -18,7 +18,7 @@ class CONFIG(object):
 
         # New, use for cross validation. Got this by randomly arranging numbers in a range.
         # Do this for my data, and comment out if otherwise.
-        self.PERFORM_CV = True
+        self.PERFORM_CV = False
 
         if self.PERFORM_CV:
             self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/'
@@ -47,13 +47,13 @@ class CONFIG(object):
         self.CACHE_PATH   = self.DATA_PATH+'cache/'
         self.OUTPUT_DIR   = self.DATA_PATH+'output/'
 
-        # Based on transitions
+        # Based on transitions (NOTE: is this used at all?)
         self.TRAN_OUTPUT_DIR   = self.DATA_PATH+'transition_output/'
         self.TRAN_STATS_DIR    = self.TRAN_OUTPUT_DIR+'stats/'
         self.TRAIN_STATS_DIR_T = self.TRAN_OUTPUT_DIR+'train_stats/'
         self.TEST_STATS_DIR_T  = self.TRAN_OUTPUT_DIR+'test_stats/'
 
-        # Based on grasping (NOTE: order matters, OUTPUT_DIR is updated)
+        # If training grasp net, info goes here. Order matters, OUTPUT_DIR is updated.
         self.OUTPUT_DIR        = self.DATA_PATH+'grasp_output/'
         self.STAT_DIR          = self.OUTPUT_DIR+'stats/'
         self.TRAIN_STATS_DIR_G = self.OUTPUT_DIR+'train_stats/'
@@ -161,20 +161,6 @@ class CONFIG(object):
 
     def break_up_rollouts(self,rollout):
         """I changed it to a way that makes more sense, a list of one-item lists."""
-
-        #grasp_point = []
-        #grasp_rollout = []
-        #for data in rollout:
-        #    if type(data) == list:
-        #        continue
-        #    if(data['type'] == 'grasp'):
-        #        grasp_point.append(data)
-        #    elif(data['type'] == 'success'):
-        #        if( len(grasp_point) > 0):
-        #            grasp_rollout.append(grasp_point)
-        #            grasp_point = []
-        #return grasp_rollout
-
         grasp_rollout = []
         for data in rollout:
             if type(data) is list:
