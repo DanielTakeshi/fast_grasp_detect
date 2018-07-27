@@ -17,12 +17,15 @@ class Solver(object):
         """
         cfg: A configuration file, have separate ones for the two tasks.
         net: Either `GHNet` or `SNet` depending on which task we're doing.
-        data: A `data_manager`, which is what takes in the original raw images
-            (from cameras) and provides features to the task-specific `net`.
+        data: A `data_manager`, which is what takes in the original raw images (from cameras) and
+            provides features to the task-specific `net`. Note, it has a `yc` argument (actually, a
+            TF placeholder) that we can use to refer to the ORIGINAL input to the YOLO net, and NOT
+            the pre-trained features.  For those, use `net.images`.
         """
         self.cfg = cfg
         self.net = net
         self.data = data
+        self.layer = layer
         self.weights_file = self.cfg.WEIGHTS_FILE
         self.max_iter = self.cfg.MAX_ITER
         self.initial_learning_rate = self.cfg.LEARNING_RATE
@@ -31,10 +34,8 @@ class Solver(object):
         self.staircase = self.cfg.STAIRCASE
         self.summary_iter = self.cfg.SUMMARY_ITER
         self.test_iter = self.cfg.TEST_ITER
-        self.viz_debug_iter = self.cfg.VIZ_DEBUG_ITER
-        self.layer = layer
-        self.ss = ss
         self.save_iter = self.cfg.SAVE_ITER
+        self.original_yolo_input = data.yc.images
 
         # Handle output path and save config w/time-dependent string (smart!).
         self.output_dir = os.path.join(
@@ -65,23 +66,27 @@ class Solver(object):
                 self.decay_rate, self.staircase, name='learning_rate')
 
         # Loss function from `self.net`. Also adding the variable list we want to optimize over.
-        var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+        self.var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+        self.grads = tf.gradients(self.net.class_loss, self.var_list)
+        #for idx,item in enumerate(self.grads):
+        #    print(idx,item)
+
         if self.cfg.FIX_PRETRAINED_LAYERS:
-            var_list = [x for x in var_list if x.name in vars_restored]
+            self.var_list = [x for x in self.var_list if x.name in vars_restored]
         print("\ncfg.FIX_PRETRAINED_LAYERS={}. Our optimizer will adjust:".format(self.cfg.FIX_PRETRAINED_LAYERS))
-        for item in var_list:
+        for item in self.var_list:
             print(item)
 
         if self.cfg.OPT_ALGO == 'SGD':
             self.optimizer = tf.train.GradientDescentOptimizer(learning_rate=self.learning_rate).minimize(
                     self.net.class_loss,
                     global_step=self.global_step,
-                    var_list=var_list)
+                    var_list=self.var_list)
         elif self.cfg.OPT_ALGO == 'ADAM':
             self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(
                     self.net.class_loss,
                     global_step=self.global_step,
-                    var_list=var_list)
+                    var_list=self.var_list)
         else:
             raise ValueError(self.cfg.OPT_ALGO)
 
@@ -101,6 +106,7 @@ class Solver(object):
         self.sess.run(tf.global_variables_initializer())
 
         # Daniel: by default, it's None. We've already restored earlier in the data manager class.
+        # Delete this functionality?
         if self.weights_file is not None:
             print('\n(after tf initializer) Solver.__init__(), restoring weights for net from: ' + self.weights_file)
             self.saver.restore(self.sess, self.weights_file)
@@ -118,35 +124,42 @@ class Solver(object):
         load_timer = Timer()
         train_losses = []
         test_losses = []
-        raw_test_losses = []  # for grasp net
-        raw_test_correct = [] # for success net
-        raw_test_total = []   # for success net
+        raw_test_losses = []  # grasp net
+        raw_test_correct = [] # success net
+        raw_test_total = []   # success net
 
         for step in xrange(1, self.max_iter+1):
             # Get minibatch of images (usually, features from YOLO) and labels.
             load_timer.tic()
             images, labels = self.data.get()
             load_timer.toc()
-            feed_dict = {self.net.images: images, self.net.labels: labels}
+            if self.cfg.FIX_PRETRAINED_LAYERS:
+                feed_dict = {self.net.images: images, self.net.labels: labels}
+            else:
+                feed_dict = {self.original_yolo_input: images, self.net.labels: labels}
 
             if step % self.summary_iter == 0:
                 if step % (self.summary_iter * 10) == 0:
                     train_timer.tic()
                     summary_str, loss, _ = self.sess.run(
-                        [self.summary_op, self.net.class_loss, self.train_op], feed_dict=feed_dict)
+                        [self.summary_op, self.net.class_loss, self.train_op], feed_dict)
                     train_timer.toc()
                     train_losses.append(loss)
 
                     if step % self.test_iter == 0:
                         images_t, labels_t = self.data.get_test()
-                        feed_dict_test = {self.net.images: images_t, self.net.labels: labels_t}
-                        test_loss, test_logits = self.sess.run([self.net.class_loss, self.net.logits], feed_dict=feed_dict_test)
+                        if self.cfg.FIX_PRETRAINED_LAYERS:
+                            feed_dict_test = {self.net.images: images_t, self.net.labels: labels_t}
+                        else:
+                            feed_dict_test = {self.original_yolo_input: images_t, self.net.labels: labels_t}
+                        test_loss, test_logits = self.sess.run(
+                                [self.net.class_loss, self.net.logits], feed_dict_test)
                         test_losses.append(test_loss)
 
                         if self.cfg.CONFIG_NAME == 'grasp_net':
                             # Useful to get test loss in the **pixels**, not scaled version.
                             test_loss_raw = self.cfg.compare_preds_labels(
-                                    preds=test_logits, labels=labels_t, doprint=True)
+                                    preds=test_logits, labels=labels_t, doprint=False)
                             raw_test_losses.append(test_loss_raw)
                             print("Test loss: {:.6f} (raw: {:.2f})".format(test_loss, test_loss_raw))
                         elif self.cfg.CONFIG_NAME == 'success_net':
@@ -203,8 +216,10 @@ class Solver(object):
                 # Use this for plotting. It should overwrite the older files saved. Careful, move
                 # these to another directory ASAP; e.g. if I switch datasets these overwrite.
                 lrate = round(self.learning_rate.eval(session=self.sess), 6)
-                suffix = '{}_depth_{}_optim_{}_fixed_{}_lrate_{}.p'.format(self.cfg.CONFIG_NAME,
-                        self.cfg.USE_DEPTH, self.cfg.OPT_ALGO, self.cfg.FIX_PRETRAINED_LAYERS, lrate)
+                cv_idx = self.cfg.CV_HELD_OUT_INDEX
+                suffix = '{}_depth_{}_optim_{}_fixed_{}_lrate_{}_cv_{}.p'.format(
+                        self.cfg.CONFIG_NAME, self.cfg.USE_DEPTH, self.cfg.OPT_ALGO,
+                        self.cfg.FIX_PRETRAINED_LAYERS, lrate, cv_idx)
                 name = os.path.join(self.cfg.STAT_DIR, suffix)
                 pickle.dump(loss_dict, open(name, 'wb'))
 

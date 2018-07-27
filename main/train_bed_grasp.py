@@ -10,13 +10,13 @@ slim = tf.contrib.slim
 from fast_grasp_detect.configs.bed_grasp_config import CONFIG
 
 bed_grasp_options = CONFIG()
-tf.set_random_seed(bed_success_options.SEED)
-np.random.seed(bed_success_options.SEED)
-random.seed(bed_success_options.SEED)
+tf.set_random_seed(bed_grasp_options.SEED)
+np.random.seed(bed_grasp_options.SEED)
+random.seed(bed_grasp_options.SEED)
 
 pascal = data_manager(bed_grasp_options)
-yolo = GHNet(bed_grasp_options)
-solver = Solver(bed_grasp_options,yolo,pascal)
+yolo = GHNet(bed_grasp_options, pascal)
+solver = Solver(bed_grasp_options, yolo, pascal)
 
 print('\nJust before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:')
 variables = tf.trainable_variables()

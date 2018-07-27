@@ -24,7 +24,6 @@ class data_manager(object):
         self.t_cursor = 0
         self.epoch = 1
         self.gt_labels = None
-        self.test_labels = None
 
         # For cross-validation
         if self.cfg.PERFORM_CV:
@@ -45,8 +44,8 @@ class data_manager(object):
 
 
     def get(self, noise=False):
-        """Creates and returns images/labels for training, where the images are
-        features from the pre-trained YOLO network.
+        """Creates and returns images/labels for training, where the images are features from the
+        pre-trained YOLO network, or at least processed to correct sizes.
 
         `count` ensures we match batch size, `cursor` since it may overlap w/end of the epoch.
         """
@@ -121,7 +120,8 @@ class data_manager(object):
                 else:
                     features = self.yc.extract_conv_features(grasp_point[0]['c_img'])
                 label = self.cfg.compute_label(grasp_point[0])
-                self.test_labels.append({'c_img': grasp_point[0]['c_img'], 'label': label, 'features': features})
+                data_pt = {'c_img':grasp_point[0]['c_img'], 'label':label, 'features':features}
+                self.test_labels.append(data_pt)
 
         # Form and investigate the testing images and labels in their batch.
         K = len(self.test_labels)
@@ -176,10 +176,11 @@ class data_manager(object):
                         # labels: for grasps, alternate between (x,y) and (-x,y)
                         features = self.yc.extract_conv_features(datum_a['c_img'])
                         label = self.cfg.compute_label(datum_a)
-                        self.train_labels.append({'c_img': datum_a['c_img'], 'label': label, 'features': features})
+                        data_pt = {'c_img':datum_a['c_img'],'label': label,'features': features}
+                        self.train_labels.append(data_pt)
 
         np.random.shuffle(self.train_labels)
-        print("len(self.train_labels): {}. Also, just shuffled them!".format(len(self.train_labels)))
+        print("len(self.train_labels): {}. Also, shuffled!".format(len(self.train_labels)))
 
 
     def compute_label(self, pose):

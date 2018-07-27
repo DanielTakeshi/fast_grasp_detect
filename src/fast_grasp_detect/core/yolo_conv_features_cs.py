@@ -117,17 +117,33 @@ class YOLO_CONV(object):
     def extract_conv_features(self, img):
         """Critical!! Runs original camera images through YOLO stem to get features.
 
-        Then we later pass them to task-specific networks.  For inputs, we divide by 255 and then
+        Then we later pass them to task-specific networks.  For inputs, WE DIVIDE BY 255 and then
         scale to get pixel values in [-1,1]. This gets called for _all_ the training and data points
         before training begins, so they are all held to the same scaling constraints.
+
+        Note: if we are FIXING the first 26 layers of the network, then we will want to feed
+        through the fixed 26 layers and get features. Then our entire training data will 'start'
+        from that point, and the test data will also be startin from that point, and we must do the
+        same during deployment to new images, i.e., pass through first 26.
+
+        If not, we just return the image itself, though we need to resize to the correct YOLO
+        input, etc.  After this, we later pass it through the ENTIRE network, so update ALL weights.
+
+        BTW, when we call cv2.resize(img, (448,448)) using a 3-channel img, it will correctly leave
+        that 3-channel alone, and result in (448,448,3), whew.
         """
         img_h, img_w, _ = img.shape
         inputs = cv2.resize(img, (self.image_size, self.image_size))
+        assert inputs.shape == (self.image_size, self.image_size, 3)
         #inputs = cv2.cvtColor(inputs, cv2.COLOR_BGR2RGB).astype(np.float32)
         inputs = (inputs / 255.0) * 2.0 - 1.0
         inputs = np.reshape(inputs, (1, self.image_size, self.image_size, 3))
-        net_output = self.sess.run(self.conv_layer, feed_dict={self.images: inputs})
-        return net_output
+
+        if self.cfg.FIX_PRETRAINED_LAYERS:
+            net_output = self.sess.run(self.conv_layer, feed_dict={self.images: inputs})
+            return net_output
+        else:
+            return inputs
 
 
 def leaky_relu(alpha):

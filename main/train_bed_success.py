@@ -15,8 +15,8 @@ np.random.seed(bed_success_options.SEED)
 random.seed(bed_success_options.SEED)
 
 pascal = data_manager(bed_success_options)
-yolo = SNet(bed_success_options)
-solver = Solver(bed_success_options,yolo,pascal)
+yolo = SNet(bed_success_options, pascal)
+solver = Solver(bed_success_options, yolo, pascal)
 
 print('\nJust before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:')
 variables = tf.trainable_variables()

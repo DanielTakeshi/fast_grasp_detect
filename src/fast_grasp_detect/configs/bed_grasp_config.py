@@ -19,21 +19,21 @@ class CONFIG(object):
 
         # New, use for cross validation. Got this by randomly arranging numbers in a range.
         # Do this for my data, and comment out if otherwise.
-        self.PERFORM_CV = False
+        self.PERFORM_CV = True
 
         if self.PERFORM_CV:
-            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/'
+            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_ron_v02_h0/'
             self.CV_GROUPS = [
-                    [34,  7, 39, 37, 46],
-                    [16,  6,  8, 36, 26],
-                    [24, 11, 51, 38, 29],
-                    [32, 27,  9, 43, 19],
-                    [12, 35, 31,  4, 22],
-                    [13, 42,  5, 14, 25],
-                    [20, 40, 18, 21, 47],
-                    [23, 52, 28, 49, 45],
-                    [44, 48, 50, 15, 17],
-                    [ 3, 41, 10, 30, 33],
+                    [0],
+                    [1],
+                    [2],
+                    [3],
+                    [4],
+                    [5],
+                    [6],
+                    [7],
+                    [8],
+                    [9],
             ]
             self.CV_HELD_OUT_INDEX = 0 # Adjust!
         else:
@@ -86,10 +86,12 @@ class CONFIG(object):
         self.USE_DEPTH = True # False means RGB
 
         # solver parameter
-        self.FIX_PRETRAINED_LAYERS = False # False means train everything after weight init
+        # Careful, if fixing, this means our images effectively turn into (fs,fs,channels),
+        # e.g., could be (14,14,1024). If False, TRAIN FROM NORMAL (480,640,3)-SIZE IMAGES.
+        self.FIX_PRETRAINED_LAYERS = False # Technically call it pre-'initialized' layers.
         self.OPT_ALGO = 'ADAM'
         if self.OPT_ALGO == 'ADAM':
-            self.LEARNING_RATE = 0.00010
+            self.LEARNING_RATE = 0.00100
             self.USE_EXP_MOV_AVG = False
         elif self.OPT_ALGO == 'SGD':
             self.LEARNING_RATE = 0.01
@@ -100,7 +102,7 @@ class CONFIG(object):
         self.DECAY_RATE = 0.1
         self.STAIRCASE = True
         self.BATCH_SIZE = 64
-        self.MAX_ITER = 1000
+        self.MAX_ITER = 500
         self.SUMMARY_ITER = 1
         self.TEST_ITER = 1
         self.SAVE_ITER = 100
@@ -146,10 +148,15 @@ class CONFIG(object):
 
     def get_empty_state(self, batchdim=None):
         """Each time we call a batch during training/testing, initialize with this."""
+        bs = self.BATCH_SIZE
         if batchdim is not None:
-            return np.zeros((batchdim, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
+            bs = batchdim
+
+        if self.FIX_PRETRAINED_LAYERS:
+            return np.zeros((bs, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
         else:
-            return np.zeros((self.BATCH_SIZE, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
+            assert self.IMAGE_SIZE == 448
+            return np.zeros((bs, self.IMAGE_SIZE, self.IMAGE_SIZE, 3))
 
 
     def get_empty_label(self, batchdim=None):

@@ -1,35 +1,42 @@
 import numpy as np
 import tensorflow as tf
-#import yolo.config_card as cfg
 import IPython
 slim = tf.contrib.slim
 
 
 class GHNet(object):
 
-    def __init__(self, cfg, is_training=True, layers=0):
+    def __init__(self, cfg, data_m, is_training=True, layers=0):
+        """
+        data_m: Needs to contain `data_m.yc.conv_layer` so that we get the tensorflow variable
+            representing the 26th layer of the YOLO network, in case we need to continue passing it
+            through here if not fixing the 26 layers.
+        """
         self.cfg = cfg
         self.classes = self.cfg.CLASSES
         self.num_class = len(self.classes)
         self.image_size = self.cfg.IMAGE_SIZE
-        self.dist_size_w = self.cfg.T_IMAGE_SIZE_W/cfg.RESOLUTION
-        self.dist_size_h = self.cfg.T_IMAGE_SIZE_H/cfg.RESOLUTION
+        self.dist_size_w = self.cfg.T_IMAGE_SIZE_W/self.cfg.RESOLUTION
+        self.dist_size_h = self.cfg.T_IMAGE_SIZE_H/self.cfg.RESOLUTION
         self.output_size = 2 # 2-D output because we are predicting (x,y) pixel coords
         self.layers = layers
         self.learning_rate = self.cfg.LEARNING_RATE
         self.batch_size = self.cfg.BATCH_SIZE
         self.alpha = self.cfg.ALPHA
+        self.yolo_conv_layer = data_m.yc.conv_layer
 
         # Despite the name, `self.images` are features from the YOLO stem in `core/yolo_conv_features_cs.py`
-        if self.layers == 0:
-            self.images = tf.placeholder(tf.float32, [None, self.cfg.FILTER_SIZE, self.cfg.FILTER_SIZE, self.cfg.NUM_FILTERS], name='images')
-        elif self.layers == 1:
-            self.images = tf.placeholder(tf.float32, [None, self.cfg.FILTER_SIZE_L1, self.cfg.FILTER_SIZE_L1, self.cfg.NUM_FILTERS], name='images')
-        elif self.layers == 2:
-            self.images = tf.placeholder(tf.float32, [None, self.cfg.SIZE_L2], name='images')
-
-        # logits are not log prob of classes but simply the predicted pixels
-        self.logits = self.build_network(self.images, num_outputs=self.output_size, alpha=self.alpha, is_training=is_training)
+        if cfg.FIX_PRETRAINED_LAYERS:
+            if self.layers == 0:
+                self.images = tf.placeholder(tf.float32, [None, self.cfg.FILTER_SIZE, self.cfg.FILTER_SIZE, self.cfg.NUM_FILTERS], name='images')
+            elif self.layers == 1:
+                self.images = tf.placeholder(tf.float32, [None, self.cfg.FILTER_SIZE_L1, self.cfg.FILTER_SIZE_L1, self.cfg.NUM_FILTERS], name='images')
+            elif self.layers == 2:
+                self.images = tf.placeholder(tf.float32, [None, self.cfg.SIZE_L2], name='images')
+            # logits are not log prob of classes but simply the predicted pixels
+            self.logits = self.build_network(self.images, num_outputs=self.output_size, alpha=self.alpha, is_training=is_training)
+        else:
+            self.logits = self.build_network(self.yolo_conv_layer, num_outputs=self.output_size, alpha=self.alpha, is_training=is_training)
 
         if is_training:
             # self.labels to be provided by the human user

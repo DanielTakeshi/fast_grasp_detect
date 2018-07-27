@@ -80,7 +80,9 @@ class CONFIG(object):
         self.USE_DEPTH = False # False means RGB
 
         # solver parameter
-        self.FIX_PRETRAINED_LAYERS = False # False means train everything after weight init
+        # Careful, if fixing, this means our images effectively turn into (fs,fs,channels),
+        # e.g., could be (14,14,1024). If False, we train from the usual (480,640,3) images.
+        self.FIX_PRETRAINED_LAYERS = False
         self.OPT_ALGO = 'ADAM'
         if self.OPT_ALGO == 'ADAM':
             self.LEARNING_RATE = 0.00010
@@ -135,10 +137,15 @@ class CONFIG(object):
 
     def get_empty_state(self, batchdim=None):
         """Each time we call a batch during training/testing, initialize with this."""
+        bs = self.BATCH_SIZE
         if batchdim is not None:
-            return np.zeros((batchdim, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
+            bs = batchdim
+
+        if self.FIX_PRETRAINED_LAYERS:
+            return np.zeros((bs, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
         else:
-            return np.zeros((self.BATCH_SIZE, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
+            assert self.IMAGE_SIZE == 448
+            return np.zeros((bs, self.IMAGE_SIZE, self.IMAGE_SIZE, 3))
 
 
     def get_empty_label(self, batchdim=None):
