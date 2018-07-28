@@ -22,7 +22,7 @@ class CONFIG(object):
         self.PERFORM_CV = True
 
         if self.PERFORM_CV:
-            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_ron_v02_h0/'
+            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_ron_v02/'
             self.CV_GROUPS = [
                     [0],
                     [1],
@@ -35,7 +35,7 @@ class CONFIG(object):
                     [8],
                     [9],
             ]
-            self.CV_HELD_OUT_INDEX = 0 # Adjust!
+            self.CV_HELD_OUT_INDEX = 9 # Adjust!
         else:
             # Now do this if I have a fixed held-out directory, as with Michael's data.
             # Note: BC_HELD_OUT is not used if PERFORM_CV=True.
@@ -88,10 +88,10 @@ class CONFIG(object):
         # solver parameter
         # Careful, if fixing, this means our images effectively turn into (fs,fs,channels),
         # e.g., could be (14,14,1024). If False, TRAIN FROM NORMAL (480,640,3)-SIZE IMAGES.
-        self.FIX_PRETRAINED_LAYERS = False # Technically call it pre-'initialized' layers.
+        self.FIX_PRETRAINED_LAYERS = True # Technically call it pre-'initialized' layers.
         self.OPT_ALGO = 'ADAM'
         if self.OPT_ALGO == 'ADAM':
-            self.LEARNING_RATE = 0.00100
+            self.LEARNING_RATE = 0.00010
             self.USE_EXP_MOV_AVG = False
         elif self.OPT_ALGO == 'SGD':
             self.LEARNING_RATE = 0.01
@@ -136,8 +136,8 @@ class CONFIG(object):
         raw_preds  = (0.5 + preds) * xx
         raw_labels = (0.5 + labels) * xx
         assert np.min(raw_labels) > 0.0
-        delta = raw_preds - raw_labels
-        test_loss_raw = np.linalg.norm(delta)
+        delta = raw_preds - raw_labels # shape (batchsize,2)
+        test_loss_raw = np.mean( np.linalg.norm(delta, axis=1) )
         if doprint:
             print("grasp test preds:\n{}".format(preds))
             print("grasp test labels:\n{}".format(labels))
