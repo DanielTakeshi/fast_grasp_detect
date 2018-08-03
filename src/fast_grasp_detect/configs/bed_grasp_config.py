@@ -3,39 +3,41 @@ import numpy as np
 
 
 class CONFIG(object):
-    ###############PARAMETERS TO SWEEP##########
 
-    def __init__(self):
-        FIXED_LAYERS = 33
-        #VARY {0, 4, 9}
-        self.SEED = 0
+    def __init__(self, args):
+        """Some manual work needed for CV to put groupings here.
+
+        But external code can loop through the CV indices.
+        To find 10-fold CV for a group of N rollouts, do:
+
+            [list(x) for x in np.array_split( np.random.permutation(N) , 10) ]
+
+        and paste the result in `CV_GROUPS`.
+        """
+        self.args = args
+        self.PERFORM_CV = args.do_cv
 
         self.CONFIG_NAME = 'grasp_net'
-        #self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'   # Michael
         self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'   # Tritons
+        self.DATA_PATH   = self.ROOT_DIR+''                     # Tritons
         self.NET_NAME    = '08_28_01_37_11save.ckpt-30300'
-        #self.DATA_PATH   = self.ROOT_DIR+'bed_rcnn/'   # Michael
-        self.DATA_PATH   = self.ROOT_DIR+''     # Tritons
-
-        # New, use for cross validation. Got this by randomly arranging numbers in a range.
-        # Do this for my data, and comment out if otherwise.
-        self.PERFORM_CV = True
 
         if self.PERFORM_CV:
-            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_ron_v02/'
+            assert args.cv_idx is not None
+            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_white_v01/'
             self.CV_GROUPS = [
-                    [0],
-                    [1],
-                    [2],
-                    [3],
-                    [4],
-                    [5],
-                    [6],
-                    [7],
-                    [8],
-                    [9],
+                [24, 22, 30,  2],
+                [10, 21,  5, 15],
+                [36, 32, 17,  7],
+                [ 6, 11, 34,  1],
+                [12, 19, 28, 29],
+                [23,  0, 35, 27],
+                [18, 13, 16, 14],
+                [20, 33, 25],
+                [ 3, 31,  4],
+                [ 9, 26,  8]
             ]
-            self.CV_HELD_OUT_INDEX = 9 # Adjust!
+            self.CV_HELD_OUT_INDEX = args.cv_idx
         else:
             # Now do this if I have a fixed held-out directory, as with Michael's data.
             # Note: BC_HELD_OUT is not used if PERFORM_CV=True.
@@ -62,7 +64,6 @@ class CONFIG(object):
 
         # Weights
         self.WEIGHTS_DIR = self.DATA_PATH+'weights/'
-        #self.PRE_TRAINED_DIR = '/home/autolab/Workspaces/michael_working/yolo_tensorflow/data/pascal_voc/weights/'
         self.PRE_TRAINED_DIR = '/nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/'
         self.WEIGHTS_FILE = None
         # WEIGHTS_FILE = os.path.join(DATA_PATH, 'weights', 'YOLO_small.ckpt')
@@ -70,9 +71,9 @@ class CONFIG(object):
         # Classes, labels, data augmentation
         self.CLASSES = ['success_grasp','fail_grasp']
         self.NUM_LABELS = len(self.CLASSES)
-        self.FLIPPED = False # I don't think used?
-        self.LIGHTING_NOISE = True # Is this used?
-        self.QUICK_DEBUG = True # Is this used?
+        ## self.FLIPPED = False
+        ## self.LIGHTING_NOISE = True
+        ## self.QUICK_DEBUG = True
 
         # Model parameters. The USE_DEPTH is a critical one to test!
         self.T_IMAGE_SIZE_H = 480
@@ -108,10 +109,10 @@ class CONFIG(object):
         self.SAVE_ITER = 100
         self.VIZ_DEBUG_ITER = 400
 
-        # test parameter
-        self.PICK_THRESHOLD = 0.4
-        self.THRESHOLD = 0.4
-        self.IOU_THRESHOLD = 0.5
+        ## # test parameter
+        ## self.PICK_THRESHOLD = 0.4
+        ## self.THRESHOLD = 0.4
+        ## self.IOU_THRESHOLD = 0.5
 
         # fast params
         self.FILTER_SIZE = 14
@@ -121,11 +122,16 @@ class CONFIG(object):
 
 
     def compute_label(self,datum):
-        """Labels scaled in [-1,1], as described in paper."""
+        """Labels scaled in [-1,1], as described in paper.
+
+        Actually, [-0.5, 0.5]. I thought we needed to further adjust for the re-sizing
+        of the image to (448,448), but turns out this is still valid ... since the re-
+        sized value cancels out. Huh, interesting.
+        """
         pose = datum['pose']
         label = np.zeros((2))
-        x = pose[0]/self.T_IMAGE_SIZE_W - 0.5
-        y = pose[1]/self.T_IMAGE_SIZE_H - 0.5
+        x = (float(pose[0]) / self.T_IMAGE_SIZE_W) - 0.5
+        y = (float(pose[1]) / self.T_IMAGE_SIZE_H) - 0.5
         label = np.array([x,y])
         return label
 

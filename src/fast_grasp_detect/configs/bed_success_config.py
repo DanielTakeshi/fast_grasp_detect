@@ -3,39 +3,41 @@ import numpy as np
 
 
 class CONFIG(object):
-    ###############PARAMETERS TO SWEEP##########
 
-    def __init__(self):
-        FIXED_LAYERS = 33
-        #VARY {0, 4, 9}
-        self.SEED = 1
+    def __init__(self, args):
+        """Some manual work needed for CV to put groupings here.
+
+        But external code can loop through the CV indices.
+        To find 10-fold CV for a group of N rollouts, do:
+
+            [list(x) for x in np.array_split( np.random.permutation(N) , 10) ]
+
+        and paste the result in `CV_GROUPS`.
+        """
+        self.args = args
+        self.PERFORM_CV = args.do_cv
 
         self.CONFIG_NAME = 'success_net'
-        #self.ROOT_DIR    = '/media/autolab/1tb/daniel-bed-make/'   # Michael
         self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'   # Tritons
+        self.DATA_PATH   = self.ROOT_DIR+''                     # Tritons
         self.NET_NAME    = '08_28_01_37_11save.ckpt-30300'
-        #self.DATA_PATH   = self.ROOT_DIR+'bed_rcnn/'  # Michael
-        self.DATA_PATH   = self.ROOT_DIR+''   # Tritons
-
-        # New, use for cross validation. Got this by randomly arranging numbers in a range.
-        # Do this for my data, and comment out if otherwise.
-        self.PERFORM_CV = False
 
         if self.PERFORM_CV:
-            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts/'
+            assert args.cv_idx is not None
+            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_white_v01/'
             self.CV_GROUPS = [
-                    [34,  7, 39, 37, 46],
-                    [16,  6,  8, 36, 26],
-                    [24, 11, 51, 38, 29],
-                    [32, 27,  9, 43, 19],
-                    [12, 35, 31,  4, 22],
-                    [13, 42,  5, 14, 25],
-                    [20, 40, 18, 21, 47],
-                    [23, 52, 28, 49, 45],
-                    [44, 48, 50, 15, 17],
-                    [ 3, 41, 10, 30, 33],
+                [24, 22, 30,  2],
+                [10, 21,  5, 15],
+                [36, 32, 17,  7],
+                [ 6, 11, 34,  1],
+                [12, 19, 28, 29],
+                [23,  0, 35, 27],
+                [18, 13, 16, 14],
+                [20, 33, 25],
+                [ 3, 31,  4],
+                [ 9, 26,  8]
             ]
-            self.CV_HELD_OUT_INDEX = 0 # Adjust!
+            self.CV_HELD_OUT_INDEX = args.cv_idx
         else:
             # Now do this if I have a fixed held-out directory, as with Michael's data.
             # Note: BC_HELD_OUT is not used if PERFORM_CV=True.
@@ -56,7 +58,6 @@ class CONFIG(object):
 
         # Weights
         self.WEIGHTS_DIR = self.DATA_PATH+'weights/'
-        #self.PRE_TRAINED_DIR = '/home/autolab/Workspaces/michael_working/yolo_tensorflow/data/pascal_voc/weights/'
         self.PRE_TRAINED_DIR = '/nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/'
         self.WEIGHTS_FILE = None
         # WEIGHTS_FILE = os.path.join(DATA_PATH, 'weights', 'YOLO_small.ckpt')
@@ -64,9 +65,9 @@ class CONFIG(object):
         # Classes, labels, data augmentation
         self.CLASSES = ['success','failure']
         self.NUM_LABELS = len(self.CLASSES)
-        self.FLIPPED = False
-        self.LIGHTING_NOISE = True
-        self.QUICK_DEBUG = True
+        ## self.FLIPPED = False
+        ## self.LIGHTING_NOISE = True
+        ## self.QUICK_DEBUG = True
 
         # Model parameters. The USE_DEPTH is a critical one to test!
         self.T_IMAGE_SIZE_H = 480
@@ -82,7 +83,7 @@ class CONFIG(object):
         # solver parameter
         # Careful, if fixing, this means our images effectively turn into (fs,fs,channels),
         # e.g., could be (14,14,1024). If False, we train from the usual (480,640,3) images.
-        self.FIX_PRETRAINED_LAYERS = False
+        self.FIX_PRETRAINED_LAYERS = True
         self.OPT_ALGO = 'ADAM'
         if self.OPT_ALGO == 'ADAM':
             self.LEARNING_RATE = 0.00010
@@ -101,12 +102,12 @@ class CONFIG(object):
         self.TEST_ITER = 1
         self.SAVE_ITER = 100
         self.VIZ_DEBUG_ITER = 400 # ?
-        self.CROSS_ENT_LOSS = True # Unique to success net since Michael did L2 earlier
+        self.CROSS_ENT_LOSS = True # Michael did 'softened L2' earlier
 
-        # test parameter
-        self.PICK_THRESHOLD = 0.4
-        self.THRESHOLD = 0.4
-        self.IOU_THRESHOLD = 0.5
+        ## # test parameter
+        ## self.PICK_THRESHOLD = 0.4
+        ## self.THRESHOLD = 0.4
+        ## self.IOU_THRESHOLD = 0.5
 
         # fast params
         self.FILTER_SIZE = 14

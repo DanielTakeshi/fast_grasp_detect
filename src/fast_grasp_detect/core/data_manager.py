@@ -18,8 +18,8 @@ class data_manager(object):
         self.num_class = len(self.classes)
         self.image_size = self.cfg.IMAGE_SIZE
         self.class_to_ind = dict(zip(self.classes, xrange(len(self.classes))))
-        self.flipped = self.cfg.FLIPPED
-        self.noise = self.cfg.LIGHTING_NOISE
+        #self.flipped = self.cfg.FLIPPED
+        #self.noise = self.cfg.LIGHTING_NOISE
         self.cursor = 0
         self.t_cursor = 0
         self.epoch = 1

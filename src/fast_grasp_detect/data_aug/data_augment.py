@@ -32,12 +32,19 @@ def augment_data(data, depth_data=False):
         img = data['d_img']
     else:
         img = data['c_img']
+
+    # If grasp we don't need a 'class', if success we don't need a 'pose'. But w/e.
+    if 'class' not in data:
+        assert data['type'] == 'grasp'
+        data['class'] = 'n/a'
+    if 'pose' not in data:
+        assert data['type'] == 'success'
+        data['pose'] = [0.0,0.0]
+
     label = data['pose']
     clss = data['class']
-    if label is None:
-        label = [0,0]
 
-    # Usually we use c_img. Get different lighting changes here.
+    # Let's get different lighting and augmentation changes.
     if depth_data:
         light_imgs = get_depth_aug(img)
     else:
