@@ -16,22 +16,27 @@ def flip_data_vertical(img,label,clss):
     h,w,channel = img.shape
     v_img = cv2.flip(img,1)
     label[0] = w-label[0]
-    return {'c_img': v_img, 'pose': label, 'class': clss}
+    return {'img': v_img, 'pose': label, 'class': clss}
 
 
 def flip_data_horizontal(img,label,clss):
     h,w,channel = img.shape
     h_img = cv2.flip(img,0)
     label[1] = h-label[1]
-    return {'c_img': h_img, 'pose': label, 'class': clss}
+    return {'img': h_img, 'pose': label, 'class': clss}
 
 
 def augment_data(data, depth_data=False):
+    """Make augmented data and return list of dictionary items."""
     augmented_data = []
+
+    # Let's get different lighting and augmentation changes.
     if depth_data:
         img = data['d_img']
+        light_imgs = get_depth_aug(img)
     else:
         img = data['c_img']
+        light_imgs = get_lighting(img)
 
     # If grasp we don't need a 'class', if success we don't need a 'pose'. But w/e.
     if 'class' not in data:
@@ -44,17 +49,10 @@ def augment_data(data, depth_data=False):
     label = data['pose']
     clss = data['class']
 
-    # Let's get different lighting and augmentation changes.
-    if depth_data:
-        light_imgs = get_depth_aug(img)
-    else:
-        light_imgs = get_lighting(img)
-
     # For each of the lighting changes (assuming c_img) we do normal, then a flip about vertical
     # axis. Thus, we adjust the label (i.e., (x,y) pose for gripper) by flipping the x value.
-    # NOTE: even if this was originally the depth image, we actually make keys `c_img`.
     for l_imgs in light_imgs:
-        p_n = {'c_img': l_imgs, 'pose': label, 'class': clss}
+        p_n = {'img': l_imgs, 'pose': label, 'class': clss}
         #p_h = flip_data_horizontal(l_imgs,np.copy(label))
         p_v = flip_data_vertical(l_imgs,np.copy(label),clss)
         augmented_data.append(p_n)

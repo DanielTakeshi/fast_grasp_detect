@@ -113,14 +113,17 @@ class data_manager(object):
                     rollout_p, len(grasp_rollout), len(rollout)))
 
             for grasp_point in grasp_rollout:
+                data_pt = {}
                 # Run the YOLO network w/pre-trained weights!!
+                # No data augmentation, since we're on the test set.
                 if self.cfg.USE_DEPTH:
                     grasp_point[0] = datum_to_net_dim(grasp_point[0])
-                    features = self.yc.extract_conv_features(grasp_point[0]['d_img'])
+                    data_pt['features'] = self.yc.extract_conv_features(grasp_point[0]['d_img'])
                 else:
-                    features = self.yc.extract_conv_features(grasp_point[0]['c_img'])
-                label = self.cfg.compute_label(grasp_point[0])
-                data_pt = {'c_img':grasp_point[0]['c_img'], 'label':label, 'features':features}
+                    data_pt['features'] = self.yc.extract_conv_features(grasp_point[0]['c_img'])
+                #data_pt['c_img'] = grasp_point[0]['c_img']
+                #data_pt['d_img'] = grasp_point[0]['d_img']
+                data_pt['label'] = self.cfg.compute_label(grasp_point[0])
                 self.test_labels.append(data_pt)
 
         # Form and investigate the testing images and labels in their batch.
@@ -146,7 +149,13 @@ class data_manager(object):
 
         Each rollout in the designated directory is broken up into 'grasp_point' dicts, which are
         like the data dicts we used for collecting data (though w/out 'd_img'). Then for each, we
-        augment the data and then run the YOLO network on that to get pre-extracted features.
+        augment the data and then run the YOLO network on that to get pre-extracted features. Note
+        that these features are assumed to be held fixed, so if we did this in test-time execution,
+        we would need those test images passed through this same feature extractor, THEN through our
+        pre-trained weights.
+        
+        Unless we trained the entire YOLO net, that is, in which case the feature extractor is
+        simply something that resizes the input for the first YOLO layer.
         """
         if self.cfg.PERFORM_CV:
             print("\ndata_manager.load_rollouts(), path {} (but w/held-out ignored: {}, index {})".format(
@@ -168,16 +177,22 @@ class data_manager(object):
 
             for grasp_point in grasp_rollout:
                 for data in grasp_point:
+                    c_img = data['c_img']
+                    d_img = data['d_img']
                     if self.cfg.USE_DEPTH:
-                        data = datum_to_net_dim(data)
+                        data = datum_to_net_dim(data) # always do _before_ data augmentation!!
                     data_a = augment_data(data, self.cfg.USE_DEPTH) # data augmentation magic.
                     for d_idx,datum_a in enumerate(data_a):
-                        # run the YOLO network w/pre-trained weights! 
+                        data_pt = {}
+                        # Run the YOLO network w/pre-trained weights! 
                         # features.shape: (1, 14, 14, 1024)
                         # labels: for grasps, alternate between (x,y) and (-x,y)
-                        features = self.yc.extract_conv_features(datum_a['c_img'])
-                        label = self.cfg.compute_label(datum_a)
-                        data_pt = {'c_img':datum_a['c_img'],'label': label,'features': features}
+                        # Note that `datum_a['img']` could represent c_img OR d_img.
+                        # But when we call the network, it really 'sees' the `features`.
+                        data_pt['features'] = self.yc.extract_conv_features(datum_a['img'])
+                        data_pt['label'] = self.cfg.compute_label(datum_a)
+                        #data_pt['c_img'] = c_img
+                        #data_pt['d_img'] = d_img
                         self.train_labels.append(data_pt)
 
         np.random.shuffle(self.train_labels)
@@ -187,7 +202,7 @@ class data_manager(object):
     def compute_label(self, pose):
         """Load image and bounding boxes info from XML file in the PASCAL VOC format."""
         label = np.zeros((2))
-        x = pose[0]/cfg.T_IMAGE_SIZE_W - 0.5
-        y = pose[1]/cfg.T_IMAGE_SIZE_H - 0.5
+        x = float(pose[0])/cfg.T_IMAGE_SIZE_W - 0.5
+        y = float(pose[1])/cfg.T_IMAGE_SIZE_H - 0.5
         label = np.array([x,y])
         return label

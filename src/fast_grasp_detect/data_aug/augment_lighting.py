@@ -42,13 +42,13 @@ def addSaltPepperNoise(src):
     num_salt = np.ceil(amount * src.size * s_vs_p)
     coords = [np.random.randint(0, i-1 , int(num_salt))
                  for i in src.shape]
-    out[coords[:-1]] = (255,255,255)
+    out[tuple(coords[:-1])] = (255,255,255)
 
     # Pepper mode
     num_pepper = np.ceil(amount* src.size * (1. - s_vs_p))
     coords = [np.random.randint(0, i-1 , int(num_pepper))
              for i in src.shape]
-    out[coords[:-1]] = (0,0,0)
+    out[tuple(coords[:-1])] = (0,0,0)
     return out
 
 
@@ -72,7 +72,7 @@ def addSaltOnlyNoise(src):
     num_salt = np.ceil(amount * src.size * s_vs_p)
     coords = [np.random.randint(0, i-1 , int(num_salt))
                  for i in src.shape]
-    out[coords[:-1]] = (255,255,255)
+    out[tuple(coords[:-1])] = (255,255,255)
     return out
 
 

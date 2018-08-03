@@ -120,6 +120,7 @@ class Solver(object):
 
     def train(self):
         """Called during outer script to do training!!"""
+        cfg = self.cfg
         train_timer = Timer()
         load_timer = Timer()
         train_losses = []
@@ -213,14 +214,22 @@ class Solver(object):
                 loss_dict["train"] = train_losses
                 loss_dict["name"] = self.cfg.CONFIG_NAME
                 loss_dict["epoch"] = self.data.epoch
-                # Use this for plotting. It should overwrite the older files saved. Careful, move
-                # these to another directory ASAP; e.g. if I switch datasets these overwrite.
+
+                # Don't forget best set of predictions + true labels, so we can visualize.
+                #loss_dict["preds"] = 
+                #loss_dict["targs"] =
+
+                # Save for plotting later. It should overwrite the older files saved. Careful,
+                # move to another directory ASAP; e.g. if I switch datasets these overwrite.
                 lrate = round(self.learning_rate.eval(session=self.sess), 6)
-                cv_idx = self.cfg.CV_HELD_OUT_INDEX
-                suffix = '{}_depth_{}_optim_{}_fixed_{}_lrate_{}_cv_{}.p'.format(
-                        self.cfg.CONFIG_NAME, self.cfg.USE_DEPTH, self.cfg.OPT_ALGO,
-                        self.cfg.FIX_PRETRAINED_LAYERS, lrate, cv_idx)
-                name = os.path.join(self.cfg.STAT_DIR, suffix)
+                cv_idx = cfg.CV_HELD_OUT_INDEX
+                img_type = 'rgb'
+                if cfg.USE_DEPTH:
+                    img_type = 'depth'
+                suffix = '{}_type_{}_optim_{}_fixed26_{}_lrate_{}_cv_{}.p'.format(
+                        cfg.CONFIG_NAME, img_type, (cfg.OPT_ALGO).lower(),
+                        cfg.FIX_PRETRAINED_LAYERS, lrate, cv_idx)
+                name = os.path.join(cfg.STAT_DIR, suffix)
                 pickle.dump(loss_dict, open(name, 'wb'))
 
 
