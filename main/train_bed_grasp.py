@@ -33,10 +33,10 @@ print('\nJust before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:')
 variables = tf.trainable_variables()
 for vv in variables:
     print(vv)
-print('\nAnd here is `tf.GraphKeys.GLOBAL_VARIABLES`:')
-variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
-for vv in variables:
-    print(vv)
+#print('\nAnd here is `tf.GraphKeys.GLOBAL_VARIABLES`:')
+#variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+#for vv in variables:
+#    print(vv)
 
 print('\nStart training ...')
 solver.train()

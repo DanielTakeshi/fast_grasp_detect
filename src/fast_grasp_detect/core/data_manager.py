@@ -109,7 +109,7 @@ class data_manager(object):
         for rollout_p in rollouts:
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
             grasp_rollout = self.cfg.break_up_rollouts(rollout)
-            print("{},  len(grasp_rollout)={},  w/len(rollout)={} [TEST]".format(
+            print("{},  len(relevant)={},  w/len(rollout)={} [TEST]".format(
                     rollout_p, len(grasp_rollout), len(rollout)))
 
             for grasp_point in grasp_rollout:
@@ -159,10 +159,11 @@ class data_manager(object):
 
         self.train_labels = []
 
+        # Oops, bad naming, `grasp_rollout` could also contain the success, but w/e.
         for rollout_p in rollouts:
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
             grasp_rollout = self.cfg.break_up_rollouts(rollout)
-            print("{},  len(grasp_rollout)={},  w/len(rollout)={} [TEST]".format(
+            print("{},  len(relevant)={},  w/len(rollout)={} [TEST]".format(
                     rollout_p, len(grasp_rollout), len(rollout)))
 
             for grasp_point in grasp_rollout:
