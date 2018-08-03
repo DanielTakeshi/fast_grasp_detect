@@ -74,8 +74,11 @@ class Solver(object):
         if self.cfg.FIX_PRETRAINED_LAYERS:
             self.var_list = [x for x in self.var_list if x.name in vars_restored]
         print("\ncfg.FIX_PRETRAINED_LAYERS={}. Our optimizer will adjust:".format(self.cfg.FIX_PRETRAINED_LAYERS))
+        numv = 0
         for item in self.var_list:
             print(item)
+            numv += np.prod(item.shape)
+        print("adjustable params: {}".format(numv))
 
         if self.cfg.OPT_ALGO == 'SGD':
             self.optimizer = tf.train.GradientDescentOptimizer(learning_rate=self.learning_rate).minimize(
@@ -104,14 +107,6 @@ class Solver(object):
         config = tf.ConfigProto(gpu_options=gpu_options)
         self.sess = tf.Session(config=config)
         self.sess.run(tf.global_variables_initializer())
-
-        # Daniel: by default, it's None. We've already restored earlier in the data manager class.
-        # Delete this functionality?
-        if self.weights_file is not None:
-            print('\n(after tf initializer) Solver.__init__(), restoring weights for net from: ' + self.weights_file)
-            self.saver.restore(self.sess, self.weights_file)
-        else:
-            print('\n(after tf initializer) self.weights_file is None, so not restoring here.')
 
 
     def variables_to_restore(self):
