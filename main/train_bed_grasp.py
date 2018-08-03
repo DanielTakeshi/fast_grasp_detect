@@ -30,9 +30,13 @@ yolo = GHNet(bed_grasp_options, pascal)
 solver = Solver(bed_grasp_options, yolo, pascal)
 
 print('\nJust before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:')
+numv = 0
 variables = tf.trainable_variables()
 for vv in variables:
+    numv += np.prod(vv.shape)
     print(vv)
+print("\nNumber of parameters: {}".format(numv))
+
 #print('\nAnd here is `tf.GraphKeys.GLOBAL_VARIABLES`:')
 #variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
 #for vv in variables:

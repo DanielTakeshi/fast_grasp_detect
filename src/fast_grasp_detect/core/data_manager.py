@@ -37,8 +37,10 @@ class data_manager(object):
 
         # Load test set and training rollouts. Also make test set batch fixed (shouldn't be re-shuffling).
         self.recent_batch = []
-        self.test_batch_images = None
+        self.test_batch_feats  = None
         self.test_batch_labels = None
+        self.test_batch_c_imgs = None
+        self.test_batch_d_imgs = None
         self.load_test_set()
         self.load_rollouts()
 
@@ -70,14 +72,18 @@ class data_manager(object):
         return images, labels
 
 
-    def get_test(self):
+    def get_test(self, return_imgs=False):
         """Creates and returns images/labels for testing, where the images are
-        features from the pre-trained YOLO network.
+        features from the pre-trained YOLO network, not (generally) raw images.
 
-        Unlike the training case, here we should just take the entire test data in one batch.
+        Unlike in training, here we should just take the entire test data in one batch.
         """
-        assert self.test_batch_images is not None and self.test_batch_labels is not None
-        return (self.test_batch_images, self.test_batch_labels)
+        assert self.test_batch_feats is not None and self.test_batch_labels is not None
+        if return_imgs:
+            assert self.test_batch_c_imgs is not None and self.test_batch_d_imgs is not None
+            return (self.test_batch_feats, self.test_batch_labels, self.test_batch_c_imgs, self.test_batch_d_imgs)
+        else:
+            return (self.test_batch_feats, self.test_batch_labels)
 
 
     def prep_image(self, image):
@@ -116,13 +122,14 @@ class data_manager(object):
                 data_pt = {}
                 # Run the YOLO network w/pre-trained weights!!
                 # No data augmentation, since we're on the test set.
+                # Also the datum_to_net_dim only changes 'd_img'.
+                grasp_point[0] = datum_to_net_dim(grasp_point[0])
                 if self.cfg.USE_DEPTH:
-                    grasp_point[0] = datum_to_net_dim(grasp_point[0])
                     data_pt['features'] = self.yc.extract_conv_features(grasp_point[0]['d_img'])
                 else:
                     data_pt['features'] = self.yc.extract_conv_features(grasp_point[0]['c_img'])
-                #data_pt['c_img'] = grasp_point[0]['c_img']
-                #data_pt['d_img'] = grasp_point[0]['d_img']
+                data_pt['c_img'] = grasp_point[0]['c_img']
+                data_pt['d_img'] = grasp_point[0]['d_img']
                 data_pt['label'] = self.cfg.compute_label(grasp_point[0])
                 self.test_labels.append(data_pt)
 
@@ -130,14 +137,26 @@ class data_manager(object):
         K = len(self.test_labels)
         print("len(self.test_labels): {}".format(K))
         assert K <= 500
-        self.test_batch_images = self.cfg.get_empty_state(batchdim=K)
+        
+        # What the network needs, inputs and labels.
+        self.test_batch_feats = self.cfg.get_empty_state(batchdim=K)
         self.test_batch_labels = self.cfg.get_empty_label(batchdim=K)
+
+        # Useful if we want to later visualize/plot test-set predictions.
+        self.test_batch_c_imgs = []
+        self.test_batch_d_imgs = []
+
         for count in range(K):
-            self.test_batch_images[count, :, :, :] = self.test_labels[count]['features']
-            self.test_batch_labels[count, :]       = self.test_labels[count]['label']
-        print("test_batch_images.shape: {}".format(self.test_batch_images.shape))
-        print("test_batch_labels.shape: {}".format(self.test_batch_labels.shape))
+            self.test_batch_feats[count, :, :, :] = self.test_labels[count]['features']
+            self.test_batch_labels[count, :]      = self.test_labels[count]['label']
+            self.test_batch_c_imgs.append( self.test_labels[count]['c_img'] )
+            self.test_batch_d_imgs.append( self.test_labels[count]['d_img'] )
+
+        print("test_batch_d_imgs[0].shape: {}".format(self.test_batch_d_imgs[0].shape))
+        print("test_batch_feats.shape:     {}".format(self.test_batch_feats.shape))
+        print("test_batch_labels.shape:    {}".format(self.test_batch_labels.shape))
         print("test_batch_labels:\n{}".format(self.test_batch_labels))
+
         if self.cfg.CONFIG_NAME == 'grasp_net':
             W, H = self.cfg.T_IMAGE_SIZE_W, self.cfg.T_IMAGE_SIZE_H
             raw_labels = (self.test_batch_labels + 0.5) * np.array([W,H])
@@ -179,8 +198,7 @@ class data_manager(object):
                 for data in grasp_point:
                     c_img = data['c_img']
                     d_img = data['d_img']
-                    if self.cfg.USE_DEPTH:
-                        data = datum_to_net_dim(data) # always do _before_ data augmentation!!
+                    data = datum_to_net_dim(data) # always do _before_ data augmentation!!
                     data_a = augment_data(data, self.cfg.USE_DEPTH) # data augmentation magic.
                     for d_idx,datum_a in enumerate(data_a):
                         data_pt = {}

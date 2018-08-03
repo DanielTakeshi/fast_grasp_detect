@@ -153,6 +153,14 @@ class CONFIG(object):
         return test_loss_raw
 
 
+    def return_raw_labels(self, arr):
+        """Assumes `arr` is like the logits or predictions for sclaed labels."""
+        xx = np.array([self.T_IMAGE_SIZE_W, self.T_IMAGE_SIZE_H])
+        raw = (0.5 + arr) * xx
+        assert np.min(raw) > 0.0
+        return raw
+
+
     def get_empty_state(self, batchdim=None):
         """Each time we call a batch during training/testing, initialize with this."""
         bs = self.BATCH_SIZE

@@ -128,13 +128,16 @@ class Solver(object):
         raw_test_losses = []  # grasp net
         raw_test_correct = [] # success net
         raw_test_total = []   # success net
+        best_loss = np.float('inf')
+        best_preds = None
+        images_t, labels_t, c_imgs_list, d_imgs_list = self.data.get_test(return_imgs=True)
 
         for step in xrange(1, self.max_iter+1):
             # Get minibatch of images (usually, features from YOLO) and labels.
             load_timer.tic()
             images, labels = self.data.get()
             load_timer.toc()
-            if self.cfg.FIX_PRETRAINED_LAYERS:
+            if cfg.FIX_PRETRAINED_LAYERS:
                 feed_dict = {self.net.images: images, self.net.labels: labels}
             else:
                 feed_dict = {self.original_yolo_input: images, self.net.labels: labels}
@@ -148,30 +151,31 @@ class Solver(object):
                     train_losses.append(loss)
 
                     if step % self.test_iter == 0:
-                        images_t, labels_t = self.data.get_test()
-                        if self.cfg.FIX_PRETRAINED_LAYERS:
-                            feed_dict_test = {self.net.images: images_t, self.net.labels: labels_t}
+                        if cfg.FIX_PRETRAINED_LAYERS:
+                            feed_dict_t = {self.net.images: images_t, self.net.labels: labels_t}
                         else:
-                            feed_dict_test = {self.original_yolo_input: images_t, self.net.labels: labels_t}
-                        test_loss, test_logits = self.sess.run(
-                                [self.net.class_loss, self.net.logits], feed_dict_test)
+                            feed_dict_t = {self.original_yolo_input: images_t, self.net.labels: labels_t}
+                        test_loss, test_logits = self.sess.run([self.net.class_loss, self.net.logits], feed_dict_t)
                         test_losses.append(test_loss)
 
-                        if self.cfg.CONFIG_NAME == 'grasp_net':
+                        if cfg.CONFIG_NAME == 'grasp_net':
                             # Useful to get test loss in the **pixels**, not scaled version.
-                            test_loss_raw = self.cfg.compare_preds_labels(
-                                    preds=test_logits, labels=labels_t, doprint=self.cfg.PRINT_PREDS)
+                            test_loss_raw = cfg.compare_preds_labels(
+                                    preds=test_logits, labels=labels_t, doprint=cfg.PRINT_PREDS)
                             raw_test_losses.append(test_loss_raw)
                             print("Test loss: {:.6f} (raw: {:.2f})".format(test_loss, test_loss_raw))
-                        elif self.cfg.CONFIG_NAME == 'success_net':
+                            if test_loss_raw < best_loss:
+                                best_loss = test_loss_raw
+                                best_preds = cfg.return_raw_labels(test_logits)
+                        elif cfg.CONFIG_NAME == 'success_net':
                             correctness = np.argmax(test_logits,axis=1) == np.argmax(labels_t,axis=1)
                             correct = float(np.sum(correctness))
                             K = len(correctness)
                             raw_acc = correct / K
                             raw_test_correct.append(correct)
                             raw_test_total.append(K)
-                            self.cfg.compare_preds_labels(preds=test_logits, labels=labels_t,
-                                    correctness=correctness, doprint=self.cfg.PRINT_PREDS)
+                            cfg.compare_preds_labels(preds=test_logits, labels=labels_t,
+                                    correctness=correctness, doprint=cfg.PRINT_PREDS)
                             print("Test loss: {:.6f}, acc: {}/{} = {:.2f}".format(test_loss, correct, K, raw_acc))
                         else:
                             raise ValueError(self.cfg.CONFIG_NAME)
@@ -216,13 +220,16 @@ class Solver(object):
                 loss_dict["epoch"] = self.data.epoch
 
                 # Don't forget best set of predictions + true labels, so we can visualize.
-                #loss_dict["preds"] = 
-                #loss_dict["targs"] =
+                cv_idx = cfg.CV_HELD_OUT_INDEX
+                if cfg.CONFIG_NAME == 'grasp_net':
+                    if cfg.PERFORM_CV:
+                        loss_dict["cv_indices"] = cfg.CV_GROUPS[cv_idx]
+                    loss_dict["preds"] = best_preds
+                    loss_dict["targs"] = cfg.return_raw_labels(labels_t)
 
                 # Save for plotting later. It should overwrite the older files saved. Careful,
                 # move to another directory ASAP; e.g. if I switch datasets these overwrite.
                 lrate = round(self.learning_rate.eval(session=self.sess), 6)
-                cv_idx = cfg.CV_HELD_OUT_INDEX
                 img_type = 'rgb'
                 if cfg.USE_DEPTH:
                     img_type = 'depth'
@@ -231,6 +238,11 @@ class Solver(object):
                         cfg.FIX_PRETRAINED_LAYERS, lrate, cv_idx)
                 name = os.path.join(cfg.STAT_DIR, suffix)
                 pickle.dump(loss_dict, open(name, 'wb'))
+
+        # Take most recent `name` and add images here. Test set imgs should all be in order.
+        name = name.replace('.p', '_raw_imgs.p')
+        imgs = {'c_imgs_list':c_imgs_list, 'd_imgs_list':d_imgs_list}
+        pickle.dump(imgs, open(name, 'wb'))
 
 
     def save_cfg(self):
