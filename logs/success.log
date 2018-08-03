@@ -1,0 +1,2374 @@
+
+`data_manager` class, now calling YOLO_CONV and loading network...
+
+YOLO_CONV.load_network(), restoring pre-trained weights from: /nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/YOLO_small.ckpt
+The variables we are restoring in `tf.train.Saver(variables_to_restore)`:
+0 yolo/conv_2/weights:0
+1 yolo/conv_2/biases:0
+2 yolo/conv_4/weights:0
+3 yolo/conv_4/biases:0
+4 yolo/conv_6/weights:0
+5 yolo/conv_6/biases:0
+6 yolo/conv_7/weights:0
+7 yolo/conv_7/biases:0
+8 yolo/conv_8/weights:0
+9 yolo/conv_8/biases:0
+10 yolo/conv_9/weights:0
+11 yolo/conv_9/biases:0
+12 yolo/conv_11/weights:0
+13 yolo/conv_11/biases:0
+14 yolo/conv_12/weights:0
+15 yolo/conv_12/biases:0
+16 yolo/conv_13/weights:0
+17 yolo/conv_13/biases:0
+18 yolo/conv_14/weights:0
+19 yolo/conv_14/biases:0
+20 yolo/conv_15/weights:0
+21 yolo/conv_15/biases:0
+22 yolo/conv_16/weights:0
+23 yolo/conv_16/biases:0
+24 yolo/conv_17/weights:0
+25 yolo/conv_17/biases:0
+26 yolo/conv_18/weights:0
+27 yolo/conv_18/biases:0
+28 yolo/conv_19/weights:0
+29 yolo/conv_19/biases:0
+30 yolo/conv_20/weights:0
+31 yolo/conv_20/biases:0
+32 yolo/conv_22/weights:0
+33 yolo/conv_22/biases:0
+34 yolo/conv_23/weights:0
+35 yolo/conv_23/biases:0
+36 yolo/conv_24/weights:0
+37 yolo/conv_24/biases:0
+38 yolo/conv_25/weights:0
+39 yolo/conv_25/biases:0
+40 yolo/conv_26/weights:0
+41 yolo/conv_26/biases:0
+self.layers = 0 so self.variables_to_restore: 0:45
+
+data_manager.load_test_set(), held-out rollouts: [24, 22, 30, 2] (cv index 0) from /nfs/diskstation/seita/bed-make/rollouts_white_v01/
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_24,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_22,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_30,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_2,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.test_labels): 8
+test_batch_images.shape: (8, 14, 14, 1024)
+test_batch_labels.shape: (8, 2)
+test_batch_labels:
+[[0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]]
+
+data_manager.load_rollouts(), path /nfs/diskstation/seita/bed-make/rollouts_white_v01/ (but w/held-out ignored: [24, 22, 30, 2], index 0)
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_0,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_10,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_11,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_12,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_13,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_14,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_15,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_16,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_17,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_18,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_19,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_3,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_4,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_5,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_6,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_9,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_20,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_21,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_23,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_25,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_26,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_27,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_28,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_29,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_31,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_32,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_33,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_34,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_35,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_36,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_1,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_7,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_8,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.train_labels): 660. Also, shuffled!
+
+Solver.__init__(), self.variables_to_restore:
+0 yolo/conv_28/weights:0
+1 yolo/conv_28/biases:0
+2 yolo/conv_29/weights:0
+3 yolo/conv_29/biases:0
+4 yolo/conv_30/weights:0
+5 yolo/conv_30/biases:0
+6 yolo/fc_33/weights:0
+7 yolo/fc_33/biases:0
+8 yolo/fc_34/weights:0
+9 yolo/fc_34/biases:0
+
+cfg.FIX_PRETRAINED_LAYERS=True. Our optimizer will adjust:
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+
+(after tf initializer) self.weights_file is None, so not restoring here.
+
+Just before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:
+<tf.Variable 'yolo/conv_2/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/conv_2/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/weights:0' shape=(3, 3, 64, 192) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/weights:0' shape=(1, 1, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/weights:0' shape=(3, 3, 128, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/weights:0' shape=(1, 1, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/weights:0' shape=(1, 1, 512, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(4096, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+Start training ...
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.236442, acc: 8.0/8 = 1.00
+08/02 19:06:42 Epoch: 1, Step: 10, L-Rate: 0.0001, Loss: 0.211987
+Speed: 0.179s/iter, Load: 0.036s/iter, Remain: 0:00:20
+correctness:
+[ True  True False  True  True  True  True  True]
+Test loss: 0.297401, acc: 7.0/8 = 0.88
+08/02 19:06:44 Epoch: 2, Step: 20, L-Rate: 0.0001, Loss: 0.182685
+Speed: 0.148s/iter, Load: 0.036s/iter, Remain: 0:00:15
+correctness:
+[ True  True False  True  True  True  True  True]
+Test loss: 0.171302, acc: 7.0/8 = 0.88
+08/02 19:06:46 Epoch: 3, Step: 30, L-Rate: 0.0001, Loss: 0.020912
+Speed: 0.137s/iter, Load: 0.036s/iter, Remain: 0:00:12
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.001775, acc: 8.0/8 = 1.00
+08/02 19:06:47 Epoch: 4, Step: 40, L-Rate: 0.0001, Loss: 0.037700
+Speed: 0.132s/iter, Load: 0.036s/iter, Remain: 0:00:10
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.013044, acc: 8.0/8 = 1.00
+08/02 19:06:49 Epoch: 5, Step: 50, L-Rate: 0.0001, Loss: 0.003956
+Speed: 0.129s/iter, Load: 0.036s/iter, Remain: 0:00:08
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000253, acc: 8.0/8 = 1.00
+08/02 19:06:50 Epoch: 6, Step: 60, L-Rate: 0.0001, Loss: 0.000714
+Speed: 0.127s/iter, Load: 0.036s/iter, Remain: 0:00:06
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000113, acc: 8.0/8 = 1.00
+08/02 19:06:52 Epoch: 7, Step: 70, L-Rate: 0.0001, Loss: 0.000100
+Speed: 0.125s/iter, Load: 0.036s/iter, Remain: 0:00:05
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000063, acc: 8.0/8 = 1.00
+08/02 19:06:53 Epoch: 8, Step: 80, L-Rate: 0.0001, Loss: 0.000215
+Speed: 0.124s/iter, Load: 0.036s/iter, Remain: 0:00:03
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000049, acc: 8.0/8 = 1.00
+08/02 19:06:55 Epoch: 9, Step: 90, L-Rate: 0.0001, Loss: 0.000190
+Speed: 0.124s/iter, Load: 0.036s/iter, Remain: 0:00:01
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000043, acc: 8.0/8 = 1.00
+08/02 19:06:57 Epoch: 10, Step: 100, L-Rate: 0.0001, Loss: 0.000123
+Speed: 0.123s/iter, Load: 0.036s/iter, Remain: 0:00:00
+    saving tf checkpoint to /nfs/diskstation/seita/bed-make/transition_output/08_02_19_06_57_CS_0_save.ckpt
+Done training.
+
+`data_manager` class, now calling YOLO_CONV and loading network...
+
+YOLO_CONV.load_network(), restoring pre-trained weights from: /nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/YOLO_small.ckpt
+The variables we are restoring in `tf.train.Saver(variables_to_restore)`:
+0 yolo/conv_2/weights:0
+1 yolo/conv_2/biases:0
+2 yolo/conv_4/weights:0
+3 yolo/conv_4/biases:0
+4 yolo/conv_6/weights:0
+5 yolo/conv_6/biases:0
+6 yolo/conv_7/weights:0
+7 yolo/conv_7/biases:0
+8 yolo/conv_8/weights:0
+9 yolo/conv_8/biases:0
+10 yolo/conv_9/weights:0
+11 yolo/conv_9/biases:0
+12 yolo/conv_11/weights:0
+13 yolo/conv_11/biases:0
+14 yolo/conv_12/weights:0
+15 yolo/conv_12/biases:0
+16 yolo/conv_13/weights:0
+17 yolo/conv_13/biases:0
+18 yolo/conv_14/weights:0
+19 yolo/conv_14/biases:0
+20 yolo/conv_15/weights:0
+21 yolo/conv_15/biases:0
+22 yolo/conv_16/weights:0
+23 yolo/conv_16/biases:0
+24 yolo/conv_17/weights:0
+25 yolo/conv_17/biases:0
+26 yolo/conv_18/weights:0
+27 yolo/conv_18/biases:0
+28 yolo/conv_19/weights:0
+29 yolo/conv_19/biases:0
+30 yolo/conv_20/weights:0
+31 yolo/conv_20/biases:0
+32 yolo/conv_22/weights:0
+33 yolo/conv_22/biases:0
+34 yolo/conv_23/weights:0
+35 yolo/conv_23/biases:0
+36 yolo/conv_24/weights:0
+37 yolo/conv_24/biases:0
+38 yolo/conv_25/weights:0
+39 yolo/conv_25/biases:0
+40 yolo/conv_26/weights:0
+41 yolo/conv_26/biases:0
+self.layers = 0 so self.variables_to_restore: 0:45
+
+data_manager.load_test_set(), held-out rollouts: [10, 21, 5, 15] (cv index 1) from /nfs/diskstation/seita/bed-make/rollouts_white_v01/
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_10,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_21,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_5,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_15,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.test_labels): 8
+test_batch_images.shape: (8, 14, 14, 1024)
+test_batch_labels.shape: (8, 2)
+test_batch_labels:
+[[0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]]
+
+data_manager.load_rollouts(), path /nfs/diskstation/seita/bed-make/rollouts_white_v01/ (but w/held-out ignored: [10, 21, 5, 15], index 1)
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_0,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_11,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_12,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_13,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_14,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_16,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_17,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_18,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_19,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_2,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_3,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_4,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_6,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_9,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_20,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_22,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_23,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_24,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_25,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_26,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_27,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_28,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_29,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_30,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_31,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_32,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_33,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_34,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_35,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_36,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_1,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_7,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_8,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.train_labels): 660. Also, shuffled!
+
+Solver.__init__(), self.variables_to_restore:
+0 yolo/conv_28/weights:0
+1 yolo/conv_28/biases:0
+2 yolo/conv_29/weights:0
+3 yolo/conv_29/biases:0
+4 yolo/conv_30/weights:0
+5 yolo/conv_30/biases:0
+6 yolo/fc_33/weights:0
+7 yolo/fc_33/biases:0
+8 yolo/fc_34/weights:0
+9 yolo/fc_34/biases:0
+
+cfg.FIX_PRETRAINED_LAYERS=True. Our optimizer will adjust:
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+
+(after tf initializer) self.weights_file is None, so not restoring here.
+
+Just before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:
+<tf.Variable 'yolo/conv_2/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/conv_2/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/weights:0' shape=(3, 3, 64, 192) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/weights:0' shape=(1, 1, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/weights:0' shape=(3, 3, 128, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/weights:0' shape=(1, 1, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/weights:0' shape=(1, 1, 512, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(4096, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+Start training ...
+correctness:
+[ True  True  True False  True  True  True  True]
+Test loss: 0.456983, acc: 7.0/8 = 0.88
+08/02 19:07:39 Epoch: 1, Step: 10, L-Rate: 0.0001, Loss: 0.327293
+Speed: 0.180s/iter, Load: 0.036s/iter, Remain: 0:00:20
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.011187, acc: 8.0/8 = 1.00
+08/02 19:07:41 Epoch: 2, Step: 20, L-Rate: 0.0001, Loss: 0.002842
+Speed: 0.148s/iter, Load: 0.035s/iter, Remain: 0:00:15
+correctness:
+[ True  True  True False  True  True  True  True]
+Test loss: 1.671626, acc: 7.0/8 = 0.88
+08/02 19:07:42 Epoch: 3, Step: 30, L-Rate: 0.0001, Loss: 0.000207
+Speed: 0.137s/iter, Load: 0.035s/iter, Remain: 0:00:12
+correctness:
+[ True  True  True False  True  True  True  True]
+Test loss: 1.657573, acc: 7.0/8 = 0.88
+08/02 19:07:44 Epoch: 4, Step: 40, L-Rate: 0.0001, Loss: 0.007969
+Speed: 0.131s/iter, Load: 0.035s/iter, Remain: 0:00:10
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.042153, acc: 8.0/8 = 1.00
+08/02 19:07:45 Epoch: 5, Step: 50, L-Rate: 0.0001, Loss: 0.003443
+Speed: 0.128s/iter, Load: 0.035s/iter, Remain: 0:00:08
+correctness:
+[ True  True  True False  True  True  True  True]
+Test loss: 0.465382, acc: 7.0/8 = 0.88
+08/02 19:07:47 Epoch: 6, Step: 60, L-Rate: 0.0001, Loss: 0.000686
+Speed: 0.126s/iter, Load: 0.035s/iter, Remain: 0:00:06
+correctness:
+[ True  True  True False  True  True  True  True]
+Test loss: 0.379054, acc: 7.0/8 = 0.88
+08/02 19:07:48 Epoch: 7, Step: 70, L-Rate: 0.0001, Loss: 0.000084
+Speed: 0.124s/iter, Load: 0.035s/iter, Remain: 0:00:04
+correctness:
+[ True  True  True False  True  True  True  True]
+Test loss: 1.439607, acc: 7.0/8 = 0.88
+08/02 19:07:50 Epoch: 8, Step: 80, L-Rate: 0.0001, Loss: 0.000512
+Speed: 0.123s/iter, Load: 0.035s/iter, Remain: 0:00:03
+correctness:
+[ True  True  True False  True  True  True  True]
+Test loss: 0.194478, acc: 7.0/8 = 0.88
+08/02 19:07:51 Epoch: 9, Step: 90, L-Rate: 0.0001, Loss: 0.042298
+Speed: 0.122s/iter, Load: 0.035s/iter, Remain: 0:00:01
+correctness:
+[ True  True  True False  True  True  True  True]
+Test loss: 1.426941, acc: 7.0/8 = 0.88
+08/02 19:07:53 Epoch: 10, Step: 100, L-Rate: 0.0001, Loss: 0.001977
+Speed: 0.122s/iter, Load: 0.035s/iter, Remain: 0:00:00
+    saving tf checkpoint to /nfs/diskstation/seita/bed-make/transition_output/08_02_19_07_53_CS_0_save.ckpt
+Done training.
+
+`data_manager` class, now calling YOLO_CONV and loading network...
+
+YOLO_CONV.load_network(), restoring pre-trained weights from: /nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/YOLO_small.ckpt
+The variables we are restoring in `tf.train.Saver(variables_to_restore)`:
+0 yolo/conv_2/weights:0
+1 yolo/conv_2/biases:0
+2 yolo/conv_4/weights:0
+3 yolo/conv_4/biases:0
+4 yolo/conv_6/weights:0
+5 yolo/conv_6/biases:0
+6 yolo/conv_7/weights:0
+7 yolo/conv_7/biases:0
+8 yolo/conv_8/weights:0
+9 yolo/conv_8/biases:0
+10 yolo/conv_9/weights:0
+11 yolo/conv_9/biases:0
+12 yolo/conv_11/weights:0
+13 yolo/conv_11/biases:0
+14 yolo/conv_12/weights:0
+15 yolo/conv_12/biases:0
+16 yolo/conv_13/weights:0
+17 yolo/conv_13/biases:0
+18 yolo/conv_14/weights:0
+19 yolo/conv_14/biases:0
+20 yolo/conv_15/weights:0
+21 yolo/conv_15/biases:0
+22 yolo/conv_16/weights:0
+23 yolo/conv_16/biases:0
+24 yolo/conv_17/weights:0
+25 yolo/conv_17/biases:0
+26 yolo/conv_18/weights:0
+27 yolo/conv_18/biases:0
+28 yolo/conv_19/weights:0
+29 yolo/conv_19/biases:0
+30 yolo/conv_20/weights:0
+31 yolo/conv_20/biases:0
+32 yolo/conv_22/weights:0
+33 yolo/conv_22/biases:0
+34 yolo/conv_23/weights:0
+35 yolo/conv_23/biases:0
+36 yolo/conv_24/weights:0
+37 yolo/conv_24/biases:0
+38 yolo/conv_25/weights:0
+39 yolo/conv_25/biases:0
+40 yolo/conv_26/weights:0
+41 yolo/conv_26/biases:0
+self.layers = 0 so self.variables_to_restore: 0:45
+
+data_manager.load_test_set(), held-out rollouts: [36, 32, 17, 7] (cv index 2) from /nfs/diskstation/seita/bed-make/rollouts_white_v01/
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_36,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_32,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_17,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_7,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.test_labels): 8
+test_batch_images.shape: (8, 14, 14, 1024)
+test_batch_labels.shape: (8, 2)
+test_batch_labels:
+[[0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]]
+
+data_manager.load_rollouts(), path /nfs/diskstation/seita/bed-make/rollouts_white_v01/ (but w/held-out ignored: [36, 32, 17, 7], index 2)
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_0,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_10,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_11,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_12,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_13,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_14,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_15,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_16,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_18,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_19,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_2,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_3,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_4,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_5,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_6,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_9,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_20,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_21,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_22,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_23,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_24,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_25,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_26,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_27,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_28,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_29,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_30,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_31,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_33,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_34,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_35,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_1,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_8,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.train_labels): 660. Also, shuffled!
+
+Solver.__init__(), self.variables_to_restore:
+0 yolo/conv_28/weights:0
+1 yolo/conv_28/biases:0
+2 yolo/conv_29/weights:0
+3 yolo/conv_29/biases:0
+4 yolo/conv_30/weights:0
+5 yolo/conv_30/biases:0
+6 yolo/fc_33/weights:0
+7 yolo/fc_33/biases:0
+8 yolo/fc_34/weights:0
+9 yolo/fc_34/biases:0
+
+cfg.FIX_PRETRAINED_LAYERS=True. Our optimizer will adjust:
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+
+(after tf initializer) self.weights_file is None, so not restoring here.
+
+Just before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:
+<tf.Variable 'yolo/conv_2/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/conv_2/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/weights:0' shape=(3, 3, 64, 192) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/weights:0' shape=(1, 1, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/weights:0' shape=(3, 3, 128, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/weights:0' shape=(1, 1, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/weights:0' shape=(1, 1, 512, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(4096, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+Start training ...
+correctness:
+[ True  True  True  True  True False  True  True]
+Test loss: 0.285181, acc: 7.0/8 = 0.88
+08/02 19:08:35 Epoch: 1, Step: 10, L-Rate: 0.0001, Loss: 0.144538
+Speed: 0.183s/iter, Load: 0.035s/iter, Remain: 0:00:20
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.052267, acc: 8.0/8 = 1.00
+08/02 19:08:37 Epoch: 2, Step: 20, L-Rate: 0.0001, Loss: 0.187827
+Speed: 0.149s/iter, Load: 0.035s/iter, Remain: 0:00:15
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.003367, acc: 8.0/8 = 1.00
+08/02 19:08:38 Epoch: 3, Step: 30, L-Rate: 0.0001, Loss: 0.008286
+Speed: 0.138s/iter, Load: 0.035s/iter, Remain: 0:00:12
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000310, acc: 8.0/8 = 1.00
+08/02 19:08:40 Epoch: 4, Step: 40, L-Rate: 0.0001, Loss: 0.001114
+Speed: 0.132s/iter, Load: 0.036s/iter, Remain: 0:00:10
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000036, acc: 8.0/8 = 1.00
+08/02 19:08:41 Epoch: 5, Step: 50, L-Rate: 0.0001, Loss: 0.000088
+Speed: 0.129s/iter, Load: 0.036s/iter, Remain: 0:00:08
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000054, acc: 8.0/8 = 1.00
+08/02 19:08:43 Epoch: 6, Step: 60, L-Rate: 0.0001, Loss: 0.000132
+Speed: 0.127s/iter, Load: 0.036s/iter, Remain: 0:00:06
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000069, acc: 8.0/8 = 1.00
+08/02 19:08:45 Epoch: 7, Step: 70, L-Rate: 0.0001, Loss: 0.000053
+Speed: 0.125s/iter, Load: 0.036s/iter, Remain: 0:00:04
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000022, acc: 8.0/8 = 1.00
+08/02 19:08:46 Epoch: 8, Step: 80, L-Rate: 0.0001, Loss: 0.000023
+Speed: 0.124s/iter, Load: 0.036s/iter, Remain: 0:00:03
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000012, acc: 8.0/8 = 1.00
+08/02 19:08:48 Epoch: 9, Step: 90, L-Rate: 0.0001, Loss: 0.000006
+Speed: 0.123s/iter, Load: 0.036s/iter, Remain: 0:00:01
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000010, acc: 8.0/8 = 1.00
+08/02 19:08:49 Epoch: 10, Step: 100, L-Rate: 0.0001, Loss: 0.000018
+Speed: 0.122s/iter, Load: 0.036s/iter, Remain: 0:00:00
+    saving tf checkpoint to /nfs/diskstation/seita/bed-make/transition_output/08_02_19_08_49_CS_0_save.ckpt
+Done training.
+
+`data_manager` class, now calling YOLO_CONV and loading network...
+
+YOLO_CONV.load_network(), restoring pre-trained weights from: /nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/YOLO_small.ckpt
+The variables we are restoring in `tf.train.Saver(variables_to_restore)`:
+0 yolo/conv_2/weights:0
+1 yolo/conv_2/biases:0
+2 yolo/conv_4/weights:0
+3 yolo/conv_4/biases:0
+4 yolo/conv_6/weights:0
+5 yolo/conv_6/biases:0
+6 yolo/conv_7/weights:0
+7 yolo/conv_7/biases:0
+8 yolo/conv_8/weights:0
+9 yolo/conv_8/biases:0
+10 yolo/conv_9/weights:0
+11 yolo/conv_9/biases:0
+12 yolo/conv_11/weights:0
+13 yolo/conv_11/biases:0
+14 yolo/conv_12/weights:0
+15 yolo/conv_12/biases:0
+16 yolo/conv_13/weights:0
+17 yolo/conv_13/biases:0
+18 yolo/conv_14/weights:0
+19 yolo/conv_14/biases:0
+20 yolo/conv_15/weights:0
+21 yolo/conv_15/biases:0
+22 yolo/conv_16/weights:0
+23 yolo/conv_16/biases:0
+24 yolo/conv_17/weights:0
+25 yolo/conv_17/biases:0
+26 yolo/conv_18/weights:0
+27 yolo/conv_18/biases:0
+28 yolo/conv_19/weights:0
+29 yolo/conv_19/biases:0
+30 yolo/conv_20/weights:0
+31 yolo/conv_20/biases:0
+32 yolo/conv_22/weights:0
+33 yolo/conv_22/biases:0
+34 yolo/conv_23/weights:0
+35 yolo/conv_23/biases:0
+36 yolo/conv_24/weights:0
+37 yolo/conv_24/biases:0
+38 yolo/conv_25/weights:0
+39 yolo/conv_25/biases:0
+40 yolo/conv_26/weights:0
+41 yolo/conv_26/biases:0
+self.layers = 0 so self.variables_to_restore: 0:45
+
+data_manager.load_test_set(), held-out rollouts: [6, 11, 34, 1] (cv index 3) from /nfs/diskstation/seita/bed-make/rollouts_white_v01/
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_6,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_11,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_34,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_1,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.test_labels): 8
+test_batch_images.shape: (8, 14, 14, 1024)
+test_batch_labels.shape: (8, 2)
+test_batch_labels:
+[[0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]]
+
+data_manager.load_rollouts(), path /nfs/diskstation/seita/bed-make/rollouts_white_v01/ (but w/held-out ignored: [6, 11, 34, 1], index 3)
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_0,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_10,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_12,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_13,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_14,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_15,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_16,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_17,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_18,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_19,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_2,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_3,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_4,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_5,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_9,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_20,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_21,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_22,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_23,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_24,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_25,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_26,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_27,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_28,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_29,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_30,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_31,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_32,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_33,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_35,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_36,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_7,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_8,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.train_labels): 660. Also, shuffled!
+
+Solver.__init__(), self.variables_to_restore:
+0 yolo/conv_28/weights:0
+1 yolo/conv_28/biases:0
+2 yolo/conv_29/weights:0
+3 yolo/conv_29/biases:0
+4 yolo/conv_30/weights:0
+5 yolo/conv_30/biases:0
+6 yolo/fc_33/weights:0
+7 yolo/fc_33/biases:0
+8 yolo/fc_34/weights:0
+9 yolo/fc_34/biases:0
+
+cfg.FIX_PRETRAINED_LAYERS=True. Our optimizer will adjust:
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+
+(after tf initializer) self.weights_file is None, so not restoring here.
+
+Just before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:
+<tf.Variable 'yolo/conv_2/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/conv_2/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/weights:0' shape=(3, 3, 64, 192) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/weights:0' shape=(1, 1, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/weights:0' shape=(3, 3, 128, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/weights:0' shape=(1, 1, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/weights:0' shape=(1, 1, 512, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(4096, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+Start training ...
+correctness:
+[ True  True  True  True  True False  True  True]
+Test loss: 0.134434, acc: 7.0/8 = 0.88
+08/02 19:09:31 Epoch: 1, Step: 10, L-Rate: 0.0001, Loss: 0.242319
+Speed: 0.181s/iter, Load: 0.036s/iter, Remain: 0:00:20
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.006306, acc: 8.0/8 = 1.00
+08/02 19:09:33 Epoch: 2, Step: 20, L-Rate: 0.0001, Loss: 0.001297
+Speed: 0.148s/iter, Load: 0.035s/iter, Remain: 0:00:15
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000340, acc: 8.0/8 = 1.00
+08/02 19:09:35 Epoch: 3, Step: 30, L-Rate: 0.0001, Loss: 0.000016
+Speed: 0.137s/iter, Load: 0.036s/iter, Remain: 0:00:12
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.035342, acc: 8.0/8 = 1.00
+08/02 19:09:36 Epoch: 4, Step: 40, L-Rate: 0.0001, Loss: 0.000037
+Speed: 0.132s/iter, Load: 0.036s/iter, Remain: 0:00:10
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.003363, acc: 8.0/8 = 1.00
+08/02 19:09:38 Epoch: 5, Step: 50, L-Rate: 0.0001, Loss: 0.000026
+Speed: 0.129s/iter, Load: 0.036s/iter, Remain: 0:00:08
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.064386, acc: 8.0/8 = 1.00
+08/02 19:09:39 Epoch: 6, Step: 60, L-Rate: 0.0001, Loss: 0.000121
+Speed: 0.127s/iter, Load: 0.035s/iter, Remain: 0:00:06
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000003, acc: 8.0/8 = 1.00
+08/02 19:09:41 Epoch: 7, Step: 70, L-Rate: 0.0001, Loss: 0.000005
+Speed: 0.126s/iter, Load: 0.035s/iter, Remain: 0:00:04
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000245, acc: 8.0/8 = 1.00
+08/02 19:09:42 Epoch: 8, Step: 80, L-Rate: 0.0001, Loss: 0.000001
+Speed: 0.124s/iter, Load: 0.035s/iter, Remain: 0:00:03
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.011303, acc: 8.0/8 = 1.00
+08/02 19:09:44 Epoch: 9, Step: 90, L-Rate: 0.0001, Loss: 0.000000
+Speed: 0.124s/iter, Load: 0.035s/iter, Remain: 0:00:01
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.040279, acc: 8.0/8 = 1.00
+08/02 19:09:46 Epoch: 10, Step: 100, L-Rate: 0.0001, Loss: 0.000001
+Speed: 0.124s/iter, Load: 0.036s/iter, Remain: 0:00:00
+    saving tf checkpoint to /nfs/diskstation/seita/bed-make/transition_output/08_02_19_09_46_CS_0_save.ckpt
+Done training.
+
+`data_manager` class, now calling YOLO_CONV and loading network...
+
+YOLO_CONV.load_network(), restoring pre-trained weights from: /nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/YOLO_small.ckpt
+The variables we are restoring in `tf.train.Saver(variables_to_restore)`:
+0 yolo/conv_2/weights:0
+1 yolo/conv_2/biases:0
+2 yolo/conv_4/weights:0
+3 yolo/conv_4/biases:0
+4 yolo/conv_6/weights:0
+5 yolo/conv_6/biases:0
+6 yolo/conv_7/weights:0
+7 yolo/conv_7/biases:0
+8 yolo/conv_8/weights:0
+9 yolo/conv_8/biases:0
+10 yolo/conv_9/weights:0
+11 yolo/conv_9/biases:0
+12 yolo/conv_11/weights:0
+13 yolo/conv_11/biases:0
+14 yolo/conv_12/weights:0
+15 yolo/conv_12/biases:0
+16 yolo/conv_13/weights:0
+17 yolo/conv_13/biases:0
+18 yolo/conv_14/weights:0
+19 yolo/conv_14/biases:0
+20 yolo/conv_15/weights:0
+21 yolo/conv_15/biases:0
+22 yolo/conv_16/weights:0
+23 yolo/conv_16/biases:0
+24 yolo/conv_17/weights:0
+25 yolo/conv_17/biases:0
+26 yolo/conv_18/weights:0
+27 yolo/conv_18/biases:0
+28 yolo/conv_19/weights:0
+29 yolo/conv_19/biases:0
+30 yolo/conv_20/weights:0
+31 yolo/conv_20/biases:0
+32 yolo/conv_22/weights:0
+33 yolo/conv_22/biases:0
+34 yolo/conv_23/weights:0
+35 yolo/conv_23/biases:0
+36 yolo/conv_24/weights:0
+37 yolo/conv_24/biases:0
+38 yolo/conv_25/weights:0
+39 yolo/conv_25/biases:0
+40 yolo/conv_26/weights:0
+41 yolo/conv_26/biases:0
+self.layers = 0 so self.variables_to_restore: 0:45
+
+data_manager.load_test_set(), held-out rollouts: [12, 19, 28, 29] (cv index 4) from /nfs/diskstation/seita/bed-make/rollouts_white_v01/
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_12,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_19,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_28,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_29,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.test_labels): 8
+test_batch_images.shape: (8, 14, 14, 1024)
+test_batch_labels.shape: (8, 2)
+test_batch_labels:
+[[0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]]
+
+data_manager.load_rollouts(), path /nfs/diskstation/seita/bed-make/rollouts_white_v01/ (but w/held-out ignored: [12, 19, 28, 29], index 4)
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_0,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_10,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_11,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_13,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_14,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_15,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_16,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_17,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_18,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_2,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_3,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_4,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_5,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_6,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_9,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_20,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_21,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_22,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_23,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_24,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_25,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_26,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_27,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_30,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_31,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_32,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_33,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_34,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_35,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_36,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_1,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_7,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_8,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.train_labels): 660. Also, shuffled!
+
+Solver.__init__(), self.variables_to_restore:
+0 yolo/conv_28/weights:0
+1 yolo/conv_28/biases:0
+2 yolo/conv_29/weights:0
+3 yolo/conv_29/biases:0
+4 yolo/conv_30/weights:0
+5 yolo/conv_30/biases:0
+6 yolo/fc_33/weights:0
+7 yolo/fc_33/biases:0
+8 yolo/fc_34/weights:0
+9 yolo/fc_34/biases:0
+
+cfg.FIX_PRETRAINED_LAYERS=True. Our optimizer will adjust:
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+
+(after tf initializer) self.weights_file is None, so not restoring here.
+
+Just before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:
+<tf.Variable 'yolo/conv_2/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/conv_2/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/weights:0' shape=(3, 3, 64, 192) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/weights:0' shape=(1, 1, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/weights:0' shape=(3, 3, 128, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/weights:0' shape=(1, 1, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/weights:0' shape=(1, 1, 512, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(4096, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+Start training ...
+correctness:
+[ True  True  True False  True  True  True  True]
+Test loss: 0.160847, acc: 7.0/8 = 0.88
+08/02 19:10:28 Epoch: 1, Step: 10, L-Rate: 0.0001, Loss: 0.257645
+Speed: 0.179s/iter, Load: 0.036s/iter, Remain: 0:00:20
+correctness:
+[False  True  True  True False  True  True  True]
+Test loss: 0.606791, acc: 6.0/8 = 0.75
+08/02 19:10:30 Epoch: 2, Step: 20, L-Rate: 0.0001, Loss: 0.087334
+Speed: 0.147s/iter, Load: 0.036s/iter, Remain: 0:00:15
+correctness:
+[False  True  True  True  True  True  True  True]
+Test loss: 0.296561, acc: 7.0/8 = 0.88
+08/02 19:10:31 Epoch: 3, Step: 30, L-Rate: 0.0001, Loss: 0.024640
+Speed: 0.137s/iter, Load: 0.036s/iter, Remain: 0:00:12
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.001439, acc: 8.0/8 = 1.00
+08/02 19:10:33 Epoch: 4, Step: 40, L-Rate: 0.0001, Loss: 0.001462
+Speed: 0.131s/iter, Load: 0.036s/iter, Remain: 0:00:10
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.078393, acc: 8.0/8 = 1.00
+08/02 19:10:34 Epoch: 5, Step: 50, L-Rate: 0.0001, Loss: 0.001198
+Speed: 0.128s/iter, Load: 0.036s/iter, Remain: 0:00:08
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.005652, acc: 8.0/8 = 1.00
+08/02 19:10:36 Epoch: 6, Step: 60, L-Rate: 0.0001, Loss: 0.002083
+Speed: 0.126s/iter, Load: 0.036s/iter, Remain: 0:00:06
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000113, acc: 8.0/8 = 1.00
+08/02 19:10:37 Epoch: 7, Step: 70, L-Rate: 0.0001, Loss: 0.000088
+Speed: 0.125s/iter, Load: 0.036s/iter, Remain: 0:00:04
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000045, acc: 8.0/8 = 1.00
+08/02 19:10:39 Epoch: 8, Step: 80, L-Rate: 0.0001, Loss: 0.000113
+Speed: 0.124s/iter, Load: 0.036s/iter, Remain: 0:00:03
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000057, acc: 8.0/8 = 1.00
+08/02 19:10:41 Epoch: 9, Step: 90, L-Rate: 0.0001, Loss: 0.000052
+Speed: 0.123s/iter, Load: 0.036s/iter, Remain: 0:00:01
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000078, acc: 8.0/8 = 1.00
+08/02 19:10:42 Epoch: 10, Step: 100, L-Rate: 0.0001, Loss: 0.000029
+Speed: 0.123s/iter, Load: 0.036s/iter, Remain: 0:00:00
+    saving tf checkpoint to /nfs/diskstation/seita/bed-make/transition_output/08_02_19_10_42_CS_0_save.ckpt
+Done training.
+
+`data_manager` class, now calling YOLO_CONV and loading network...
+
+YOLO_CONV.load_network(), restoring pre-trained weights from: /nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/YOLO_small.ckpt
+The variables we are restoring in `tf.train.Saver(variables_to_restore)`:
+0 yolo/conv_2/weights:0
+1 yolo/conv_2/biases:0
+2 yolo/conv_4/weights:0
+3 yolo/conv_4/biases:0
+4 yolo/conv_6/weights:0
+5 yolo/conv_6/biases:0
+6 yolo/conv_7/weights:0
+7 yolo/conv_7/biases:0
+8 yolo/conv_8/weights:0
+9 yolo/conv_8/biases:0
+10 yolo/conv_9/weights:0
+11 yolo/conv_9/biases:0
+12 yolo/conv_11/weights:0
+13 yolo/conv_11/biases:0
+14 yolo/conv_12/weights:0
+15 yolo/conv_12/biases:0
+16 yolo/conv_13/weights:0
+17 yolo/conv_13/biases:0
+18 yolo/conv_14/weights:0
+19 yolo/conv_14/biases:0
+20 yolo/conv_15/weights:0
+21 yolo/conv_15/biases:0
+22 yolo/conv_16/weights:0
+23 yolo/conv_16/biases:0
+24 yolo/conv_17/weights:0
+25 yolo/conv_17/biases:0
+26 yolo/conv_18/weights:0
+27 yolo/conv_18/biases:0
+28 yolo/conv_19/weights:0
+29 yolo/conv_19/biases:0
+30 yolo/conv_20/weights:0
+31 yolo/conv_20/biases:0
+32 yolo/conv_22/weights:0
+33 yolo/conv_22/biases:0
+34 yolo/conv_23/weights:0
+35 yolo/conv_23/biases:0
+36 yolo/conv_24/weights:0
+37 yolo/conv_24/biases:0
+38 yolo/conv_25/weights:0
+39 yolo/conv_25/biases:0
+40 yolo/conv_26/weights:0
+41 yolo/conv_26/biases:0
+self.layers = 0 so self.variables_to_restore: 0:45
+
+data_manager.load_test_set(), held-out rollouts: [23, 0, 35, 27] (cv index 5) from /nfs/diskstation/seita/bed-make/rollouts_white_v01/
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_23,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_0,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_35,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_27,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.test_labels): 8
+test_batch_images.shape: (8, 14, 14, 1024)
+test_batch_labels.shape: (8, 2)
+test_batch_labels:
+[[0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]]
+
+data_manager.load_rollouts(), path /nfs/diskstation/seita/bed-make/rollouts_white_v01/ (but w/held-out ignored: [23, 0, 35, 27], index 5)
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_10,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_11,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_12,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_13,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_14,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_15,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_16,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_17,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_18,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_19,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_2,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_3,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_4,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_5,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_6,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_9,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_20,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_21,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_22,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_24,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_25,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_26,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_28,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_29,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_30,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_31,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_32,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_33,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_34,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_36,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_1,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_7,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_8,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.train_labels): 660. Also, shuffled!
+
+Solver.__init__(), self.variables_to_restore:
+0 yolo/conv_28/weights:0
+1 yolo/conv_28/biases:0
+2 yolo/conv_29/weights:0
+3 yolo/conv_29/biases:0
+4 yolo/conv_30/weights:0
+5 yolo/conv_30/biases:0
+6 yolo/fc_33/weights:0
+7 yolo/fc_33/biases:0
+8 yolo/fc_34/weights:0
+9 yolo/fc_34/biases:0
+
+cfg.FIX_PRETRAINED_LAYERS=True. Our optimizer will adjust:
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+
+(after tf initializer) self.weights_file is None, so not restoring here.
+
+Just before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:
+<tf.Variable 'yolo/conv_2/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/conv_2/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/weights:0' shape=(3, 3, 64, 192) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/weights:0' shape=(1, 1, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/weights:0' shape=(3, 3, 128, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/weights:0' shape=(1, 1, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/weights:0' shape=(1, 1, 512, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(4096, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+Start training ...
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.236020, acc: 8.0/8 = 1.00
+08/02 19:11:25 Epoch: 1, Step: 10, L-Rate: 0.0001, Loss: 0.361623
+Speed: 0.184s/iter, Load: 0.036s/iter, Remain: 0:00:20
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.082529, acc: 8.0/8 = 1.00
+08/02 19:11:27 Epoch: 2, Step: 20, L-Rate: 0.0001, Loss: 0.041446
+Speed: 0.151s/iter, Load: 0.036s/iter, Remain: 0:00:15
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.013886, acc: 8.0/8 = 1.00
+08/02 19:11:28 Epoch: 3, Step: 30, L-Rate: 0.0001, Loss: 0.011982
+Speed: 0.140s/iter, Load: 0.037s/iter, Remain: 0:00:12
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.001808, acc: 8.0/8 = 1.00
+08/02 19:11:30 Epoch: 4, Step: 40, L-Rate: 0.0001, Loss: 0.000572
+Speed: 0.134s/iter, Load: 0.036s/iter, Remain: 0:00:10
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.002858, acc: 8.0/8 = 1.00
+08/02 19:11:31 Epoch: 5, Step: 50, L-Rate: 0.0001, Loss: 0.000451
+Speed: 0.131s/iter, Load: 0.036s/iter, Remain: 0:00:08
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.001038, acc: 8.0/8 = 1.00
+08/02 19:11:33 Epoch: 6, Step: 60, L-Rate: 0.0001, Loss: 0.000298
+Speed: 0.128s/iter, Load: 0.035s/iter, Remain: 0:00:06
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.005668, acc: 8.0/8 = 1.00
+08/02 19:11:34 Epoch: 7, Step: 70, L-Rate: 0.0001, Loss: 0.000039
+Speed: 0.126s/iter, Load: 0.036s/iter, Remain: 0:00:05
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.001971, acc: 8.0/8 = 1.00
+08/02 19:11:36 Epoch: 8, Step: 80, L-Rate: 0.0001, Loss: 0.000031
+Speed: 0.125s/iter, Load: 0.036s/iter, Remain: 0:00:03
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000857, acc: 8.0/8 = 1.00
+08/02 19:11:38 Epoch: 9, Step: 90, L-Rate: 0.0001, Loss: 0.000065
+Speed: 0.125s/iter, Load: 0.036s/iter, Remain: 0:00:01
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.000562, acc: 8.0/8 = 1.00
+08/02 19:11:39 Epoch: 10, Step: 100, L-Rate: 0.0001, Loss: 0.000013
+Speed: 0.124s/iter, Load: 0.036s/iter, Remain: 0:00:00
+    saving tf checkpoint to /nfs/diskstation/seita/bed-make/transition_output/08_02_19_11_39_CS_0_save.ckpt
+Done training.
+
+`data_manager` class, now calling YOLO_CONV and loading network...
+
+YOLO_CONV.load_network(), restoring pre-trained weights from: /nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/YOLO_small.ckpt
+The variables we are restoring in `tf.train.Saver(variables_to_restore)`:
+0 yolo/conv_2/weights:0
+1 yolo/conv_2/biases:0
+2 yolo/conv_4/weights:0
+3 yolo/conv_4/biases:0
+4 yolo/conv_6/weights:0
+5 yolo/conv_6/biases:0
+6 yolo/conv_7/weights:0
+7 yolo/conv_7/biases:0
+8 yolo/conv_8/weights:0
+9 yolo/conv_8/biases:0
+10 yolo/conv_9/weights:0
+11 yolo/conv_9/biases:0
+12 yolo/conv_11/weights:0
+13 yolo/conv_11/biases:0
+14 yolo/conv_12/weights:0
+15 yolo/conv_12/biases:0
+16 yolo/conv_13/weights:0
+17 yolo/conv_13/biases:0
+18 yolo/conv_14/weights:0
+19 yolo/conv_14/biases:0
+20 yolo/conv_15/weights:0
+21 yolo/conv_15/biases:0
+22 yolo/conv_16/weights:0
+23 yolo/conv_16/biases:0
+24 yolo/conv_17/weights:0
+25 yolo/conv_17/biases:0
+26 yolo/conv_18/weights:0
+27 yolo/conv_18/biases:0
+28 yolo/conv_19/weights:0
+29 yolo/conv_19/biases:0
+30 yolo/conv_20/weights:0
+31 yolo/conv_20/biases:0
+32 yolo/conv_22/weights:0
+33 yolo/conv_22/biases:0
+34 yolo/conv_23/weights:0
+35 yolo/conv_23/biases:0
+36 yolo/conv_24/weights:0
+37 yolo/conv_24/biases:0
+38 yolo/conv_25/weights:0
+39 yolo/conv_25/biases:0
+40 yolo/conv_26/weights:0
+41 yolo/conv_26/biases:0
+self.layers = 0 so self.variables_to_restore: 0:45
+
+data_manager.load_test_set(), held-out rollouts: [18, 13, 16, 14] (cv index 6) from /nfs/diskstation/seita/bed-make/rollouts_white_v01/
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_18,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_13,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_16,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_14,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.test_labels): 8
+test_batch_images.shape: (8, 14, 14, 1024)
+test_batch_labels.shape: (8, 2)
+test_batch_labels:
+[[0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]]
+
+data_manager.load_rollouts(), path /nfs/diskstation/seita/bed-make/rollouts_white_v01/ (but w/held-out ignored: [18, 13, 16, 14], index 6)
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_0,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_10,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_11,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_12,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_15,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_17,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_19,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_2,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_3,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_4,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_5,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_6,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_9,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_20,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_21,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_22,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_23,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_24,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_25,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_26,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_27,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_28,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_29,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_30,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_31,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_32,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_33,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_34,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_35,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_36,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_1,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_7,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_8,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.train_labels): 660. Also, shuffled!
+
+Solver.__init__(), self.variables_to_restore:
+0 yolo/conv_28/weights:0
+1 yolo/conv_28/biases:0
+2 yolo/conv_29/weights:0
+3 yolo/conv_29/biases:0
+4 yolo/conv_30/weights:0
+5 yolo/conv_30/biases:0
+6 yolo/fc_33/weights:0
+7 yolo/fc_33/biases:0
+8 yolo/fc_34/weights:0
+9 yolo/fc_34/biases:0
+
+cfg.FIX_PRETRAINED_LAYERS=True. Our optimizer will adjust:
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+
+(after tf initializer) self.weights_file is None, so not restoring here.
+
+Just before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:
+<tf.Variable 'yolo/conv_2/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/conv_2/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/weights:0' shape=(3, 3, 64, 192) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/weights:0' shape=(1, 1, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/weights:0' shape=(3, 3, 128, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/weights:0' shape=(1, 1, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/weights:0' shape=(1, 1, 512, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(4096, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+Start training ...
+correctness:
+[ True False  True  True  True  True  True  True]
+Test loss: 0.283272, acc: 7.0/8 = 0.88
+08/02 19:12:22 Epoch: 1, Step: 10, L-Rate: 0.0001, Loss: 0.264642
+Speed: 0.189s/iter, Load: 0.036s/iter, Remain: 0:00:21
+correctness:
+[ True False  True  True  True  True  True  True]
+Test loss: 0.110089, acc: 7.0/8 = 0.88
+08/02 19:12:24 Epoch: 2, Step: 20, L-Rate: 0.0001, Loss: 0.017995
+Speed: 0.156s/iter, Load: 0.036s/iter, Remain: 0:00:15
+correctness:
+[ True False  True  True  True  True  True  True]
+Test loss: 0.451105, acc: 7.0/8 = 0.88
+08/02 19:12:25 Epoch: 3, Step: 30, L-Rate: 0.0001, Loss: 0.010266
+Speed: 0.143s/iter, Load: 0.036s/iter, Remain: 0:00:13
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.004216, acc: 8.0/8 = 1.00
+08/02 19:12:27 Epoch: 4, Step: 40, L-Rate: 0.0001, Loss: 0.000799
+Speed: 0.137s/iter, Load: 0.036s/iter, Remain: 0:00:10
+correctness:
+[ True False  True  True  True  True  True  True]
+Test loss: 0.307398, acc: 7.0/8 = 0.88
+08/02 19:12:29 Epoch: 5, Step: 50, L-Rate: 0.0001, Loss: 0.000043
+Speed: 0.133s/iter, Load: 0.036s/iter, Remain: 0:00:08
+correctness:
+[ True  True  True  True  True  True  True  True]
+Test loss: 0.085814, acc: 8.0/8 = 1.00
+08/02 19:12:30 Epoch: 6, Step: 60, L-Rate: 0.0001, Loss: 0.000027
+Speed: 0.131s/iter, Load: 0.036s/iter, Remain: 0:00:06
+correctness:
+[ True False  True  True  True  True  True  True]
+Test loss: 0.191210, acc: 7.0/8 = 0.88
+08/02 19:12:32 Epoch: 7, Step: 70, L-Rate: 0.0001, Loss: 0.000053
+Speed: 0.129s/iter, Load: 0.036s/iter, Remain: 0:00:05
+correctness:
+[ True False  True  True  True  True  True  True]
+Test loss: 0.233340, acc: 7.0/8 = 0.88
+08/02 19:12:33 Epoch: 8, Step: 80, L-Rate: 0.0001, Loss: 0.000070
+Speed: 0.127s/iter, Load: 0.036s/iter, Remain: 0:00:03
+correctness:
+[ True False  True  True  True  True  True  True]
+Test loss: 0.228809, acc: 7.0/8 = 0.88
+08/02 19:12:35 Epoch: 9, Step: 90, L-Rate: 0.0001, Loss: 0.000081
+Speed: 0.126s/iter, Load: 0.036s/iter, Remain: 0:00:01
+correctness:
+[ True False  True  True  True  True  True  True]
+Test loss: 0.209745, acc: 7.0/8 = 0.88
+08/02 19:12:36 Epoch: 10, Step: 100, L-Rate: 0.0001, Loss: 0.000021
+Speed: 0.125s/iter, Load: 0.036s/iter, Remain: 0:00:00
+    saving tf checkpoint to /nfs/diskstation/seita/bed-make/transition_output/08_02_19_12_36_CS_0_save.ckpt
+Done training.
+
+`data_manager` class, now calling YOLO_CONV and loading network...
+
+YOLO_CONV.load_network(), restoring pre-trained weights from: /nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/YOLO_small.ckpt
+The variables we are restoring in `tf.train.Saver(variables_to_restore)`:
+0 yolo/conv_2/weights:0
+1 yolo/conv_2/biases:0
+2 yolo/conv_4/weights:0
+3 yolo/conv_4/biases:0
+4 yolo/conv_6/weights:0
+5 yolo/conv_6/biases:0
+6 yolo/conv_7/weights:0
+7 yolo/conv_7/biases:0
+8 yolo/conv_8/weights:0
+9 yolo/conv_8/biases:0
+10 yolo/conv_9/weights:0
+11 yolo/conv_9/biases:0
+12 yolo/conv_11/weights:0
+13 yolo/conv_11/biases:0
+14 yolo/conv_12/weights:0
+15 yolo/conv_12/biases:0
+16 yolo/conv_13/weights:0
+17 yolo/conv_13/biases:0
+18 yolo/conv_14/weights:0
+19 yolo/conv_14/biases:0
+20 yolo/conv_15/weights:0
+21 yolo/conv_15/biases:0
+22 yolo/conv_16/weights:0
+23 yolo/conv_16/biases:0
+24 yolo/conv_17/weights:0
+25 yolo/conv_17/biases:0
+26 yolo/conv_18/weights:0
+27 yolo/conv_18/biases:0
+28 yolo/conv_19/weights:0
+29 yolo/conv_19/biases:0
+30 yolo/conv_20/weights:0
+31 yolo/conv_20/biases:0
+32 yolo/conv_22/weights:0
+33 yolo/conv_22/biases:0
+34 yolo/conv_23/weights:0
+35 yolo/conv_23/biases:0
+36 yolo/conv_24/weights:0
+37 yolo/conv_24/biases:0
+38 yolo/conv_25/weights:0
+39 yolo/conv_25/biases:0
+40 yolo/conv_26/weights:0
+41 yolo/conv_26/biases:0
+self.layers = 0 so self.variables_to_restore: 0:45
+
+data_manager.load_test_set(), held-out rollouts: [20, 33, 25] (cv index 7) from /nfs/diskstation/seita/bed-make/rollouts_white_v01/
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_20,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_33,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_25,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.test_labels): 6
+test_batch_images.shape: (6, 14, 14, 1024)
+test_batch_labels.shape: (6, 2)
+test_batch_labels:
+[[0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]]
+
+data_manager.load_rollouts(), path /nfs/diskstation/seita/bed-make/rollouts_white_v01/ (but w/held-out ignored: [20, 33, 25], index 7)
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_0,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_10,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_11,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_12,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_13,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_14,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_15,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_16,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_17,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_18,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_19,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_2,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_3,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_4,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_5,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_6,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_9,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_21,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_22,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_23,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_24,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_26,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_27,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_28,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_29,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_30,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_31,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_32,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_34,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_35,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_36,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_1,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_7,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_8,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.train_labels): 680. Also, shuffled!
+
+Solver.__init__(), self.variables_to_restore:
+0 yolo/conv_28/weights:0
+1 yolo/conv_28/biases:0
+2 yolo/conv_29/weights:0
+3 yolo/conv_29/biases:0
+4 yolo/conv_30/weights:0
+5 yolo/conv_30/biases:0
+6 yolo/fc_33/weights:0
+7 yolo/fc_33/biases:0
+8 yolo/fc_34/weights:0
+9 yolo/fc_34/biases:0
+
+cfg.FIX_PRETRAINED_LAYERS=True. Our optimizer will adjust:
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+
+(after tf initializer) self.weights_file is None, so not restoring here.
+
+Just before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:
+<tf.Variable 'yolo/conv_2/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/conv_2/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/weights:0' shape=(3, 3, 64, 192) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/weights:0' shape=(1, 1, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/weights:0' shape=(3, 3, 128, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/weights:0' shape=(1, 1, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/weights:0' shape=(1, 1, 512, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(4096, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+Start training ...
+correctness:
+[ True  True  True False  True  True]
+Test loss: 0.192230, acc: 5.0/6 = 0.83
+08/02 19:13:20 Epoch: 1, Step: 10, L-Rate: 0.0001, Loss: 0.167522
+Speed: 0.186s/iter, Load: 0.037s/iter, Remain: 0:00:21
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.006103, acc: 6.0/6 = 1.00
+08/02 19:13:21 Epoch: 2, Step: 20, L-Rate: 0.0001, Loss: 0.127769
+Speed: 0.151s/iter, Load: 0.037s/iter, Remain: 0:00:15
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000104, acc: 6.0/6 = 1.00
+08/02 19:13:23 Epoch: 3, Step: 30, L-Rate: 0.0001, Loss: 0.000729
+Speed: 0.139s/iter, Load: 0.037s/iter, Remain: 0:00:12
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000090, acc: 6.0/6 = 1.00
+08/02 19:13:24 Epoch: 4, Step: 40, L-Rate: 0.0001, Loss: 0.000067
+Speed: 0.134s/iter, Load: 0.037s/iter, Remain: 0:00:10
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000004, acc: 6.0/6 = 1.00
+08/02 19:13:26 Epoch: 5, Step: 50, L-Rate: 0.0001, Loss: 0.000211
+Speed: 0.130s/iter, Load: 0.036s/iter, Remain: 0:00:08
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000007, acc: 6.0/6 = 1.00
+08/02 19:13:27 Epoch: 6, Step: 60, L-Rate: 0.0001, Loss: 0.000017
+Speed: 0.128s/iter, Load: 0.037s/iter, Remain: 0:00:06
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000083, acc: 6.0/6 = 1.00
+08/02 19:13:29 Epoch: 7, Step: 70, L-Rate: 0.0001, Loss: 0.000006
+Speed: 0.126s/iter, Load: 0.037s/iter, Remain: 0:00:05
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000002, acc: 6.0/6 = 1.00
+08/02 19:13:30 Epoch: 8, Step: 80, L-Rate: 0.0001, Loss: 0.000012
+Speed: 0.125s/iter, Load: 0.036s/iter, Remain: 0:00:03
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000001, acc: 6.0/6 = 1.00
+08/02 19:13:32 Epoch: 9, Step: 90, L-Rate: 0.0001, Loss: 0.000190
+Speed: 0.124s/iter, Load: 0.036s/iter, Remain: 0:00:01
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000001, acc: 6.0/6 = 1.00
+08/02 19:13:34 Epoch: 10, Step: 100, L-Rate: 0.0001, Loss: 0.000004
+Speed: 0.123s/iter, Load: 0.036s/iter, Remain: 0:00:00
+    saving tf checkpoint to /nfs/diskstation/seita/bed-make/transition_output/08_02_19_13_34_CS_0_save.ckpt
+Done training.
+
+`data_manager` class, now calling YOLO_CONV and loading network...
+
+YOLO_CONV.load_network(), restoring pre-trained weights from: /nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/YOLO_small.ckpt
+The variables we are restoring in `tf.train.Saver(variables_to_restore)`:
+0 yolo/conv_2/weights:0
+1 yolo/conv_2/biases:0
+2 yolo/conv_4/weights:0
+3 yolo/conv_4/biases:0
+4 yolo/conv_6/weights:0
+5 yolo/conv_6/biases:0
+6 yolo/conv_7/weights:0
+7 yolo/conv_7/biases:0
+8 yolo/conv_8/weights:0
+9 yolo/conv_8/biases:0
+10 yolo/conv_9/weights:0
+11 yolo/conv_9/biases:0
+12 yolo/conv_11/weights:0
+13 yolo/conv_11/biases:0
+14 yolo/conv_12/weights:0
+15 yolo/conv_12/biases:0
+16 yolo/conv_13/weights:0
+17 yolo/conv_13/biases:0
+18 yolo/conv_14/weights:0
+19 yolo/conv_14/biases:0
+20 yolo/conv_15/weights:0
+21 yolo/conv_15/biases:0
+22 yolo/conv_16/weights:0
+23 yolo/conv_16/biases:0
+24 yolo/conv_17/weights:0
+25 yolo/conv_17/biases:0
+26 yolo/conv_18/weights:0
+27 yolo/conv_18/biases:0
+28 yolo/conv_19/weights:0
+29 yolo/conv_19/biases:0
+30 yolo/conv_20/weights:0
+31 yolo/conv_20/biases:0
+32 yolo/conv_22/weights:0
+33 yolo/conv_22/biases:0
+34 yolo/conv_23/weights:0
+35 yolo/conv_23/biases:0
+36 yolo/conv_24/weights:0
+37 yolo/conv_24/biases:0
+38 yolo/conv_25/weights:0
+39 yolo/conv_25/biases:0
+40 yolo/conv_26/weights:0
+41 yolo/conv_26/biases:0
+self.layers = 0 so self.variables_to_restore: 0:45
+
+data_manager.load_test_set(), held-out rollouts: [3, 31, 4] (cv index 8) from /nfs/diskstation/seita/bed-make/rollouts_white_v01/
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_3,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_31,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_4,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.test_labels): 6
+test_batch_images.shape: (6, 14, 14, 1024)
+test_batch_labels.shape: (6, 2)
+test_batch_labels:
+[[0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]]
+
+data_manager.load_rollouts(), path /nfs/diskstation/seita/bed-make/rollouts_white_v01/ (but w/held-out ignored: [3, 31, 4], index 8)
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_0,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_10,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_11,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_12,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_13,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_14,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_15,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_16,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_17,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_18,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_19,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_2,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_5,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_6,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_9,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_20,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_21,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_22,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_23,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_24,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_25,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_26,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_27,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_28,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_29,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_30,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_32,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_33,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_34,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_35,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_36,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_1,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_7,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_8,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.train_labels): 680. Also, shuffled!
+
+Solver.__init__(), self.variables_to_restore:
+0 yolo/conv_28/weights:0
+1 yolo/conv_28/biases:0
+2 yolo/conv_29/weights:0
+3 yolo/conv_29/biases:0
+4 yolo/conv_30/weights:0
+5 yolo/conv_30/biases:0
+6 yolo/fc_33/weights:0
+7 yolo/fc_33/biases:0
+8 yolo/fc_34/weights:0
+9 yolo/fc_34/biases:0
+
+cfg.FIX_PRETRAINED_LAYERS=True. Our optimizer will adjust:
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+
+(after tf initializer) self.weights_file is None, so not restoring here.
+
+Just before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:
+<tf.Variable 'yolo/conv_2/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/conv_2/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/weights:0' shape=(3, 3, 64, 192) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/weights:0' shape=(1, 1, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/weights:0' shape=(3, 3, 128, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/weights:0' shape=(1, 1, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/weights:0' shape=(1, 1, 512, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(4096, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+Start training ...
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.129457, acc: 6.0/6 = 1.00
+08/02 19:14:16 Epoch: 1, Step: 10, L-Rate: 0.0001, Loss: 0.206515
+Speed: 0.181s/iter, Load: 0.036s/iter, Remain: 0:00:20
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.029947, acc: 6.0/6 = 1.00
+08/02 19:14:18 Epoch: 2, Step: 20, L-Rate: 0.0001, Loss: 0.037593
+Speed: 0.149s/iter, Load: 0.036s/iter, Remain: 0:00:15
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.016100, acc: 6.0/6 = 1.00
+08/02 19:14:19 Epoch: 3, Step: 30, L-Rate: 0.0001, Loss: 0.002648
+Speed: 0.137s/iter, Load: 0.036s/iter, Remain: 0:00:12
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000641, acc: 6.0/6 = 1.00
+08/02 19:14:21 Epoch: 4, Step: 40, L-Rate: 0.0001, Loss: 0.138705
+Speed: 0.132s/iter, Load: 0.036s/iter, Remain: 0:00:10
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.001403, acc: 6.0/6 = 1.00
+08/02 19:14:22 Epoch: 5, Step: 50, L-Rate: 0.0001, Loss: 0.008705
+Speed: 0.129s/iter, Load: 0.036s/iter, Remain: 0:00:08
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.009737, acc: 6.0/6 = 1.00
+08/02 19:14:24 Epoch: 6, Step: 60, L-Rate: 0.0001, Loss: 0.001199
+Speed: 0.127s/iter, Load: 0.036s/iter, Remain: 0:00:06
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.001435, acc: 6.0/6 = 1.00
+08/02 19:14:26 Epoch: 7, Step: 70, L-Rate: 0.0001, Loss: 0.000405
+Speed: 0.126s/iter, Load: 0.036s/iter, Remain: 0:00:05
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.020572, acc: 6.0/6 = 1.00
+08/02 19:14:27 Epoch: 8, Step: 80, L-Rate: 0.0001, Loss: 0.000317
+Speed: 0.124s/iter, Load: 0.036s/iter, Remain: 0:00:03
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.067975, acc: 6.0/6 = 1.00
+08/02 19:14:29 Epoch: 9, Step: 90, L-Rate: 0.0001, Loss: 0.000061
+Speed: 0.123s/iter, Load: 0.036s/iter, Remain: 0:00:01
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.075418, acc: 6.0/6 = 1.00
+08/02 19:14:30 Epoch: 10, Step: 100, L-Rate: 0.0001, Loss: 0.000063
+Speed: 0.123s/iter, Load: 0.036s/iter, Remain: 0:00:00
+    saving tf checkpoint to /nfs/diskstation/seita/bed-make/transition_output/08_02_19_14_30_CS_0_save.ckpt
+Done training.
+
+`data_manager` class, now calling YOLO_CONV and loading network...
+
+YOLO_CONV.load_network(), restoring pre-trained weights from: /nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/YOLO_small.ckpt
+The variables we are restoring in `tf.train.Saver(variables_to_restore)`:
+0 yolo/conv_2/weights:0
+1 yolo/conv_2/biases:0
+2 yolo/conv_4/weights:0
+3 yolo/conv_4/biases:0
+4 yolo/conv_6/weights:0
+5 yolo/conv_6/biases:0
+6 yolo/conv_7/weights:0
+7 yolo/conv_7/biases:0
+8 yolo/conv_8/weights:0
+9 yolo/conv_8/biases:0
+10 yolo/conv_9/weights:0
+11 yolo/conv_9/biases:0
+12 yolo/conv_11/weights:0
+13 yolo/conv_11/biases:0
+14 yolo/conv_12/weights:0
+15 yolo/conv_12/biases:0
+16 yolo/conv_13/weights:0
+17 yolo/conv_13/biases:0
+18 yolo/conv_14/weights:0
+19 yolo/conv_14/biases:0
+20 yolo/conv_15/weights:0
+21 yolo/conv_15/biases:0
+22 yolo/conv_16/weights:0
+23 yolo/conv_16/biases:0
+24 yolo/conv_17/weights:0
+25 yolo/conv_17/biases:0
+26 yolo/conv_18/weights:0
+27 yolo/conv_18/biases:0
+28 yolo/conv_19/weights:0
+29 yolo/conv_19/biases:0
+30 yolo/conv_20/weights:0
+31 yolo/conv_20/biases:0
+32 yolo/conv_22/weights:0
+33 yolo/conv_22/biases:0
+34 yolo/conv_23/weights:0
+35 yolo/conv_23/biases:0
+36 yolo/conv_24/weights:0
+37 yolo/conv_24/biases:0
+38 yolo/conv_25/weights:0
+39 yolo/conv_25/biases:0
+40 yolo/conv_26/weights:0
+41 yolo/conv_26/biases:0
+self.layers = 0 so self.variables_to_restore: 0:45
+
+data_manager.load_test_set(), held-out rollouts: [9, 26, 8] (cv index 9) from /nfs/diskstation/seita/bed-make/rollouts_white_v01/
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_9,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_26,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_8,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.test_labels): 6
+test_batch_images.shape: (6, 14, 14, 1024)
+test_batch_labels.shape: (6, 2)
+test_batch_labels:
+[[0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]
+ [0. 1.]
+ [1. 0.]]
+
+data_manager.load_rollouts(), path /nfs/diskstation/seita/bed-make/rollouts_white_v01/ (but w/held-out ignored: [9, 26, 8], index 9)
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_0,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_10,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_11,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_12,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_13,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_14,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_15,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_16,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_17,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_18,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_19,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_2,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_3,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_4,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_5,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_6,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_20,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_21,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_22,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_23,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_24,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_25,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_27,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_28,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_29,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_30,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_31,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_32,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_33,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_34,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_35,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_36,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_1,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+/nfs/diskstation/seita/bed-make/rollouts_white_v01/rollout_7,  len(grasp_rollout)=2,  w/len(rollout)=4 [TEST]
+len(self.train_labels): 680. Also, shuffled!
+
+Solver.__init__(), self.variables_to_restore:
+0 yolo/conv_28/weights:0
+1 yolo/conv_28/biases:0
+2 yolo/conv_29/weights:0
+3 yolo/conv_29/biases:0
+4 yolo/conv_30/weights:0
+5 yolo/conv_30/biases:0
+6 yolo/fc_33/weights:0
+7 yolo/fc_33/biases:0
+8 yolo/fc_34/weights:0
+9 yolo/fc_34/biases:0
+
+cfg.FIX_PRETRAINED_LAYERS=True. Our optimizer will adjust:
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+
+(after tf initializer) self.weights_file is None, so not restoring here.
+
+Just before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:
+<tf.Variable 'yolo/conv_2/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/conv_2/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/weights:0' shape=(3, 3, 64, 192) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/weights:0' shape=(1, 1, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/weights:0' shape=(3, 3, 128, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/weights:0' shape=(1, 1, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/weights:0' shape=(1, 1, 512, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_28/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(50176, 512) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(512, 4096) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(4096,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(4096, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+Start training ...
+correctness:
+[False  True  True  True False  True]
+Test loss: 0.868542, acc: 4.0/6 = 0.67
+08/02 19:15:12 Epoch: 1, Step: 10, L-Rate: 0.0001, Loss: 0.310944
+Speed: 0.179s/iter, Load: 0.034s/iter, Remain: 0:00:20
+correctness:
+[False  True  True  True False  True]
+Test loss: 0.506840, acc: 4.0/6 = 0.67
+08/02 19:15:14 Epoch: 2, Step: 20, L-Rate: 0.0001, Loss: 0.233432
+Speed: 0.147s/iter, Load: 0.035s/iter, Remain: 0:00:15
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.003470, acc: 6.0/6 = 1.00
+08/02 19:15:15 Epoch: 3, Step: 30, L-Rate: 0.0001, Loss: 0.031937
+Speed: 0.136s/iter, Load: 0.035s/iter, Remain: 0:00:12
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000010, acc: 6.0/6 = 1.00
+08/02 19:15:17 Epoch: 4, Step: 40, L-Rate: 0.0001, Loss: 0.015737
+Speed: 0.131s/iter, Load: 0.035s/iter, Remain: 0:00:10
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000012, acc: 6.0/6 = 1.00
+08/02 19:15:19 Epoch: 5, Step: 50, L-Rate: 0.0001, Loss: 0.000011
+Speed: 0.128s/iter, Load: 0.035s/iter, Remain: 0:00:08
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000073, acc: 6.0/6 = 1.00
+08/02 19:15:20 Epoch: 6, Step: 60, L-Rate: 0.0001, Loss: 0.000121
+Speed: 0.126s/iter, Load: 0.035s/iter, Remain: 0:00:06
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000023, acc: 6.0/6 = 1.00
+08/02 19:15:22 Epoch: 7, Step: 70, L-Rate: 0.0001, Loss: 0.000081
+Speed: 0.124s/iter, Load: 0.035s/iter, Remain: 0:00:04
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000009, acc: 6.0/6 = 1.00
+08/02 19:15:23 Epoch: 8, Step: 80, L-Rate: 0.0001, Loss: 0.000005
+Speed: 0.123s/iter, Load: 0.035s/iter, Remain: 0:00:03
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000006, acc: 6.0/6 = 1.00
+08/02 19:15:25 Epoch: 9, Step: 90, L-Rate: 0.0001, Loss: 0.000020
+Speed: 0.122s/iter, Load: 0.035s/iter, Remain: 0:00:01
+correctness:
+[ True  True  True  True  True  True]
+Test loss: 0.000006, acc: 6.0/6 = 1.00
+08/02 19:15:26 Epoch: 10, Step: 100, L-Rate: 0.0001, Loss: 0.000002
+Speed: 0.122s/iter, Load: 0.035s/iter, Remain: 0:00:00
+    saving tf checkpoint to /nfs/diskstation/seita/bed-make/transition_output/08_02_19_15_26_CS_0_save.ckpt
+Done training.

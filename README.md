@@ -29,8 +29,22 @@ The networks use TF slim. [Documentation here][3].
 I think Michael may have trained the YOLO network end-to-end, also using
 `train_network.py`, which appears to be flexible enough to handle both.
 
+**Probably better to run for now**: use the scripts `main/grasp.sh` and `main/success.sh` since
+these iterate through all indices in a cross validation set, and then put the output to a file, such
+as in:
+
+```
+./main/grasp.sh | tee logs/grasp.log
+```
+
+so that we can inspect the output later.
+
+
 
 ## src
+
+(This is older stuff from Michael's documentation)
+
 	• CONFIG
 		○ Bed_grasp_config = grasp network (trains the hsr to use end-effector to make an effective grasp)
 		○ Bed_success_config = success network (tells you whether the sequence of states and actions resulted in a successfully made bed)
