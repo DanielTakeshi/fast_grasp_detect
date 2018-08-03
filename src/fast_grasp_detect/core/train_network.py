@@ -159,7 +159,7 @@ class Solver(object):
                         if self.cfg.CONFIG_NAME == 'grasp_net':
                             # Useful to get test loss in the **pixels**, not scaled version.
                             test_loss_raw = self.cfg.compare_preds_labels(
-                                    preds=test_logits, labels=labels_t, doprint=True)
+                                    preds=test_logits, labels=labels_t, doprint=self.cfg.PRINT_PREDS)
                             raw_test_losses.append(test_loss_raw)
                             print("Test loss: {:.6f} (raw: {:.2f})".format(test_loss, test_loss_raw))
                         elif self.cfg.CONFIG_NAME == 'success_net':
@@ -170,7 +170,7 @@ class Solver(object):
                             raw_test_correct.append(correct)
                             raw_test_total.append(K)
                             self.cfg.compare_preds_labels(preds=test_logits, labels=labels_t,
-                                    correctness=correctness, doprint=True)
+                                    correctness=correctness, doprint=self.cfg.PRINT_PREDS)
                             print("Test loss: {:.6f}, acc: {}/{} = {:.2f}".format(test_loss, correct, K, raw_acc))
                         else:
                             raise ValueError(self.cfg.CONFIG_NAME)

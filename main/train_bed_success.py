@@ -17,7 +17,9 @@ def set_seed(s):
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=0)
 parser.add_argument('--cv_idx', type=int)
+parser.add_argument('--max_iters', type=int, default=100)
 parser.add_argument('--do_cv', action='store_true', default=False)
+parser.add_argument('--print_preds', action='store_true', default=False)
 args = parser.parse_args()
 bed_success_options = CONFIG(args)
 set_seed(args.seed)
@@ -31,10 +33,10 @@ print('\nJust before training, here is `tf.GraphKeys.TRAINABLE_VARIABLES`:')
 variables = tf.trainable_variables()
 for vv in variables:
     print(vv)
-print('\nAnd here is `tf.GraphKeys.GLOBAL_VARIABLES`:')
-variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
-for vv in variables:
-    print(vv)
+#print('\nAnd here is `tf.GraphKeys.GLOBAL_VARIABLES`:')
+#variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+#for vv in variables:
+#    print(vv)
 
 print('\nStart training ...')
 solver.train()

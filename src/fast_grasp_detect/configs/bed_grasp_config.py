@@ -16,6 +16,7 @@ class CONFIG(object):
         """
         self.args = args
         self.PERFORM_CV = args.do_cv
+        self.PRINT_PREDS = args.print_preds
 
         self.CONFIG_NAME = 'grasp_net'
         self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'   # Tritons
@@ -103,7 +104,7 @@ class CONFIG(object):
         self.DECAY_RATE = 0.1
         self.STAIRCASE = True
         self.BATCH_SIZE = 64
-        self.MAX_ITER = 500
+        self.MAX_ITER = args.max_iters
         self.SUMMARY_ITER = 1
         self.TEST_ITER = 1
         self.SAVE_ITER = 100
