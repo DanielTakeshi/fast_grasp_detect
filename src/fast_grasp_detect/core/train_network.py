@@ -78,7 +78,7 @@ class Solver(object):
         for item in self.var_list:
             print(item)
             numv += np.prod(item.shape)
-        print("adjustable params: {}".format(numv))
+        print("\nadjustable params: {}\n".format(numv))
 
         if self.cfg.OPT_ALGO == 'SGD':
             self.optimizer = tf.train.GradientDescentOptimizer(learning_rate=self.learning_rate).minimize(

@@ -82,19 +82,27 @@ class CONFIG(object):
         self.USE_DEPTH = False # False means RGB
 
         # solver parameter
-        # Careful, if fixing, this means our images effectively turn into (fs,fs,channels),
-        # e.g., could be (14,14,1024). If False, we train from the usual (480,640,3) images.
-        self.FIX_PRETRAINED_LAYERS = True
+        # ----------------------------------------------------------------------
+        # If 'fixing', this means 'images' effectively turn into (fs,fs,channels),
+        # e.g., shape (14,14,1024). If False, train from normal (480,640,3)-size data.
+        # Technically 'pre-trained' is more like 'pre-initialized' (from Pascal task).
+        # Update: if we use a smaller network, `FIX_PRETRAINED_LAYERS` is _ignored_.
+        # ----------------------------------------------------------------------
+        self.FIX_PRETRAINED_LAYERS = False
+        self.SMALLER_NET = False
+
         self.OPT_ALGO = 'ADAM'
         if self.OPT_ALGO == 'ADAM':
-            self.LEARNING_RATE = 0.00010
+            self.LEARNING_RATE = args.lrate
             self.USE_EXP_MOV_AVG = False
         elif self.OPT_ALGO == 'SGD':
             self.LEARNING_RATE = 0.01
             self.USE_EXP_MOV_AVG = True
         else:
             raise ValueError(self.OPT_ALGO)
-        self.DECAY_STEPS = 10000 # Decay every k steps
+
+        # Decay LR every `DECAY_STEPS` but probably easiest to keep a fixed LR.
+        self.DECAY_STEPS = 10000
         self.DECAY_RATE = 0.1
         self.STAIRCASE = True
         self.BATCH_SIZE = 64
@@ -102,13 +110,8 @@ class CONFIG(object):
         self.SUMMARY_ITER = 1
         self.TEST_ITER = 1
         self.SAVE_ITER = 100
-        self.VIZ_DEBUG_ITER = 400 # ?
+        self.VIZ_DEBUG_ITER = 400
         self.CROSS_ENT_LOSS = True # Michael did 'softened L2' earlier
-
-        ## # test parameter
-        ## self.PICK_THRESHOLD = 0.4
-        ## self.THRESHOLD = 0.4
-        ## self.IOU_THRESHOLD = 0.5
 
         # fast params
         self.FILTER_SIZE = 14
