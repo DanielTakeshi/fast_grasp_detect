@@ -6,7 +6,7 @@ slim = tf.contrib.slim
 
 class SNet(object):
 
-    def __init__(self, cfg, data_m, is_training=True, layers=0):
+    def __init__(self, cfg, data_m, is_training=True):
         """
         data_m: Needs to contain `data_m.yc.conv_layer` so that we get the tensorflow variable
             representing the 26th layer of the YOLO network, in case we need to continue passing it
@@ -18,18 +18,17 @@ class SNet(object):
         self.image_size = self.cfg.IMAGE_SIZE
         self.dist_size_w = self.cfg.T_IMAGE_SIZE_W/self.cfg.RESOLUTION
         self.dist_size_h = self.cfg.T_IMAGE_SIZE_H/self.cfg.RESOLUTION
-        self.output_size = 2
-        self.layers = layers
         self.learning_rate = self.cfg.LEARNING_RATE
         self.batch_size = self.cfg.BATCH_SIZE
         self.alpha = self.cfg.ALPHA
         self.yolo_conv_layer = data_m.yc.conv_layer
+        self.output_size = 2
 
         # Like w/grasp net, `images` are features. Also, logits _might_ be output AFTER a softmax op.
         if cfg.FIX_PRETRAINED_LAYERS:
             assert not cfg.SMALLER_NET
             self.images = tf.placeholder(tf.float32, [None, cfg.FILTER_SIZE, cfg.FILTER_SIZE, cfg.NUM_FILTERS], name='images')
-            self.logits = self.build_network(self.images, num_outputs=self.output_size, alpha=self.alpha, is_training=is_training)
+            self.logits = self.build_network(self.images, self.output_size, self.alpha, is_training=is_training)
         else:
             self.logits = self.build_network(self.yolo_conv_layer, self.output_size, self.alpha, is_training=is_training)
 
@@ -43,18 +42,22 @@ class SNet(object):
     def build_network(self, images, num_outputs, alpha, keep_prob=1.0, is_training=True, scope='yolo'):
         """Extra layers built on _top_ of the YOLO stem (first 26 layers)."""
         with tf.variable_scope(scope, reuse=tf.AUTO_REUSE):
-            with slim.arg_scope([slim.conv2d, slim.fully_connected],
-                                activation_fn=leaky_relu(alpha),
-                                weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
-                                weights_regularizer=slim.l2_regularizer(0.0005)):
-
-                if self.cfg.SMALLER_NET:
-                    net = images
-                    net = slim.dropout(net, keep_prob=keep_prob, is_training=is_training, scope='dropout_35')
+            net = images
+            
+            if self.cfg.SMALLER_NET:
+                with slim.arg_scope([slim.conv2d, slim.fully_connected],
+                                    activation_fn=leaky_relu(alpha),
+                                    weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
+                                    weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
                     net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='lastfc')
 
-                else:
-                    net = tf.pad(images, np.array([[0, 0], [1, 1], [1, 1], [0, 0]]), name='pad_27')
+            else:
+                # Michael's old way.
+                with slim.arg_scope([slim.conv2d, slim.fully_connected],
+                                    activation_fn=leaky_relu(alpha),
+                                    weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
+                                    weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
+                    net = tf.pad(net, np.array([[0, 0], [1, 1], [1, 1], [0, 0]]), name='pad_27')
                     net = slim.conv2d(net, 1024, 3, 2, padding='VALID', scope='conv_28')
                     net = slim.conv2d(net, 1024, 3, scope='conv_29')
                     net = slim.conv2d(net, 1024, 3, scope='conv_30')
@@ -65,9 +68,9 @@ class SNet(object):
                     net = slim.dropout(net, keep_prob=keep_prob, is_training=is_training, scope='dropout_35')
                     net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='fc_36')
 
-                if not self.cfg.CROSS_ENT_LOSS:
-                    # Note the softmax, which is NOT in grasping network. Ignore if using cross ent.
-                    net = tf.nn.softmax(net)
+            # Note the softmax, which is NOT in the grasp net. Ignore if using cross ent.
+            if not self.cfg.CROSS_ENT_LOSS:
+                net = tf.nn.softmax(net)
         return net
 
 

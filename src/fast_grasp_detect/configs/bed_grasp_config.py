@@ -86,6 +86,7 @@ class CONFIG(object):
         self.DISP_CONSOLE = True
         self.RESOLUTION = 10
         self.USE_DEPTH = True # False means RGB
+        self.L2_LAMBDA = args.l2_lambda
 
         # solver parameter
         # ----------------------------------------------------------------------

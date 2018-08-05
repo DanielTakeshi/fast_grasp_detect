@@ -236,8 +236,9 @@ class Solver(object):
                         net_type = 'fixed26'
                     else:
                         net_type = 'all26'
-                suffix = '{}_type_{}_optim_{}_net_{}_lrate_{}_cv_{}.p'.format(
-                        cfg.CONFIG_NAME, img_type, (cfg.OPT_ALGO).lower(), net_type, lrate, cv_idx)
+                suffix = '{}_type_{}_optim_{}_net_{}_lrate_{}_l2reg_{}_cv_{}.p'.format(
+                        cfg.CONFIG_NAME, img_type, (cfg.OPT_ALGO).lower(), net_type, lrate,
+                        cfg.L2_LAMBDA, cv_idx)
                 name = os.path.join(cfg.STAT_DIR, suffix)
                 pickle.dump(loss_dict, open(name, 'wb'))
 

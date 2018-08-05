@@ -6,7 +6,7 @@ slim = tf.contrib.slim
 
 class GHNet(object):
 
-    def __init__(self, cfg, data_m, is_training=True, layers=0):
+    def __init__(self, cfg, data_m, is_training=True):
         """
         data_m: Needs to contain `data_m.yc.conv_layer` so that we get the tensorflow variable
             representing the 26th layer of the YOLO network, in case we need to continue passing it
@@ -19,23 +19,17 @@ class GHNet(object):
         self.dist_size_w = self.cfg.T_IMAGE_SIZE_W/self.cfg.RESOLUTION
         self.dist_size_h = self.cfg.T_IMAGE_SIZE_H/self.cfg.RESOLUTION
         self.output_size = 2 # 2-D output because we are predicting (x,y) pixel coords
-        self.layers = layers
         self.learning_rate = self.cfg.LEARNING_RATE
         self.batch_size = self.cfg.BATCH_SIZE
         self.alpha = self.cfg.ALPHA
         self.yolo_conv_layer = data_m.yc.conv_layer
 
-        # Despite the name, `self.images` are features from the YOLO stem in `core/yolo_conv_features_cs.py`
+        # Despite the name, `self.images` are features from YOLO stem.
+        # Also, `logits` are not log prob of classes but simply the predicted pixels.
         if cfg.FIX_PRETRAINED_LAYERS:
             assert not cfg.SMALLER_NET
-            if self.layers == 0:
-                self.images = tf.placeholder(tf.float32, [None, self.cfg.FILTER_SIZE, self.cfg.FILTER_SIZE, self.cfg.NUM_FILTERS], name='images')
-            elif self.layers == 1:
-                self.images = tf.placeholder(tf.float32, [None, self.cfg.FILTER_SIZE_L1, self.cfg.FILTER_SIZE_L1, self.cfg.NUM_FILTERS], name='images')
-            elif self.layers == 2:
-                self.images = tf.placeholder(tf.float32, [None, self.cfg.SIZE_L2], name='images')
-            # logits are not log prob of classes but simply the predicted pixels
-            self.logits = self.build_network(self.images, num_outputs=self.output_size, alpha=self.alpha, is_training=is_training)
+            self.images = tf.placeholder(tf.float32, [None, cfg.FILTER_SIZE, cfg.FILTER_SIZE, cfg.NUM_FILTERS], name='images')
+            self.logits = self.build_network(self.images, self.output_size, self.alpha, is_training=is_training)
         else:
             self.logits = self.build_network(self.yolo_conv_layer, self.output_size, self.alpha, is_training=is_training)
 
@@ -50,30 +44,27 @@ class GHNet(object):
     def build_network(self, images, num_outputs, alpha, keep_prob=1.0, is_training=True, scope='yolo'):
         """Extra layers built on _top_ of the YOLO stem (first 26 layers)."""
         with tf.variable_scope(scope):
-            with slim.arg_scope([slim.conv2d, slim.fully_connected],
-                                activation_fn=leaky_relu(alpha),
-                                weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
-                                weights_regularizer=slim.l2_regularizer(0.0005)):
+            net = images
 
-                if self.cfg.SMALLER_NET:
-                    net = images
-                    net = slim.dropout(net, keep_prob=keep_prob, is_training=is_training, scope='dropout_35')
+            if self.cfg.SMALLER_NET:
+                with slim.arg_scope([slim.conv2d, slim.fully_connected],
+                                    activation_fn=leaky_relu(alpha),
+                                    weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
+                                    weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
                     net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='lastfc')
 
-                else:
-                    if self.layers == 0:
-                        net = tf.pad(images, np.array([[0, 0], [1, 1], [1, 1], [0, 0]]), name='pad_27')
-                        net = slim.conv2d(net, 1024, 3, 2, padding='VALID', scope='conv_28')
-                        net = slim.conv2d(net, 1024, 3, scope='conv_29')
-                        net = slim.conv2d(net, 1024, 3, scope='conv_30')
-                        net = tf.transpose(net, [0, 3, 1, 2], name='trans_31')
-                        net = slim.flatten(net, scope='flat_32')
-                    elif self.layers == 1:
-                        net = slim.conv2d(images, 1024, 3, scope='conv_30')
-                        net = tf.transpose(net, [0, 3, 1, 2], name='trans_31')
-                        net = slim.flatten(net, scope='flat_32')
-                    elif self.layers == 2:
-                        net = slim.flatten(images, scope='flat_32')
+            else:
+                # Michael's old way.
+                with slim.arg_scope([slim.conv2d, slim.fully_connected],
+                                    activation_fn=leaky_relu(alpha),
+                                    weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
+                                    weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
+                    net = tf.pad(net, np.array([[0, 0], [1, 1], [1, 1], [0, 0]]), name='pad_27')
+                    net = slim.conv2d(net, 1024, 3, 2, padding='VALID', scope='conv_28')
+                    net = slim.conv2d(net, 1024, 3, scope='conv_29')
+                    net = slim.conv2d(net, 1024, 3, scope='conv_30')
+                    net = tf.transpose(net, [0, 3, 1, 2], name='trans_31')
+                    net = slim.flatten(net, scope='flat_32')
                     net = slim.fully_connected(net, 512, scope='fc_33')
                     net = slim.fully_connected(net, 4096, scope='fc_34')
                     net = slim.dropout(net, keep_prob=keep_prob, is_training=is_training, scope='dropout_35')

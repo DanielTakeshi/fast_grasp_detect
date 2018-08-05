@@ -20,6 +20,7 @@ parser.add_argument('--cv_idx', type=int)
 parser.add_argument('--max_iters', type=int, default=100)
 parser.add_argument('--lrate', type=float, default=0.00010,
         help='Default _starting_ LR.  Assumes Adam, if SGD then increase LR.')
+parser.add_argument('--l2_lambda', type=float, default=0.00050)
 parser.add_argument('--do_cv', action='store_true', default=False)
 parser.add_argument('--print_preds', action='store_true', default=False)
 args = parser.parse_args()
