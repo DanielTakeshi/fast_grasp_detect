@@ -82,7 +82,7 @@ class YOLO_CONV(object):
                     print(net)
                     net = slim.fully_connected(net, 1024)
                     print(net)
-                    net = slim.fully_connected(net, 1024)
+                    net = slim.fully_connected(net, 2048)
                     print(net)
                     get_variables()
 
