@@ -229,9 +229,15 @@ class Solver(object):
                 img_type = 'rgb'
                 if cfg.USE_DEPTH:
                     img_type = 'depth'
-                suffix = '{}_type_{}_optim_{}_fixed26_{}_lrate_{}_cv_{}.p'.format(
-                        cfg.CONFIG_NAME, img_type, (cfg.OPT_ALGO).lower(),
-                        cfg.FIX_PRETRAINED_LAYERS, lrate, cv_idx)
+                if cfg.SMALLER_NET:
+                    net_type = 'small'
+                else: 
+                    if cfg.FIX_PRETRAINED_LAYERS:
+                        net_type = 'fixed26'
+                    else:
+                        net_type = 'all26'
+                suffix = '{}_type_{}_optim_{}_net_{}_lrate_{}_cv_{}.p'.format(
+                        cfg.CONFIG_NAME, img_type, (cfg.OPT_ALGO).lower(), net_type, lrate, cv_idx)
                 name = os.path.join(cfg.STAT_DIR, suffix)
                 pickle.dump(loss_dict, open(name, 'wb'))
 
