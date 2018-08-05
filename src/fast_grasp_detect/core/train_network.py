@@ -44,17 +44,18 @@ class Solver(object):
             os.makedirs(self.output_dir)
         self.save_cfg()
 
-        # Restoring variables.
-        self.variable_to_restore = slim.get_variables_to_restore()
-        self.variables_to_restore = self.variable_to_restore[42:52]
-        count = 0
-        print("\nSolver.__init__(), self.variables_to_restore:")
-        vars_restored = []
-        for var in self.variables_to_restore:
-            print("{} {}".format(count, var.name))
-            vars_restored.append(var.name)
-            count += 1
-        self.saver = tf.train.Saver(self.variables_to_restore, max_to_keep=None)
+        # Restoring variables, if necessary.
+        if not self.cfg.SMALLER_NET:
+            self.variable_to_restore = slim.get_variables_to_restore()
+            self.variables_to_restore = self.variable_to_restore[42:52]
+            count = 0
+            print("\nSolver.__init__(), self.variables_to_restore:")
+            vars_restored = []
+            for var in self.variables_to_restore:
+                print("{} {}".format(count, var.name))
+                vars_restored.append(var.name)
+                count += 1
+            self.saver = tf.train.Saver(self.variables_to_restore, max_to_keep=None)
         self.all_saver = tf.train.Saver()
         self.ckpt_file = os.path.join(self.output_dir, 'save.ckpt')
         self.summary_op = tf.summary.merge_all()
@@ -73,7 +74,7 @@ class Solver(object):
 
         if self.cfg.FIX_PRETRAINED_LAYERS:
             self.var_list = [x for x in self.var_list if x.name in vars_restored]
-        print("\ncfg.FIX_PRETRAINED_LAYERS={}. Our optimizer will adjust:".format(self.cfg.FIX_PRETRAINED_LAYERS))
+        print("\ncfg.FIX_PRETRAINED_LAYERS={}. Optimizer will adjust:".format(self.cfg.FIX_PRETRAINED_LAYERS))
         numv = 0
         for item in self.var_list:
             print(item)

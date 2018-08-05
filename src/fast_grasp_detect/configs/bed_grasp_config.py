@@ -95,7 +95,7 @@ class CONFIG(object):
         # Update: if we use a smaller network, `FIX_PRETRAINED_LAYERS` is _ignored_.
         # ----------------------------------------------------------------------
         self.FIX_PRETRAINED_LAYERS = False
-        self.SMALLER_NET = False
+        self.SMALLER_NET = True
 
         self.OPT_ALGO = 'ADAM'
         if self.OPT_ALGO == 'ADAM':

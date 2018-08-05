@@ -31,9 +31,11 @@ class data_manager(object):
             self.held_out_rollouts = [os.path.join(self.rollout_path,'rollout_'+str(rr)) for rr in self.held_out_list]
 
         # Load YOLO network and set up its pre-trained weights from known file
+        # Update: we'll also use this in the case of a smaller neural network.
         print("\n`data_manager` class, now calling YOLO_CONV and loading network...")
         self.yc = YOLO_CONV(self.cfg)
-        self.yc.load_network()
+        if not self.cfg.SMALLER_NET:
+            self.yc.load_network()
 
         # Load test set and training rollouts. Also make test set batch fixed (shouldn't be re-shuffling).
         self.recent_batch = []
@@ -137,7 +139,7 @@ class data_manager(object):
         K = len(self.test_labels)
         print("len(self.test_labels): {}".format(K))
         assert K <= 500
-        
+
         # What the network needs, inputs and labels.
         self.test_batch_feats = self.cfg.get_empty_state(batchdim=K)
         self.test_batch_labels = self.cfg.get_empty_label(batchdim=K)

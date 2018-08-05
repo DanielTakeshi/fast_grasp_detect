@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-import IPython
+import sys, os, cv2
 slim = tf.contrib.slim
 
 
@@ -27,6 +27,7 @@ class GHNet(object):
 
         # Despite the name, `self.images` are features from the YOLO stem in `core/yolo_conv_features_cs.py`
         if cfg.FIX_PRETRAINED_LAYERS:
+            assert not cfg.SMALLER_NET
             if self.layers == 0:
                 self.images = tf.placeholder(tf.float32, [None, self.cfg.FILTER_SIZE, self.cfg.FILTER_SIZE, self.cfg.NUM_FILTERS], name='images')
             elif self.layers == 1:
@@ -36,7 +37,7 @@ class GHNet(object):
             # logits are not log prob of classes but simply the predicted pixels
             self.logits = self.build_network(self.images, num_outputs=self.output_size, alpha=self.alpha, is_training=is_training)
         else:
-            self.logits = self.build_network(self.yolo_conv_layer, num_outputs=self.output_size, alpha=self.alpha, is_training=is_training)
+            self.logits = self.build_network(self.yolo_conv_layer, self.output_size, self.alpha, is_training=is_training)
 
         if is_training:
             # self.labels to be provided by the human user
@@ -54,26 +55,29 @@ class GHNet(object):
                                 weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
                                 weights_regularizer=slim.l2_regularizer(0.0005)):
 
-                if self.layers == 0:
-                    net = tf.pad(images, np.array([[0, 0], [1, 1], [1, 1], [0, 0]]), name='pad_27')
-                    net = slim.conv2d(net, 1024, 3, 2, padding='VALID', scope='conv_28')
-                    net = slim.conv2d(net, 1024, 3, scope='conv_29')
-                    net = slim.conv2d(net, 1024, 3, scope='conv_30')
-                    net = tf.transpose(net, [0, 3, 1, 2], name='trans_31')
-                    net = slim.flatten(net, scope='flat_32')
+                if self.cfg.SMALLER_NET:
+                    net = images
+                    net = slim.dropout(net, keep_prob=keep_prob, is_training=is_training, scope='dropout_35')
+                    net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='lastfc')
 
-                elif self.layers == 1:
-                    net = slim.conv2d(images, 1024, 3, scope='conv_30')
-                    net = tf.transpose(net, [0, 3, 1, 2], name='trans_31')
-                    net = slim.flatten(net, scope='flat_32')
-
-                elif self.layers == 2:
-                    net = slim.flatten(images, scope='flat_32')
-
-                net = slim.fully_connected(net, 512, scope='fc_33')
-                net = slim.fully_connected(net, 4096, scope='fc_34')
-                net = slim.dropout(net, keep_prob=keep_prob, is_training=is_training, scope='dropout_35')
-                net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='fc_36')
+                else:
+                    if self.layers == 0:
+                        net = tf.pad(images, np.array([[0, 0], [1, 1], [1, 1], [0, 0]]), name='pad_27')
+                        net = slim.conv2d(net, 1024, 3, 2, padding='VALID', scope='conv_28')
+                        net = slim.conv2d(net, 1024, 3, scope='conv_29')
+                        net = slim.conv2d(net, 1024, 3, scope='conv_30')
+                        net = tf.transpose(net, [0, 3, 1, 2], name='trans_31')
+                        net = slim.flatten(net, scope='flat_32')
+                    elif self.layers == 1:
+                        net = slim.conv2d(images, 1024, 3, scope='conv_30')
+                        net = tf.transpose(net, [0, 3, 1, 2], name='trans_31')
+                        net = slim.flatten(net, scope='flat_32')
+                    elif self.layers == 2:
+                        net = slim.flatten(images, scope='flat_32')
+                    net = slim.fully_connected(net, 512, scope='fc_33')
+                    net = slim.fully_connected(net, 4096, scope='fc_34')
+                    net = slim.dropout(net, keep_prob=keep_prob, is_training=is_training, scope='dropout_35')
+                    net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='fc_36')
         return net
 
 
@@ -81,7 +85,9 @@ class GHNet(object):
         """Despite the names here, this should be standard mean square error (L2) loss."""
         with tf.variable_scope(scope):
             class_delta = (predict_classes - classes) # not `class` but just error
-            self.class_loss = tf.reduce_mean(tf.reduce_sum(tf.square(class_delta), axis=[1]), name='class_loss')
+            self.class_loss = tf.reduce_mean(
+                    tf.reduce_sum(tf.square(class_delta), axis=[1]), name='class_loss'
+            )
             tf.losses.add_loss(self.class_loss)
             tf.summary.scalar('class_loss', self.class_loss)
 
@@ -90,3 +96,13 @@ def leaky_relu(alpha):
     def op(inputs):
         return tf.maximum(alpha * inputs, inputs, name='leaky_relu')
     return op
+
+
+def get_variables():
+    print("")
+    variables = tf.trainable_variables()
+    numv = 0
+    for vv in variables:
+        numv += np.prod(vv.shape)
+        print(vv)
+    print("\nNumber of parameters: {}".format(numv))
