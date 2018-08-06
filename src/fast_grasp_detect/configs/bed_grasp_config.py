@@ -27,16 +27,16 @@ class CONFIG(object):
             assert args.cv_idx is not None
             self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_white_v01/'
             self.CV_GROUPS = [
-                [52, 60, 95, 94, 82, 1, 28, 10, 65, 32, 7],
-                [50, 42, 92, 96, 9, 22, 97, 56, 2, 69, 91],
-                [99, 98, 13, 79, 38, 76, 88, 15, 17, 27, 72],
-                [61, 23, 29, 21, 19, 84, 102, 5, 41, 68],
-                [14, 37, 62, 31, 34, 35, 77, 44, 71, 12],
-                [48, 70, 100, 39, 24, 81, 57, 86, 85, 16],
-                [66, 45, 40, 6, 67, 93, 54, 43, 101, 49],
-                [51, 55, 80, 90, 75, 59, 20, 73, 25, 3],
-                [33, 4, 83, 58, 26, 47, 53, 78, 46, 89],
-                [87, 74, 8, 36, 63, 18, 11, 30, 0, 64]
+                [52, 60, 95,  94, 82, 28,  10, 65,  32, 7],
+                [50, 42, 92,  96,  9, 22,  97, 56,   2, 69],
+                [99, 98, 13,  79, 38, 76,  88, 15,  17, 27],
+                [61, 23, 29,  21, 19, 84, 102,  5,  41, 68],
+                [14, 37, 62,  31, 34, 35,  77, 44,  72, 12],
+                [48, 70, 100, 39, 24, 81,  57, 86,  85, 16],
+                [66, 45, 40,   6, 67, 93,  54, 43, 101, 49],
+                [51, 55, 80,  90, 75, 59,  20, 73,  25, 3],
+                [33, 4,  83,  58, 26, 91,  53, 78,  46, 89],
+                [87, 74, 8,   36, 63, 18,  11, 30,  0]
             ]
             self.CV_HELD_OUT_INDEX = args.cv_idx
         else:
@@ -85,7 +85,7 @@ class CONFIG(object):
         self.ALPHA = 0.1
         self.DISP_CONSOLE = True
         self.RESOLUTION = 10
-        self.USE_DEPTH = False # False means RGB
+        self.USE_DEPTH = True # IMPORTANT!! False means RGB
         self.L2_LAMBDA = args.l2_lambda
 
         # solver parameter
@@ -100,7 +100,7 @@ class CONFIG(object):
 
         self.OPT_ALGO = 'ADAM'
         if self.OPT_ALGO == 'ADAM':
-            if args.lrate > 0.01:
+            if args.lrate >= 0.01:
                 print("Don't run Adam with high LR")
                 sys.exit()
             self.LEARNING_RATE = args.lrate
