@@ -27,16 +27,16 @@ class CONFIG(object):
             assert args.cv_idx is not None
             self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_white_v01/'
             self.CV_GROUPS = [
-                [68, 47, 20, 10, 32, 7, 41, 72],
-                [44, 37, 49, 42, 62, 0, 56, 75],
-                [2, 70, 52, 26, 35, 31, 53, 29],
-                [34, 67, 48, 61, 12, 15, 11, 33],
-                [77, 8, 78, 1, 73, 28, 54, 36],
-                [46, 40, 59, 50, 23, 45, 57, 16],
-                [24, 55, 18, 71, 76, 3, 6, 14],
-                [25, 64, 60, 51, 19, 17, 79, 9],
-                [43, 27, 63, 5, 22, 74, 21, 30],
-                [38, 65, 69, 4, 58, 13, 39, 66]
+                [52, 60, 95, 94, 82, 1, 28, 10, 65, 32, 7],
+                [50, 42, 92, 96, 9, 22, 97, 56, 2, 69, 91],
+                [99, 98, 13, 79, 38, 76, 88, 15, 17, 27, 72],
+                [61, 23, 29, 21, 19, 84, 102, 5, 41, 68],
+                [14, 37, 62, 31, 34, 35, 77, 44, 71, 12],
+                [48, 70, 100, 39, 24, 81, 57, 86, 85, 16],
+                [66, 45, 40, 6, 67, 93, 54, 43, 101, 49],
+                [51, 55, 80, 90, 75, 59, 20, 73, 25, 3],
+                [33, 4, 83, 58, 26, 47, 53, 78, 46, 89],
+                [87, 74, 8, 36, 63, 18, 11, 30, 0, 64]
             ]
             self.CV_HELD_OUT_INDEX = args.cv_idx
         else:
@@ -85,7 +85,7 @@ class CONFIG(object):
         self.ALPHA = 0.1
         self.DISP_CONSOLE = True
         self.RESOLUTION = 10
-        self.USE_DEPTH = True # False means RGB
+        self.USE_DEPTH = False # False means RGB
         self.L2_LAMBDA = args.l2_lambda
 
         # solver parameter
@@ -100,10 +100,13 @@ class CONFIG(object):
 
         self.OPT_ALGO = 'ADAM'
         if self.OPT_ALGO == 'ADAM':
+            if args.lrate > 0.01:
+                print("Don't run Adam with high LR")
+                sys.exit()
             self.LEARNING_RATE = args.lrate
             self.USE_EXP_MOV_AVG = False
         elif self.OPT_ALGO == 'SGD':
-            self.LEARNING_RATE = 0.01
+            self.LEARNING_RATE = args.lrate
             self.USE_EXP_MOV_AVG = True
         else:
             raise ValueError(self.OPT_ALGO)
