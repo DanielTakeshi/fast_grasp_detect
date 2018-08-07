@@ -93,10 +93,11 @@ class CONFIG(object):
         # If 'fixing', this means 'images' effectively turn into (fs,fs,channels),
         # e.g., shape (14,14,1024). If False, train from normal (480,640,3)-size data.
         # Technically 'pre-trained' is more like 'pre-initialized' (from Pascal task).
-        # Update: if we use a smaller network, `FIX_PRETRAINED_LAYERS` is _ignored_.
+        # Update: if we use a smaller network, `FIX_PRETRAINED_LAYERS==False`.
         # ----------------------------------------------------------------------
         self.FIX_PRETRAINED_LAYERS = True
         self.SMALLER_NET = False
+        assert not (self.SMALLER_NET and self.FIX_PRETRAINED_LAYERS)
 
         self.OPT_ALGO = 'ADAM'
         if self.OPT_ALGO == 'ADAM':
@@ -175,6 +176,7 @@ class CONFIG(object):
             bs = batchdim
 
         if self.FIX_PRETRAINED_LAYERS:
+            assert not self.SMALLER_NET
             return np.zeros((bs, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
         else:
             assert self.IMAGE_SIZE == 448

@@ -11,7 +11,7 @@ import cPickle as pickle
 class data_manager(object):
 
     def __init__(self,options):
-        self.cfg = options
+        self.cfg = cfg = options
         self.rollout_path = self.cfg.ROLLOUT_PATH
         self.batch_size = self.cfg.BATCH_SIZE
         self.classes = self.cfg.CLASSES
@@ -25,10 +25,20 @@ class data_manager(object):
         self.epoch = 1
         self.gt_labels = None
 
-        # For cross-validation
-        if self.cfg.PERFORM_CV:
-            self.held_out_list = self.cfg.CV_GROUPS[self.cfg.CV_HELD_OUT_INDEX]
-            self.held_out_rollouts = [os.path.join(self.rollout_path,'rollout_'+str(rr)) for rr in self.held_out_list]
+        # For cross-validation. Use self.training_list to hold single list of all training
+        # rollouts. That way I can ignore rollouts in the same target directory simply by
+        # removing the index in the configuration files rather than moving the rollout file.
+        if cfg.PERFORM_CV:
+            cidx = cfg.CV_HELD_OUT_INDEX
+            num = len(cfg.CV_GROUPS)
+            self.held_out_list = cfg.CV_GROUPS[cidx]
+            self.training_list = sorted(
+                    sum([cfg.CV_GROUPS[c] for c in range(num) if c != cidx], [])
+            )
+            self.held_out_rollouts = [os.path.join(self.rollout_path,'rollout_'+str(rr)) 
+                    for rr in self.held_out_list]
+            self.training_rollouts = [os.path.join(self.rollout_path,'rollout_'+str(rr)) 
+                    for rr in self.training_list]
 
         # Load YOLO network and set up its pre-trained weights from known file
         # Update: we'll also use this in the case of a smaller neural network.
@@ -37,7 +47,7 @@ class data_manager(object):
         if not self.cfg.SMALLER_NET:
             self.yc.load_network()
 
-        # Load test set and training rollouts. Also make test set batch fixed (shouldn't be re-shuffling).
+        # Load test & training rollouts. Make test batch fixed (i.e, don't keep shuffling).
         self.recent_batch = []
         self.test_batch_feats  = None
         self.test_batch_labels = None
@@ -104,11 +114,11 @@ class data_manager(object):
         shouldn't keep re-computing and re-shuffling since it's a test (or validation) batch.
         """
         if self.cfg.PERFORM_CV:
-            print("\ndata_manager.load_test_set(), held-out rollouts: {} (cv index {}) from {}".format(
+            print("\ndata_manager.load_test_set(), held-out: {} (cv index {}) from {}".format(
                     self.held_out_list, self.cfg.CV_HELD_OUT_INDEX, self.rollout_path))
             rollouts = list(self.held_out_rollouts)
         else:
-            print("\ndata_manager.load_test_set(), path: {}".format(self.cfg.BC_HELD_OUT))
+            print("\ndata_manager.load_test_set(): {}".format(self.cfg.BC_HELD_OUT))
             rollouts = glob.glob(os.path.join(self.cfg.BC_HELD_OUT, '*_*'))
 
         self.test_labels = []
@@ -179,10 +189,9 @@ class data_manager(object):
         simply something that resizes the input for the first YOLO layer.
         """
         if self.cfg.PERFORM_CV:
-            print("\ndata_manager.load_rollouts(), path {} (but w/held-out ignored: {}, index {})".format(
+            print("\ndata_manager.load_rollouts(), {} (held-out ignored: {}, idx {})".format(
                     self.rollout_path, self.held_out_list, self.cfg.CV_HELD_OUT_INDEX))
-            rollouts = [rr for rr in glob.glob(os.path.join(self.rollout_path, '*_*'))
-                        if rr not in self.held_out_rollouts]
+            rollouts = list(self.training_rollouts)
         else:
             print("\ndata_manager.load_rollouts(), path: {}".format(self.rollout_path))
             rollouts = glob.glob(os.path.join(self.rollout_path, '*_*'))
@@ -193,7 +202,7 @@ class data_manager(object):
         for rollout_p in rollouts:
             rollout = pickle.load(open(rollout_p+'/rollout.p'))
             grasp_rollout = self.cfg.break_up_rollouts(rollout)
-            print("{},  len(relevant)={},  w/len(rollout)={} [TEST]".format(
+            print("{},  len(relevant)={},  w/len(rollout)={}".format(
                     rollout_p, len(grasp_rollout), len(rollout)))
 
             for grasp_point in grasp_rollout:
