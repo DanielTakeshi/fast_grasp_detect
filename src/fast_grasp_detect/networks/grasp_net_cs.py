@@ -18,20 +18,27 @@ class GHNet(object):
         self.image_size = self.cfg.IMAGE_SIZE
         self.dist_size_w = self.cfg.T_IMAGE_SIZE_W/self.cfg.RESOLUTION
         self.dist_size_h = self.cfg.T_IMAGE_SIZE_H/self.cfg.RESOLUTION
-        self.output_size = 2 # 2-D output because we are predicting (x,y) pixel coords
         self.learning_rate = self.cfg.LEARNING_RATE
         self.batch_size = self.cfg.BATCH_SIZE
         self.alpha = self.cfg.ALPHA
         self.yolo_conv_layer = data_m.yc.conv_layer
+
+        # 2-D output because we are predicting (x,y) pixel coords
+        self.output_size = 2
+
+        # In case we want to apply dropout. Training only! Currently confusing since there is
+        # another `is_training` from earlier. This here helps to see _validation_ performance.
+        self.training_mode = tf.placeholder(tf.bool, name='training_mode')
+        self.keep_prob = cfg.DROPOUT_KEEP_PROB
 
         # Despite the name, `self.images` are features from YOLO stem.
         # Also, `logits` are not log prob of classes but simply the predicted pixels.
         if cfg.FIX_PRETRAINED_LAYERS:
             assert not cfg.SMALLER_NET
             self.images = tf.placeholder(tf.float32, [None, cfg.FILTER_SIZE, cfg.FILTER_SIZE, cfg.NUM_FILTERS], name='images')
-            self.logits = self.build_network(self.images, self.output_size, self.alpha, is_training=is_training)
+            self.logits = self.build_network(self.images, self.output_size, self.alpha, self.training_mode)
         else:
-            self.logits = self.build_network(self.yolo_conv_layer, self.output_size, self.alpha, is_training=is_training)
+            self.logits = self.build_network(self.yolo_conv_layer, self.output_size, self.alpha, self.training_mode)
 
         if is_training:
             # self.labels to be provided by the human user
@@ -41,7 +48,7 @@ class GHNet(object):
             tf.summary.scalar('total_loss', self.total_loss)
 
 
-    def build_network(self, images, num_outputs, alpha, keep_prob=1.0, is_training=True, scope='yolo'):
+    def build_network(self, images, num_outputs, alpha, training_mode, scope='yolo'):
         """Extra layers built on _top_ of the YOLO stem (first 26 layers)."""
         with tf.variable_scope(scope):
             net = images
@@ -51,6 +58,29 @@ class GHNet(object):
                                     activation_fn=leaky_relu(alpha),
                                     weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
                                     weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
+                    net = slim.conv2d(net, 64, [11, 11], 4, padding='VALID')
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
+                    net = slim.max_pool2d(net, [3, 3], 2)
+
+                    net = slim.conv2d(net, 192, [5, 5])
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
+                    net = slim.max_pool2d(net, [3, 3], 2)
+
+                    net = slim.conv2d(net, 256, [3, 3], 2)
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
+                    net = slim.conv2d(net, 256, [3, 3])
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
+                    net = slim.conv2d(net, 128, [3, 3])
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
+                    net = slim.conv2d(net, 128, [3, 3])
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
+                    net = slim.max_pool2d(net, [3, 3], 2)
+
+                    net = slim.flatten(net)
+                    net = slim.fully_connected(net, 2048)
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
+                    net = slim.fully_connected(net, 2048)
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
                     net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='lastfc')
 
             else:
@@ -59,15 +89,18 @@ class GHNet(object):
                                     activation_fn=leaky_relu(alpha),
                                     weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
                                     weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
-                    net = tf.pad(net, np.array([[0, 0], [1, 1], [1, 1], [0, 0]]), name='pad_27')
-                    net = slim.conv2d(net, 1024, 3, 2, padding='VALID', scope='conv_28')
-                    net = slim.conv2d(net, 1024, 3, scope='conv_29')
-                    net = slim.conv2d(net, 1024, 3, scope='conv_30')
+                    #net = tf.pad(net, np.array([[0, 0], [1, 1], [1, 1], [0, 0]]), name='pad_27')
+                    #net = slim.conv2d(net, 1024, 3, 2, padding='VALID', scope='conv_28')
+                    #net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
+                    net = slim.conv2d(net, 256, 3, stride=2, scope='conv_29')
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
+                    net = slim.conv2d(net, 256, 3, scope='conv_30')
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
                     net = tf.transpose(net, [0, 3, 1, 2], name='trans_31')
                     net = slim.flatten(net, scope='flat_32')
                     net = slim.fully_connected(net, 512, scope='fc_33')
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
                     net = slim.fully_connected(net, 4096, scope='fc_34')
-                    net = slim.dropout(net, keep_prob=keep_prob, is_training=is_training, scope='dropout_35')
                     net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='fc_36')
         return net
 

@@ -19,10 +19,17 @@ parser.add_argument('--seed', type=int, default=0)
 parser.add_argument('--cv_idx', type=int)
 parser.add_argument('--max_iters', type=int, default=100)
 parser.add_argument('--lrate', type=float, default=0.00010,
-        help='Default _starting_ LR.  Assumes Adam, if SGD then increase LR.')
-parser.add_argument('--l2_lambda', type=float, default=0.00050)
+        help='Default _starting_ LR. Assumes Adam, if SGD then increase LR.')
+parser.add_argument('--dropout_keep_prob', type=float, default=1.0,
+        help='The dropout keep probability. 1.0 means no dropout.')
+parser.add_argument('--l2_lambda', type=float, default=0.00010,
+        help='Standard L2 regularization term.')
 parser.add_argument('--do_cv', action='store_true', default=False)
 parser.add_argument('--print_preds', action='store_true', default=False)
+parser.add_argument('--use_smaller_net', action='store_true', default=False,
+        help='Use this to avoid the YOLO stem')
+parser.add_argument('--fix_pretrained_layers', action='store_true', default=False,
+        help='If using YOLO stem, this is usually a good ideastem')
 args = parser.parse_args()
 bed_grasp_options = CONFIG(args)
 set_seed(args.seed)

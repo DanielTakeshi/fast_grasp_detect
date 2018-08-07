@@ -85,8 +85,9 @@ class CONFIG(object):
         self.ALPHA = 0.1
         self.DISP_CONSOLE = True
         self.RESOLUTION = 10
-        self.USE_DEPTH = True # IMPORTANT!! False means RGB
+        self.DROPOUT_KEEP_PROB = args.dropout_keep_prob
         self.L2_LAMBDA = args.l2_lambda
+        self.USE_DEPTH = True # IMPORTANT!! False means RGB
 
         # solver parameter
         # ----------------------------------------------------------------------
@@ -95,8 +96,8 @@ class CONFIG(object):
         # Technically 'pre-trained' is more like 'pre-initialized' (from Pascal task).
         # Update: if we use a smaller network, `FIX_PRETRAINED_LAYERS==False`.
         # ----------------------------------------------------------------------
-        self.FIX_PRETRAINED_LAYERS = True
-        self.SMALLER_NET = False
+        self.FIX_PRETRAINED_LAYERS = args.fix_pretrained_layers
+        self.SMALLER_NET = args.use_smaller_net
         assert not (self.SMALLER_NET and self.FIX_PRETRAINED_LAYERS)
 
         self.OPT_ALGO = 'ADAM'
@@ -120,7 +121,7 @@ class CONFIG(object):
         self.MAX_ITER = args.max_iters
         self.SUMMARY_ITER = 1
         self.TEST_ITER = 1
-        self.SAVE_ITER = 100
+        self.SAVE_ITER = 500
         self.VIZ_DEBUG_ITER = 400
 
         # fast params

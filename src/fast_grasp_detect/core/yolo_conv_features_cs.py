@@ -50,30 +50,15 @@ class YOLO_CONV(object):
             padding: One of `"VALID"` or `"SAME"`.
 
         The `stride` defaults to 1, `padding` to SAME.
+
+        Note: if using the smaller net, we move all the computation to the other nets.
+        This part is only used for weights we don't want the user to modify, unless they
+        really want that full YOLO stem.
         """
         with tf.variable_scope(scope):
             net = images
 
-            if self.cfg.SMALLER_NET:
-                with slim.arg_scope([slim.conv2d, slim.fully_connected],
-                                    activation_fn=leaky_relu(alpha),
-                                    weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
-                                    weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
-                    # https://github.com/tensorflow/models/blob/master/research/slim/nets/alexnet.py#L55
-                    net = slim.conv2d(net, 64, [11, 11], 4, padding='VALID')
-                    net = slim.max_pool2d(net, [3, 3], 2)
-                    net = slim.conv2d(net, 192, [5, 5])
-                    net = slim.max_pool2d(net, [3, 3], 2)
-                    net = slim.conv2d(net, 384, [3, 3])
-                    net = slim.conv2d(net, 384, [3, 3])
-                    net = slim.conv2d(net, 256, [3, 3])
-                    net = slim.max_pool2d(net, [3, 3], 2)
-                    net = slim.flatten(net)
-                    net = slim.fully_connected(net, 2048)
-                    net = slim.fully_connected(net, 2048)
-
-            else:
-                # Michael's old way, with tf.slim, etc.
+            if not self.cfg.SMALLER_NET:
                 with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                     activation_fn=leaky_relu(alpha),
                                     weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
@@ -107,9 +92,6 @@ class YOLO_CONV(object):
 
             # Important reference! We provide this to final grasp/success net layers.
             self.conv_layer = net
-
-            #get_variables()
-            #sys.exit()
             return net
 
 

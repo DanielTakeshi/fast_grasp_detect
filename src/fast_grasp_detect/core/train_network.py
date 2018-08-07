@@ -133,10 +133,12 @@ class Solver(object):
             load_timer.tic()
             images, labels = self.data.get()
             load_timer.toc()
+
+            feed_dict = {self.net.labels: labels, self.net.training_mode: True}
             if cfg.FIX_PRETRAINED_LAYERS:
-                feed_dict = {self.net.images: images, self.net.labels: labels}
+                feed_dict[self.net.images] = images
             else:
-                feed_dict = {self.original_yolo_input: images, self.net.labels: labels}
+                feed_dict[self.original_yolo_input] = images
 
             if step % self.summary_iter == 0:
                 if step % (self.summary_iter * 10) == 0:
@@ -147,10 +149,12 @@ class Solver(object):
                     train_losses.append(loss)
 
                     if step % self.test_iter == 0:
+                        feed_dict_t = {self.net.labels: labels_t, self.net.training_mode: False}
                         if cfg.FIX_PRETRAINED_LAYERS:
-                            feed_dict_t = {self.net.images: images_t, self.net.labels: labels_t}
+                            feed_dict_t[self.net.images] = images_t
                         else:
-                            feed_dict_t = {self.original_yolo_input: images_t, self.net.labels: labels_t}
+                            feed_dict_t[self.original_yolo_input] = images_t
+
                         test_loss, test_logits = self.sess.run([self.net.class_loss, self.net.logits], feed_dict_t)
                         test_losses.append(test_loss)
 
@@ -225,7 +229,7 @@ class Solver(object):
 
                 # Save for plotting later. It should overwrite the older files saved. Careful,
                 # move to another directory ASAP; e.g. if I switch datasets these overwrite.
-                lrate = round(self.learning_rate.eval(session=self.sess), 6)
+                # TODO figure out a good way to save all this ...
                 img_type = 'rgb'
                 if cfg.USE_DEPTH:
                     img_type = 'depth'
@@ -236,14 +240,19 @@ class Solver(object):
                         net_type = 'fixed26'
                     else:
                         net_type = 'all26'
-                suffix = '{}_type_{}_optim_{}_net_{}_lrate_{}_l2reg_{}_cv_{}.p'.format(
-                        cfg.CONFIG_NAME, img_type, (cfg.OPT_ALGO).lower(), net_type, lrate,
-                        cfg.L2_LAMBDA, cv_idx)
-                name = os.path.join(cfg.STAT_DIR, suffix)
-                pickle.dump(loss_dict, open(name, 'wb'))
+                lrate = round(self.learning_rate.eval(session=self.sess), 6)
+
+                suffix = '{}_{}_img_{}_opt_{}_lr_{}_l2_{}_kp_{}'.format(
+                        cfg.CONFIG_NAME, net_type, img_type, (cfg.OPT_ALGO).lower(),
+                        lrate, cfg.L2_LAMBDA, cfg.DROPOUT_KEEP_PROB)
+                directory = os.path.join(cfg.STAT_DIR, suffix)
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
+                cv_pickle_file = os.path.join(directory, 'cv_{}.p'.format(cv_idx))
+                pickle.dump(loss_dict, open(cv_pickle_file, 'wb'))
 
         # Take most recent `name` and add images here. Test set imgs should all be in order.
-        name = name.replace('.p', '_raw_imgs.p')
+        name = cv_pickle_file.replace('.p', '_raw_imgs.p')
         imgs = {'c_imgs_list':c_imgs_list, 'd_imgs_list':d_imgs_list}
         pickle.dump(imgs, open(name, 'wb'))
 
