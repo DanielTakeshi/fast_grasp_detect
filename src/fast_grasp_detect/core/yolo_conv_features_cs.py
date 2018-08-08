@@ -10,7 +10,7 @@ class YOLO_CONV(object):
     """
 
     def __init__(self, options, is_training=True):
-        self.cfg = options
+        self.cfg = cfg = options
         self.classes = self.cfg.CLASSES
         self.num_class = len(self.classes)
         self.image_size = self.cfg.IMAGE_SIZE
@@ -30,8 +30,14 @@ class YOLO_CONV(object):
         self.images = tf.placeholder(tf.float32, [None, self.image_size, self.image_size, 3], name='images')
         self.logits = self.build_network(self.images, self.output_size, self.alpha, is_training=is_training)
 
-        self.sess = tf.Session()
+        # Use a user-specified fraction of our GPU.
+        gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=cfg.GPU_MEM_FRAC)
+        config = tf.ConfigProto(gpu_options=gpu_options)
+        self.sess = tf.Session(config=config)
         self.sess.run(tf.global_variables_initializer())
+
+        # In case we want to track some data statistics.
+        self.img_mean = np.zeros((self.image_size, self.image_size, 3))
 
 
     def build_network(self, images, num_outputs, alpha, keep_prob=1.0, is_training=True, scope='yolo'):
@@ -61,7 +67,8 @@ class YOLO_CONV(object):
             if not self.cfg.SMALLER_NET:
                 with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                     activation_fn=leaky_relu(alpha),
-                                    weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
+                                    #weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
+                                    weights_initializer=tf.contrib.layers.xavier_initializer(),
                                     weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
                     net = tf.pad(net, np.array([[0, 0], [3, 3], [3, 3], [0, 0]]), name='pad_1')
                     net = slim.conv2d(net, 64, 7, 2, padding='VALID', scope='conv_2')

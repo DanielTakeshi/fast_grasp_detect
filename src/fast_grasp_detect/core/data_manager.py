@@ -1,4 +1,4 @@
-import os, cv2, sys, copy, glob, IPython
+import os, cv2, sys, copy, glob, IPython, time
 import xml.etree.ElementTree as ET
 import numpy as np
 from numpy.random import random
@@ -35,9 +35,9 @@ class data_manager(object):
             self.training_list = sorted(
                     sum([cfg.CV_GROUPS[c] for c in range(num) if c != cidx], [])
             )
-            self.held_out_rollouts = [os.path.join(self.rollout_path,'rollout_'+str(rr)) 
+            self.held_out_rollouts = [os.path.join(self.rollout_path,'rollout_'+str(rr))
                     for rr in self.held_out_list]
-            self.training_rollouts = [os.path.join(self.rollout_path,'rollout_'+str(rr)) 
+            self.training_rollouts = [os.path.join(self.rollout_path,'rollout_'+str(rr))
                     for rr in self.training_list]
 
         # Load YOLO network and set up its pre-trained weights from known file
@@ -113,6 +113,7 @@ class data_manager(object):
         Also, form the test batch at the end. It won't be large with the data we have and we
         shouldn't keep re-computing and re-shuffling since it's a test (or validation) batch.
         """
+        s_time = time.time()
         if self.cfg.PERFORM_CV:
             print("\ndata_manager.load_test_set(), held-out: {} (cv index {}) from {}".format(
                     self.held_out_list, self.cfg.CV_HELD_OUT_INDEX, self.rollout_path))
@@ -173,6 +174,8 @@ class data_manager(object):
             W, H = self.cfg.T_IMAGE_SIZE_W, self.cfg.T_IMAGE_SIZE_H
             raw_labels = (self.test_batch_labels + 0.5) * np.array([W,H])
             print("(raw) test_batch_labels:\n{}".format(raw_labels))
+        e_time = (time.time() - s_time)
+        print("loaded test set in {:.3f} seconds...".format(e_time))
 
 
     def load_rollouts(self):
@@ -184,10 +187,11 @@ class data_manager(object):
         that these features are assumed to be held fixed, so if we did this in test-time execution,
         we would need those test images passed through this same feature extractor, THEN through our
         pre-trained weights.
-        
+
         Unless we trained the entire YOLO net, that is, in which case the feature extractor is
         simply something that resizes the input for the first YOLO layer.
         """
+        s_time = time.time()
         if self.cfg.PERFORM_CV:
             print("\ndata_manager.load_rollouts(), {} (held-out ignored: {}, idx {})".format(
                     self.rollout_path, self.held_out_list, self.cfg.CV_HELD_OUT_INDEX))
@@ -213,11 +217,14 @@ class data_manager(object):
                     data_a = augment_data(data, self.cfg.USE_DEPTH) # data augmentation magic.
                     for d_idx,datum_a in enumerate(data_a):
                         data_pt = {}
+                        # ---------------------------------------------------------------
                         # Run the YOLO network w/pre-trained weights! 
                         # features.shape: (1, 14, 14, 1024)
                         # labels: for grasps, alternate between (x,y) and (-x,y)
                         # Note that `datum_a['img']` could represent c_img OR d_img.
                         # But when we call the network, it really 'sees' the `features`.
+                        # This is where we scale pixels, resize image, etc.
+                        # ---------------------------------------------------------------
                         data_pt['features'] = self.yc.extract_conv_features(datum_a['img'])
                         data_pt['label'] = self.cfg.compute_label(datum_a)
                         #data_pt['c_img'] = c_img
@@ -226,10 +233,11 @@ class data_manager(object):
 
         np.random.shuffle(self.train_labels)
         print("len(self.train_labels): {}. Also, shuffled!".format(len(self.train_labels)))
+        e_time = (time.time() - s_time)
+        print("loaded train set in {:.3f} seconds...".format(e_time))
 
 
     def compute_label(self, pose):
-        """Load image and bounding boxes info from XML file in the PASCAL VOC format."""
         label = np.zeros((2))
         x = float(pose[0])/cfg.T_IMAGE_SIZE_W - 0.5
         y = float(pose[1])/cfg.T_IMAGE_SIZE_H - 0.5

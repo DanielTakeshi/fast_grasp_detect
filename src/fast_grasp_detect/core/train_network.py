@@ -1,10 +1,6 @@
 import tensorflow as tf
-import datetime
-import os
-import sys
-import argparse
+import os, sys, datetime
 from fast_grasp_detect.core.timer import Timer
-import IPython
 import cPickle as pickle
 import numpy as np
 np.set_printoptions(suppress=True, precision=6)
@@ -37,29 +33,15 @@ class Solver(object):
         self.save_iter = self.cfg.SAVE_ITER
         self.original_yolo_input = data.yc.images
 
-        # Handle output path and save config w/time-dependent string (smart!).
-        self.output_dir = os.path.join(
-            self.cfg.OUTPUT_DIR, datetime.datetime.now().strftime('%Y_%m_%d_%H_%M'))
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
-        self.save_cfg()
-
-        # Restoring variables, if necessary.
-        if not self.cfg.SMALLER_NET:
-            self.variable_to_restore = slim.get_variables_to_restore()
-            self.variables_to_restore = self.variable_to_restore[42:52]
-            count = 0
-            print("\nSolver.__init__(), self.variables_to_restore:")
-            vars_restored = []
-            for var in self.variables_to_restore:
-                print("{} {}".format(count, var.name))
-                vars_restored.append(var.name)
-                count += 1
-            self.saver = tf.train.Saver(self.variables_to_restore, max_to_keep=None)
-        self.all_saver = tf.train.Saver()
-        self.ckpt_file = os.path.join(self.output_dir, 'save.ckpt')
+        # Handle output directory, (if necessary) restore variables, and get savers, etc.
+        self.prepare_output_directory()
+        if not cfg.SMALLER_NET:
+            self.restore()
+        self.all_saver  = tf.train.Saver()
+        #self.ckpt_file  = os.path.join(self.output_dir, 'save.ckpt')
         self.summary_op = tf.summary.merge_all()
 
+        # Support a decaying learning rate, hence use a TF placeholder.
         self.global_step = tf.get_variable(
                 'global_step', [], initializer=tf.constant_initializer(0), trainable=False)
         self.learning_rate = tf.train.exponential_decay(
@@ -69,34 +51,32 @@ class Solver(object):
         # Loss function from `self.net`. Also adding the variable list we want to optimize over.
         self.var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
         self.grads = tf.gradients(self.net.class_loss, self.var_list)
-        #for idx,item in enumerate(self.grads):
-        #    print(idx,item)
 
-        if self.cfg.FIX_PRETRAINED_LAYERS:
-            self.var_list = [x for x in self.var_list if x.name in vars_restored]
-        print("\ncfg.FIX_PRETRAINED_LAYERS={}. Optimizer will adjust:".format(self.cfg.FIX_PRETRAINED_LAYERS))
+        if cfg.FIX_PRETRAINED_LAYERS:
+            self.var_list = [x for x in self.var_list if x.name in self.vars_restored]
+        print("\ncfg.FIX_PRETRAINED_LAYERS={}. Optimizer will adjust:".format(cfg.FIX_PRETRAINED_LAYERS))
         numv = 0
         for item in self.var_list:
             print(item)
             numv += np.prod(item.shape)
         print("\nadjustable params: {}\n".format(numv))
 
-        if self.cfg.OPT_ALGO == 'SGD':
+        if cfg.OPT_ALGO == 'SGD':
             self.optimizer = tf.train.GradientDescentOptimizer(learning_rate=self.learning_rate).minimize(
                     self.net.class_loss,
                     global_step=self.global_step,
                     var_list=self.var_list)
-        elif self.cfg.OPT_ALGO == 'ADAM':
+        elif cfg.OPT_ALGO == 'ADAM':
             self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(
                     self.net.class_loss,
                     global_step=self.global_step,
                     var_list=self.var_list)
         else:
-            raise ValueError(self.cfg.OPT_ALGO)
+            raise ValueError(cfg.OPT_ALGO)
 
         # Define the training operation and set all params via a moving average.
         # https://www.tensorflow.org/api_docs/python/tf/train/ExponentialMovingAverage
-        if self.cfg.USE_EXP_MOV_AVG:
+        if cfg.USE_EXP_MOV_AVG:
             self.ema = tf.train.ExponentialMovingAverage(decay=0.9999)
             self.averages_op = self.ema.apply(tf.trainable_variables())
             with tf.control_dependencies([self.optimizer]):
@@ -104,7 +84,8 @@ class Solver(object):
         else:
             self.train_op = self.optimizer
 
-        gpu_options = tf.GPUOptions()
+        # Use a user-specified fraction of our GPU.
+        gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=cfg.GPU_MEM_FRAC)
         config = tf.ConfigProto(gpu_options=gpu_options)
         self.sess = tf.Session(config=config)
         self.sess.run(tf.global_variables_initializer())
@@ -121,6 +102,7 @@ class Solver(object):
         load_timer = Timer()
         train_losses = []
         test_losses = []
+        learning_rates = []
         raw_test_losses = []  # grasp net
         raw_test_correct = [] # success net
         raw_test_total = []   # success net
@@ -129,7 +111,7 @@ class Solver(object):
         images_t, labels_t, c_imgs_list, d_imgs_list = self.data.get_test(return_imgs=True)
 
         for step in xrange(1, self.max_iter+1):
-            # Get minibatch of images (usually, features from YOLO) and labels.
+            # Get minibatch of images (can be features from pre-trained YOLO) and labels.
             load_timer.tic()
             images, labels = self.data.get()
             load_timer.toc()
@@ -147,7 +129,9 @@ class Solver(object):
                         [self.summary_op, self.net.class_loss, self.train_op], feed_dict)
                     train_timer.toc()
                     train_losses.append(loss)
+                    learning_rates.append(self.learning_rate.eval(session=self.sess))
 
+                    # Normally we set `test_iter=1` so we always test when doing a summary...
                     if step % self.test_iter == 0:
                         feed_dict_t = {self.net.labels: labels_t, self.net.training_mode: False}
                         if cfg.FIX_PRETRAINED_LAYERS:
@@ -158,7 +142,7 @@ class Solver(object):
                         test_loss, test_logits = self.sess.run([self.net.class_loss, self.net.logits], feed_dict_t)
                         test_losses.append(test_loss)
 
-                        if cfg.CONFIG_NAME == 'grasp_net':
+                        if cfg.CONFIG_NAME == 'grasp':
                             # Useful to get test loss in the **pixels**, not scaled version.
                             test_loss_raw = cfg.compare_preds_labels(
                                     preds=test_logits, labels=labels_t, doprint=cfg.PRINT_PREDS)
@@ -167,7 +151,7 @@ class Solver(object):
                             if test_loss_raw < best_loss:
                                 best_loss = test_loss_raw
                                 best_preds = cfg.return_raw_labels(test_logits)
-                        elif cfg.CONFIG_NAME == 'success_net':
+                        elif cfg.CONFIG_NAME == 'success':
                             correctness = np.argmax(test_logits,axis=1) == np.argmax(labels_t,axis=1)
                             correct = float(np.sum(correctness))
                             K = len(correctness)
@@ -194,73 +178,114 @@ class Solver(object):
                     print(log_str)
                 else:
                     train_timer.tic()
-                    summary_str, _ = self.sess.run(
-                        [self.summary_op, self.train_op],
-                        feed_dict=feed_dict)
+                    summary_str, _ = self.sess.run([self.summary_op, self.train_op], feed_dict)
                     train_timer.toc()
             else:
                 train_timer.tic()
-                self.sess.run(self.train_op, feed_dict=feed_dict)
+                self.sess.run(self.train_op, feed_dict)
                 train_timer.toc()
 
-            # Save the actual model using standard `tf.Saver`s, also record train/test losses.
+            # Save the actual model using standard `tf.Saver`s, w/global steps. Also record
+            # train/test losses. For now, only save if we're not doing cross validation.
             if step % self.save_iter == 0:
-                curr_time = datetime.datetime.now().strftime('%m_%d_%H_%M_%S')
-                real_out = self.cfg.OUTPUT_DIR
-                real_ckpt = real_out + curr_time + "_CS_"+str(self.layer)+ "_save.ckpt"
-                print("    saving tf checkpoint to {}".format(real_ckpt))
-                self.all_saver.save(self.sess, real_ckpt, global_step=self.global_step)
-                loss_dict = {}
-                loss_dict["test"] = test_losses
-                loss_dict["raw_test"] = raw_test_losses
-                loss_dict["success_test_correct"] = raw_test_correct
-                loss_dict["success_test_total"] = raw_test_total
-                loss_dict["train"] = train_losses
-                loss_dict["name"] = self.cfg.CONFIG_NAME
-                loss_dict["epoch"] = self.data.epoch
+                if not cfg.PERFORM_CV:
+                    curr_time = datetime.datetime.now().strftime('%m_%d_%H_%M_%S')
+                    ckpt_name = curr_time+ "_save.ckpt"
+                    real_ckpt = os.path.join(cfg.OUT_DIR, ckpt_name)
+                    print("    saving tf checkpoint to {}".format(real_ckpt))
+                    self.all_saver.save(self.sess, real_ckpt, global_step=self.global_step)
+
+                # New dictionary with lists of historical info, and save (w/overwriting).
+                info = {}
+                info["test"] = test_losses
+                info["raw_test"] = raw_test_losses
+                info["success_test_correct"] = raw_test_correct
+                info["success_test_total"] = raw_test_total
+                info["train"] = train_losses
+                info["name"] = cfg.CONFIG_NAME
+                info["epoch"] = self.data.epoch
+                info["lrates"] = learning_rates
 
                 # Don't forget best set of predictions + true labels, so we can visualize.
                 cv_idx = cfg.CV_HELD_OUT_INDEX
                 if cfg.CONFIG_NAME == 'grasp_net':
                     if cfg.PERFORM_CV:
-                        loss_dict["cv_indices"] = cfg.CV_GROUPS[cv_idx]
-                    loss_dict["preds"] = best_preds
-                    loss_dict["targs"] = cfg.return_raw_labels(labels_t)
+                        info["cv_indices"] = cfg.CV_GROUPS[cv_idx]
+                    info["preds"] = best_preds
+                    info["targs"] = cfg.return_raw_labels(labels_t)
 
-                # Save for plotting later. It should overwrite the older files saved. Careful,
-                # move to another directory ASAP; e.g. if I switch datasets these overwrite.
-                # TODO figure out a good way to save all this ...
-                img_type = 'rgb'
-                if cfg.USE_DEPTH:
-                    img_type = 'depth'
-                if cfg.SMALLER_NET:
-                    net_type = 'small'
-                else: 
-                    if cfg.FIX_PRETRAINED_LAYERS:
-                        net_type = 'fixed26'
-                    else:
-                        net_type = 'all26'
-                lrate = round(self.learning_rate.eval(session=self.sess), 6)
+                pickle.dump(info, open(self.stats_pickle_file, 'wb'))
 
-                suffix = '{}_{}_img_{}_opt_{}_lr_{}_l2_{}_kp_{}'.format(
-                        cfg.CONFIG_NAME, net_type, img_type, (cfg.OPT_ALGO).lower(),
-                        lrate, cfg.L2_LAMBDA, cfg.DROPOUT_KEEP_PROB)
-                directory = os.path.join(cfg.STAT_DIR, suffix)
-                if not os.path.exists(directory):
-                    os.makedirs(directory)
-                cv_pickle_file = os.path.join(directory, 'cv_{}.p'.format(cv_idx))
-                pickle.dump(loss_dict, open(cv_pickle_file, 'wb'))
-
-        # Take most recent `name` and add images here. Test set imgs should all be in order.
-        name = cv_pickle_file.replace('.p', '_raw_imgs.p')
+        # Add test-set images (should be in order) so we can visualize later.
+        name = (self.stats_pickle_file).replace('.p', '_raw_imgs.p')
         imgs = {'c_imgs_list':c_imgs_list, 'd_imgs_list':d_imgs_list}
         pickle.dump(imgs, open(name, 'wb'))
 
 
-    def save_cfg(self):
-        with open(os.path.join(self.output_dir, 'config.txt'), 'w') as f:
+    def restore(self):
+        """Should only be called if we're not using smaller network.
+        """
+        assert not self.cfg.SMALLER_NET
+        self.variable_to_restore = slim.get_variables_to_restore()
+        self.variables_to_restore = self.variable_to_restore[42:52]
+        count = 0
+        print("\nSolver.__init__(), self.variables_to_restore:")
+        self.vars_restored = []
+        for var in self.variables_to_restore:
+            print("{} {}".format(count, var.name))
+            self.vars_restored.append(var.name)
+            count += 1
+        self.saver = tf.train.Saver(self.variables_to_restore, max_to_keep=None)
+
+
+    def save_cfg(self, config_path):
+        """Saves the `config.txt` which provides info from the (python) config file.
+        """
+        with open(config_path, 'w') as f:
             self.cfg_dict = self.cfg.__dict__
             for key in sorted(self.cfg_dict.keys()):
                 if key[0].isupper():
                     self.cfg_str = '{}: {}\n'.format(key, self.cfg_dict[key])
                     f.write(self.cfg_str)
+
+
+    def prepare_output_directory(self):
+        """Done _before_ training. See README of IL_ROS_HSR for high-level comments.
+        """
+        cfg = self.cfg
+        if cfg.SMALLER_NET:
+            net_type = 'small'
+        else:
+            if cfg.FIX_PRETRAINED_LAYERS:
+                net_type = 'fixed26'
+            else:
+                net_type = 'all26'
+        img_type = 'rgb'
+        if cfg.USE_DEPTH:
+            img_type = 'depth'
+        cidx = cfg.CV_HELD_OUT_INDEX
+
+        # Goes in `/.../grasp/` or `/.../success/`.
+        directory = '{}_{}_img_{}_opt_{}_lr_{}_L2_{}_kp_{}_cv_{}'.format(
+                cfg.CONFIG_NAME,
+                net_type,
+                img_type,
+                (cfg.OPT_ALGO).lower(),
+                self.initial_learning_rate,
+                cfg.L2_LAMBDA,
+                cfg.DROPOUT_KEEP_PROB,
+                cfg.PERFORM_CV)
+
+        head_dir = os.path.join(cfg.OUT_DIR, directory)
+        if not os.path.exists(head_dir):
+            os.makedirs(head_dir)
+
+        # Use the stats pickle file for saving results from training.
+        if cfg.PERFORM_CV:
+            self.stats_pickle_file = os.path.join(head_dir, 'stats_{}.p'.format(cidx))
+        else:
+            self.stats_pickle_file = os.path.join(head_dir, 'stats.p')
+
+        # Also, for overall config, let's augment it with the exact time.
+        c_name = 'config_{}.txt'.format( datetime.datetime.now().strftime('%Y_%m_%d_%H_%M') )
+        self.save_cfg( os.path.join(head_dir,c_name) )

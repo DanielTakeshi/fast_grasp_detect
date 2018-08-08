@@ -1,4 +1,5 @@
 import os, sys
+from os.path import join
 import numpy as np
 
 
@@ -14,18 +15,25 @@ class CONFIG(object):
 
         and paste the result in `CV_GROUPS`.
         """
-        self.args = args
-        self.PERFORM_CV = args.do_cv
-        self.PRINT_PREDS = args.print_preds
+        # TODO: I thinkt his has to do with the deployment pipeline. Double check!!
+        #self.NET_NAME    = '08_28_01_37_11save.ckpt-30300'
 
-        self.CONFIG_NAME = 'grasp_net'
+        self.args = args
+        self.PERFORM_CV  = args.do_cv
+        self.PRINT_PREDS = args.print_preds
+        self.CONFIG_NAME = 'grasp'
         self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'   # Tritons
         self.DATA_PATH   = self.ROOT_DIR+''                     # Tritons
-        self.NET_NAME    = '08_28_01_37_11save.ckpt-30300'
+
+        # Adjust to each particular machine, but doesn't seem to be helpful :(
+        self.CACHE_PATH  = '/home/seita/'
 
         if self.PERFORM_CV:
             assert args.cv_idx is not None
-            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_white_v01/'
+            if args.use_cache:
+                self.ROLLOUT_PATH = join(self.CACHE_PATH,'rollouts_white_v01/')
+            else:
+                self.ROLLOUT_PATH = join(self.DATA_PATH,'rollouts_white_v01/')
             self.CV_GROUPS = [
                 [ 0,   1, 80, 42,  69,   6, 77, 102, 97, 89, 60],
                 [47,   9, 86, 68, 101,  67,  3,  22, 38,  8, 46],
@@ -40,38 +48,30 @@ class CONFIG(object):
             ]
             self.CV_HELD_OUT_INDEX = args.cv_idx
         else:
-            # Now do this if I have a fixed held-out directory, as with Michael's data.
             # Note: BC_HELD_OUT is not used if PERFORM_CV=True.
-            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_nytimes/'
-            self.BC_HELD_OUT  = self.DATA_PATH+'held_out_nytimes/'
+            if args.use_cache:
+                self.ROLLOUT_PATH = join(self.CACHE_PATH,'rollouts_nytimes/')
+                self.BC_HELD_OUT  = join(self.CACHE_PATH,'held_out_nytimes/')
+            else:
+                self.ROLLOUT_PATH = join(self.DATA_PATH,'rollouts_nytimes/')
+                self.BC_HELD_OUT  = join(self.DATA_PATH,'held_out_nytimes/')
 
-        # Other paths now.
-        self.IMAGE_PATH   = self.DATA_PATH+'images/'
-        self.LABEL_PATH   = self.DATA_PATH+'labels/'
-        self.CACHE_PATH   = self.DATA_PATH+'cache/'
-        self.OUTPUT_DIR   = self.DATA_PATH+'output/'
+        # Info goes here for training grasp net. Note: order matters, OUTPUT_DIR updated.
+        self.OUT_DIR = join(self.DATA_PATH, 'grasp/')
 
-        # Based on transitions (NOTE: is this used at all?)
-        self.TRAN_OUTPUT_DIR   = self.DATA_PATH+'transition_output/'
-        self.TRAN_STATS_DIR    = self.TRAN_OUTPUT_DIR+'stats/'
-        self.TRAIN_STATS_DIR_T = self.TRAN_OUTPUT_DIR+'train_stats/'
-        self.TEST_STATS_DIR_T  = self.TRAN_OUTPUT_DIR+'test_stats/'
+        #self.STAT_DIR = join(self.OUTPUT_DIR,'stats/')
+        #self.TRAIN_STATS_DIR_G = join(self.OUTPUT_DIR,'train_stats/')
+        #self.TEST_STATS_DIR_G = join(self.OUTPUT_DIR,'test_stats/')
 
-        # If training grasp net, info goes here. Order matters, OUTPUT_DIR is updated.
-        self.OUTPUT_DIR        = self.DATA_PATH+'grasp_output/'
-        self.STAT_DIR          = self.OUTPUT_DIR+'stats/'
-        self.TRAIN_STATS_DIR_G = self.OUTPUT_DIR+'train_stats/'
-        self.TEST_STATS_DIR_G  = self.OUTPUT_DIR+'test_stats/'
-
-        # Weights
-        self.WEIGHTS_DIR = self.DATA_PATH+'weights/'
+        # Pre-trained weights
+        self.WEIGHTS_DIR = join(self.DATA_PATH,'weights/')
         self.PRE_TRAINED_DIR = '/nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/'
         self.WEIGHTS_FILE = None
-        # WEIGHTS_FILE = os.path.join(DATA_PATH, 'weights', 'YOLO_small.ckpt')
+        ## WEIGHTS_FILE = join(DATA_PATH, 'weights', 'YOLO_small.ckpt')
 
         # Classes, labels, data augmentation
         self.CLASSES = ['success_grasp','fail_grasp']
-        self.NUM_LABELS = len(self.CLASSES)
+        ## self.NUM_LABELS = len(self.CLASSES)
         ## self.FLIPPED = False
         ## self.LIGHTING_NOISE = True
         ## self.QUICK_DEBUG = True
@@ -123,11 +123,11 @@ class CONFIG(object):
         self.TEST_ITER = 1
         self.SAVE_ITER = 500
         self.VIZ_DEBUG_ITER = 400
+        self.GPU_MEM_FRAC = args.gpu_frac
 
         # fast params
         self.FILTER_SIZE = 14
         self.NUM_FILTERS = 1024
-        self.FILTER_SIZE_L1 = 7
 
 
     def compute_label(self,datum):
