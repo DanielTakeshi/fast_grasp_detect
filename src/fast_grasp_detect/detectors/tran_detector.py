@@ -1,17 +1,12 @@
 import tensorflow as tf
 import numpy as np
-import os
-import glob
-import cv2
-import argparse
+import os, glob, cv2, argparse, sys
 from fast_grasp_detect.networks.success_net import SNet
 from fast_grasp_detect.core.yolo_conv_features_cs import YOLO_CONV
 from fast_grasp_detect.configs.config import CONFIG
+from fast_grasp_detect.data_aug.draw_cross_hair import DrawPrediction
 from utils.timer import Timer
-import IPython
-import sys, os
 slim = tf.contrib.slim
-from fast_grasp_detect.visualizers.draw_cross_hair import DrawPrediction
 
 
 class SDetector(object):
