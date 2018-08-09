@@ -18,7 +18,7 @@ class CONFIG(object):
         self.PERFORM_CV = args.do_cv
         self.PRINT_PREDS = args.print_preds
 
-        self.CONFIG_NAME = 'success_net'
+        self.CONFIG_NAME = 'success'
         self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'   # Tritons
         self.DATA_PATH   = self.ROOT_DIR+''                     # Tritons
         self.NET_NAME    = '08_28_01_37_11save.ckpt-30300'

@@ -79,7 +79,11 @@ class CONFIG(object):
         # Model parameters. The USE_DEPTH is a critical one to test!
         self.T_IMAGE_SIZE_H = 480
         self.T_IMAGE_SIZE_W = 640
-        self.IMAGE_SIZE = 448
+        if args.shrink_images:
+            assert args.use_smaller_net and (not args.fix_pretrained_layers)
+            self.IMAGE_SIZE = 227
+        else:
+            self.IMAGE_SIZE = 448
         self.CELL_SIZE = 7
         self.BOXES_PER_CELL = 2
         self.ALPHA = 0.1

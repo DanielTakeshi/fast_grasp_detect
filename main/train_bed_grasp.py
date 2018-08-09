@@ -47,6 +47,8 @@ pp.add_argument('--do_cv', action='store_true', default=False,
         help='If not doing cv, then assumes we have a fixed held-out directory of test data')
 pp.add_argument('--use_smaller_net', action='store_true', default=False,
         help='Use this to avoid the YOLO stem')
+pp.add_argument('--shrink_images', action='store_true', default=False,
+        help='If true, shrink to (227,227,3), else it is (448,448,3)')
 pp.add_argument('--fix_pretrained_layers', action='store_true', default=False,
         help='If using YOLO stem, this is usually a good idea')
 pp.add_argument('--print_preds', action='store_true', default=False,

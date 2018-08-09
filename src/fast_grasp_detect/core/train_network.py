@@ -208,7 +208,7 @@ class Solver(object):
 
                 # Don't forget best set of predictions + true labels, so we can visualize.
                 cv_idx = cfg.CV_HELD_OUT_INDEX
-                if cfg.CONFIG_NAME == 'grasp_net':
+                if 'grasp' in cfg.CONFIG_NAME:
                     if cfg.PERFORM_CV:
                         info["cv_indices"] = cfg.CV_GROUPS[cv_idx]
                     info["preds"] = best_preds

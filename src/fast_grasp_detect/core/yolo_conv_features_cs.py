@@ -144,7 +144,7 @@ class YOLO_CONV(object):
         we later pass it through the ENTIRE network, so update ALL weights.
 
         BTW, when we call cv2.resize(img, (448,448)) using a 3-channel img, it will correctly leave
-        that 3-channel alone, and result in (448,448,3), whew.
+        that 3-channel alone, and result in (448,448,3), whew. UPDATE: now supports (227,227).
         """
         img_h, img_w, _ = img.shape
         inputs = cv2.resize(img, (self.image_size, self.image_size))
