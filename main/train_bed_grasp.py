@@ -40,17 +40,12 @@ pp.add_argument('--l2_lambda', type=float, default=0.00010,
         help='Standard L2 regularization term.')
 pp.add_argument('--gpu_frac', type=float, default=0.75,
         help='Use a value less than 0.9 to leave some memory available.')
+pp.add_argument('--net_type', type=int,
+        help='1=fix26 448x448, 2=all26 448x448, 3=smaller 448x448, 4=smaller 227x227')
 
-# Booleans. A bit awkward for neural net design choice because the default choice
-# (without specifying anything) is with the YOLO net but training all the layers...
+# Booleans. For network design we'll use an integer and then pick values.
 pp.add_argument('--do_cv', action='store_true', default=False,
         help='If not doing cv, then assumes we have a fixed held-out directory of test data')
-pp.add_argument('--use_smaller_net', action='store_true', default=False,
-        help='Use this to avoid the YOLO stem')
-pp.add_argument('--shrink_images', action='store_true', default=False,
-        help='If true, shrink to (227,227,3), else it is (448,448,3)')
-pp.add_argument('--fix_pretrained_layers', action='store_true', default=False,
-        help='If using YOLO stem, this is usually a good idea')
 pp.add_argument('--print_preds', action='store_true', default=False,
         help='For printing actual predictions during validation. I\'d avoid this for now.')
 pp.add_argument('--use_cache', action='store_true', default=False,
@@ -58,6 +53,26 @@ pp.add_argument('--use_cache', action='store_true', default=False,
 
 args = pp.parse_args()
 set_seed(args.seed)
+
+# Add stuff here, makes selecting net design less error-prone.
+if int(args.net_type) == 1:
+    args.fix_pretrained_layers = True
+    args.use_smaller_net = False
+    args.shrink_images = False
+elif int(args.net_type) == 2:
+    args.fix_pretrained_layers = False
+    args.use_smaller_net = False
+    args.shrink_images = False
+elif int(args.net_type) == 3:
+    args.fix_pretrained_layers = False
+    args.use_smaller_net = True
+    args.shrink_images = False
+elif int(args.net_type) == 4:
+    args.fix_pretrained_layers = False
+    args.use_smaller_net = True
+    args.shrink_images = True
+else:
+    raise ValueError(args.net_type)
 
 # Configuration, then three major components; `pascal` has reference to 'yolo' network.
 bed_grasp_options = CONFIG(args)

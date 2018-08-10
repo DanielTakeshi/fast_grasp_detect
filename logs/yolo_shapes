@@ -1,3 +1,230 @@
+This document lists the shapes of the network inputs, along with variables.
+
+**************
+* NET TYPE 1 *
+**************
+
+YOLO stem:
+
+Tensor("images:0", shape=(?, 448, 448, 3), dtype=float32)
+Tensor("yolo/pad_1:0", shape=(?, 454, 454, 3), dtype=float32)
+Tensor("yolo/conv_2/leaky_relu:0", shape=(?, 224, 224, 64), dtype=float32)
+Tensor("yolo/pool_3/MaxPool:0", shape=(?, 112, 112, 64), dtype=float32)
+Tensor("yolo/conv_4/leaky_relu:0", shape=(?, 112, 112, 192), dtype=float32)
+Tensor("yolo/pool_5/MaxPool:0", shape=(?, 56, 56, 192), dtype=float32)
+Tensor("yolo/conv_6/leaky_relu:0", shape=(?, 56, 56, 128), dtype=float32)
+Tensor("yolo/conv_7/leaky_relu:0", shape=(?, 56, 56, 256), dtype=float32)
+Tensor("yolo/conv_8/leaky_relu:0", shape=(?, 56, 56, 256), dtype=float32)
+Tensor("yolo/conv_9/leaky_relu:0", shape=(?, 56, 56, 512), dtype=float32)
+Tensor("yolo/pool_10/MaxPool:0", shape=(?, 28, 28, 512), dtype=float32)
+Tensor("yolo/conv_11/leaky_relu:0", shape=(?, 28, 28, 256), dtype=float32)
+Tensor("yolo/conv_12/leaky_relu:0", shape=(?, 28, 28, 512), dtype=float32)
+Tensor("yolo/conv_13/leaky_relu:0", shape=(?, 28, 28, 256), dtype=float32)
+Tensor("yolo/conv_14/leaky_relu:0", shape=(?, 28, 28, 512), dtype=float32)
+Tensor("yolo/conv_15/leaky_relu:0", shape=(?, 28, 28, 256), dtype=float32)
+Tensor("yolo/conv_16/leaky_relu:0", shape=(?, 28, 28, 512), dtype=float32)
+Tensor("yolo/conv_17/leaky_relu:0", shape=(?, 28, 28, 256), dtype=float32)
+Tensor("yolo/conv_18/leaky_relu:0", shape=(?, 28, 28, 512), dtype=float32)
+Tensor("yolo/conv_19/leaky_relu:0", shape=(?, 28, 28, 512), dtype=float32)
+Tensor("yolo/conv_20/leaky_relu:0", shape=(?, 28, 28, 1024), dtype=float32)
+Tensor("yolo/pool_21/MaxPool:0", shape=(?, 14, 14, 1024), dtype=float32)
+Tensor("yolo/conv_22/leaky_relu:0", shape=(?, 14, 14, 512), dtype=float32)
+Tensor("yolo/conv_23/leaky_relu:0", shape=(?, 14, 14, 1024), dtype=float32)
+Tensor("yolo/conv_24/leaky_relu:0", shape=(?, 14, 14, 512), dtype=float32)
+Tensor("yolo/conv_25/leaky_relu:0", shape=(?, 14, 14, 1024), dtype=float32)
+Tensor("yolo/conv_26/leaky_relu:0", shape=(?, 14, 14, 1024), dtype=float32)
+
+then after YOLO, w/first input here `images_1:0` matching the last one above:
+
+Tensor("images_1:0", shape=(?, 14, 14, 1024), dtype=float32)
+Tensor("yolo_1/conv_29/leaky_relu:0", shape=(?, 7, 7, 256), dtype=float32)
+Tensor("yolo_1/conv_30/leaky_relu:0", shape=(?, 7, 7, 256), dtype=float32)
+Tensor("yolo_1/trans_31:0", shape=(?, 256, 7, 7), dtype=float32)
+Tensor("yolo_1/flat_32/flatten/Reshape:0", shape=(?, 12544), dtype=float32)
+Tensor("yolo_1/fc_33/leaky_relu:0", shape=(?, 1024), dtype=float32)
+Tensor("yolo_1/Dropout/cond/Merge:0", shape=(?, 1024), dtype=float32)
+Tensor("yolo_1/fc_34/leaky_relu:0", shape=(?, 1024), dtype=float32)
+Tensor("yolo_1/fc_36/BiasAdd:0", shape=(?, 2), dtype=float32)
+
+<tf.Variable 'yolo/conv_2/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/conv_2/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/weights:0' shape=(3, 3, 64, 192) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/weights:0' shape=(1, 1, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/weights:0' shape=(3, 3, 128, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/weights:0' shape=(1, 1, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/weights:0' shape=(1, 1, 512, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(12544, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(1024, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+Number of parameters: 48688706
+
+cfg.FIX_PRETRAINED_LAYERS=True. Optimizer will adjust:
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(12544, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(1024, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+adjustable params: 16847362
+
+
+**************
+* NET TYPE 2 *
+**************
+
+Network inputs: same as type 1, except adjustable params is actually 48M, not the 16M above.
+
+
+**************
+* NET TYPE 3 *
+**************
+
+Inputs:
+
+Tensor("yolo_1/Conv/leaky_relu:0", shape=(?, 224, 224, 64), dtype=float32)
+Tensor("yolo_1/Conv_1/leaky_relu:0", shape=(?, 112, 112, 128), dtype=float32)
+Tensor("yolo_1/MaxPool2D/MaxPool:0", shape=(?, 56, 56, 128), dtype=float32)
+Tensor("yolo_1/Conv_2/leaky_relu:0", shape=(?, 56, 56, 128), dtype=float32)
+Tensor("yolo_1/Conv_3/leaky_relu:0", shape=(?, 28, 28, 192), dtype=float32)
+Tensor("yolo_1/MaxPool2D_1/MaxPool:0", shape=(?, 14, 14, 192), dtype=float32)
+Tensor("yolo_1/Conv_4/leaky_relu:0", shape=(?, 14, 14, 192), dtype=float32)
+Tensor("yolo_1/Conv_5/leaky_relu:0", shape=(?, 14, 14, 192), dtype=float32)
+Tensor("yolo_1/Conv_6/leaky_relu:0", shape=(?, 14, 14, 128), dtype=float32)
+Tensor("yolo_1/MaxPool2D_2/MaxPool:0", shape=(?, 7, 7, 128), dtype=float32)
+Tensor("yolo_1/Flatten/flatten/Reshape:0", shape=(?, 6272), dtype=float32)
+Tensor("yolo_1/fully_connected/leaky_relu:0", shape=(?, 2000), dtype=float32)
+Tensor("yolo_1/Dropout/cond/Merge:0", shape=(?, 2000), dtype=float32)
+Tensor("yolo_1/fully_connected_1/leaky_relu:0", shape=(?, 2000), dtype=float32)
+Tensor("yolo_1/fully_connected_2/BiasAdd:0", shape=(?, 2), dtype=float32)
+
+Weights:
+
+<tf.Variable 'yolo/Conv/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/Conv/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_1/weights:0' shape=(5, 5, 64, 128) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_1/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_2/weights:0' shape=(5, 5, 128, 128) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_2/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_3/weights:0' shape=(3, 3, 128, 192) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_3/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_4/weights:0' shape=(3, 3, 192, 192) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_5/weights:0' shape=(3, 3, 192, 192) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_5/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_6/weights:0' shape=(3, 3, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/fully_connected/weights:0' shape=(6272, 2000) dtype=float32_ref>
+<tf.Variable 'yolo/fully_connected/biases:0' shape=(2000,) dtype=float32_ref>
+<tf.Variable 'yolo/fully_connected_1/weights:0' shape=(2000, 2000) dtype=float32_ref>
+<tf.Variable 'yolo/fully_connected_1/biases:0' shape=(2000,) dtype=float32_ref>
+<tf.Variable 'yolo/fully_connected_2/weights:0' shape=(2000, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fully_connected_2/biases:0' shape=(2,) dtype=float32_ref>
+
+Number of parameters: 18282754
+
+18M is comparable with 17M, not a big deal ...
+
+
+**************
+* NET TYPE 4 *
+**************
+
+Should have the same sized input.
+
+Tensor("yolo_1/Conv/leaky_relu:0", shape=(?, 224, 224, 64), dtype=float32)
+Tensor("yolo_1/Conv_1/leaky_relu:0", shape=(?, 112, 112, 128), dtype=float32)
+Tensor("yolo_1/MaxPool2D/MaxPool:0", shape=(?, 56, 56, 128), dtype=float32)
+Tensor("yolo_1/Conv_2/leaky_relu:0", shape=(?, 56, 56, 128), dtype=float32)
+Tensor("yolo_1/Conv_3/leaky_relu:0", shape=(?, 28, 28, 192), dtype=float32)
+Tensor("yolo_1/MaxPool2D_1/MaxPool:0", shape=(?, 14, 14, 192), dtype=float32)
+Tensor("yolo_1/Conv_4/leaky_relu:0", shape=(?, 14, 14, 192), dtype=float32)
+Tensor("yolo_1/Conv_5/leaky_relu:0", shape=(?, 14, 14, 192), dtype=float32)
+Tensor("yolo_1/Conv_6/leaky_relu:0", shape=(?, 14, 14, 128), dtype=float32)
+Tensor("yolo_1/MaxPool2D_2/MaxPool:0", shape=(?, 7, 7, 128), dtype=float32)
+Tensor("yolo_1/Flatten/flatten/Reshape:0", shape=(?, 6272), dtype=float32)
+Tensor("yolo_1/fully_connected/leaky_relu:0", shape=(?, 2000), dtype=float32)
+Tensor("yolo_1/Dropout/cond/Merge:0", shape=(?, 2000), dtype=float32)
+Tensor("yolo_1/fully_connected_1/leaky_relu:0", shape=(?, 2000), dtype=float32)
+Tensor("yolo_1/fully_connected_2/BiasAdd:0", shape=(?, 2), dtype=float32)
+
+<tf.Variable 'yolo/Conv/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/Conv/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_1/weights:0' shape=(5, 5, 64, 128) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_1/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_2/weights:0' shape=(5, 5, 128, 128) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_2/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_3/weights:0' shape=(3, 3, 128, 192) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_3/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_4/weights:0' shape=(3, 3, 192, 192) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_5/weights:0' shape=(3, 3, 192, 192) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_5/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_6/weights:0' shape=(3, 3, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/Conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/fully_connected/weights:0' shape=(6272, 2000) dtype=float32_ref>
+<tf.Variable 'yolo/fully_connected/biases:0' shape=(2000,) dtype=float32_ref>
+<tf.Variable 'yolo/fully_connected_1/weights:0' shape=(2000, 2000) dtype=float32_ref>
+<tf.Variable 'yolo/fully_connected_1/biases:0' shape=(2000,) dtype=float32_ref>
+<tf.Variable 'yolo/fully_connected_2/weights:0' shape=(2000, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fully_connected_2/biases:0' shape=(2,) dtype=float32_ref>
+
+Number of parameters: 18282754
+
+
+
+
+************************
+* OLDER NETWORK DESIGN *
+************************
+
 This is what the normal YOLO stem looks like, when you call the feature extraction method in the
 YOLO class when loading the data:
 
@@ -105,4 +332,5 @@ datasets have been loaded and converted to their 'featurized' form.
 Also note that during the flattening and FC part, that alone results in 50176*512 = 25690112
 parameters! Ouch. Then we get 512*4096 = 2097152 and 4096^2 = 16777216. All together, including
 biases and the last FC part, there's about 45 _million_ parameters, just in that fully connected
-portion of the network.
+portion of the network. Then there's a few million more for the convolutions, so in all I think it's
+about 88M parameters, of which 47M are trainable here and 31M are fixed. I think.

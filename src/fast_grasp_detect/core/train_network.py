@@ -253,13 +253,6 @@ class Solver(object):
         """Done _before_ training. See README of IL_ROS_HSR for high-level comments.
         """
         cfg = self.cfg
-        if cfg.SMALLER_NET:
-            net_type = 'small'
-        else:
-            if cfg.FIX_PRETRAINED_LAYERS:
-                net_type = 'fixed26'
-            else:
-                net_type = 'all26'
         img_type = 'rgb'
         if cfg.USE_DEPTH:
             img_type = 'depth'
@@ -268,7 +261,7 @@ class Solver(object):
         # Goes in `/.../grasp/` or `/.../success/`.
         directory = '{}_{}_img_{}_opt_{}_lr_{}_L2_{}_kp_{}_cv_{}'.format(
                 cfg.CONFIG_NAME,
-                net_type,
+                cfg.NET_TYPE,
                 img_type,
                 (cfg.OPT_ALGO).lower(),
                 self.initial_learning_rate,

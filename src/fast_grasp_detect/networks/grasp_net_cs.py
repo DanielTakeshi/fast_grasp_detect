@@ -53,39 +53,68 @@ class GHNet(object):
         with tf.variable_scope(scope):
             net = images
 
-            if self.cfg.SMALLER_NET:
+            if self.cfg.NET_TYPE == 3:
+                assert self.cfg.SMALLER_NET
                 with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                     activation_fn=leaky_relu(alpha),
-                                    #weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
-                                    weights_initializer=tf.contrib.layers.xavier_initializer(),
+                                    weights_initializer=tf.truncated_normal_initializer(0.0,0.01),
+                                    #weights_initializer=tf.contrib.layers.xavier_initializer(),
                                     weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
-                    net = slim.conv2d(net, 64, [11, 11], 4, padding='VALID')
-                    net = slim.max_pool2d(net, [3, 3], 2)
+                    net = slim.conv2d(net, 64, [7, 7], 2, padding='SAME')
+                    net = slim.conv2d(net, 128, [5, 5], 2, padding='SAME')
+                    net = slim.max_pool2d(net, [2, 2], 2)
 
-                    net = slim.conv2d(net, 192, [5, 5])
-                    net = slim.max_pool2d(net, [3, 3], 2)
+                    net = slim.conv2d(net, 128, [5, 5])
+                    net = slim.conv2d(net, 192, [3, 3], 2)
+                    net = slim.max_pool2d(net, [2, 2], 2)
 
-                    net = slim.conv2d(net, 256, [3, 3], 2)
-                    net = slim.conv2d(net, 256, [3, 3])
+                    net = slim.conv2d(net, 192, [3, 3])
+                    net = slim.conv2d(net, 192, [3, 3])
                     net = slim.conv2d(net, 128, [3, 3])
-                    net = slim.conv2d(net, 128, [3, 3])
-                    net = slim.max_pool2d(net, [3, 3], 2)
+                    net = slim.max_pool2d(net, [2, 2], 2)
 
                     net = slim.flatten(net)
-                    net = slim.fully_connected(net, 2048)
+                    net = slim.fully_connected(net, 2000)
                     net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
-                    net = slim.fully_connected(net, 2048)
-                    net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='lastfc')
+                    net = slim.fully_connected(net, 2000)
+                    net = slim.fully_connected(net, num_outputs, activation_fn=None)
 
-            else:
+            elif self.cfg.NET_TYPE == 4:
+                # To reduce complexity, for now make this similar to the case above
+                assert self.cfg.SMALLER_NET
                 with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                     activation_fn=leaky_relu(alpha),
-                                    #weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
-                                    weights_initializer=tf.contrib.layers.xavier_initializer(),
+                                    weights_initializer=tf.truncated_normal_initializer(0.0,0.01),
+                                    #weights_initializer=tf.contrib.layers.xavier_initializer(),
                                     weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
-                    #net = tf.pad(net, np.array([[0, 0], [1, 1], [1, 1], [0, 0]]), name='pad_27')
-                    #net = slim.conv2d(net, 1024, 3, 2, padding='VALID', scope='conv_28')
 
+                    net = slim.conv2d(net, 64, [7, 7], 1, padding='SAME')
+                    net = slim.conv2d(net, 128, [5, 5], 2, padding='SAME')
+                    net = slim.max_pool2d(net, [2, 2], 2)
+
+                    net = slim.conv2d(net, 128, [5, 5])
+                    net = slim.conv2d(net, 192, [3, 3], 2)
+                    net = slim.max_pool2d(net, [2, 2], 2)
+
+                    net = slim.conv2d(net, 192, [3, 3])
+                    net = slim.conv2d(net, 192, [3, 3])
+                    net = slim.conv2d(net, 128, [3, 3])
+                    net = slim.max_pool2d(net, [2, 2], 2)
+
+                    net = slim.flatten(net)
+                    net = slim.fully_connected(net, 2000)
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
+                    net = slim.fully_connected(net, 2000)
+                    net = slim.fully_connected(net, num_outputs, activation_fn=None)
+
+            else:
+                assert not self.cfg.SMALLER_NET
+                assert self.cfg.NET_TYPE == 1 or self.cfg.NET_TYPE == 2
+                with slim.arg_scope([slim.conv2d, slim.fully_connected],
+                                    activation_fn=leaky_relu(alpha),
+                                    weights_initializer=tf.truncated_normal_initializer(0.0,0.01),
+                                    #weights_initializer=tf.contrib.layers.xavier_initializer(),
+                                    weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
                     net = slim.conv2d(net, 256, 3, stride=2, scope='conv_29')
                     net = slim.conv2d(net, 256, 3, scope='conv_30')
                     net = tf.transpose(net, [0, 3, 1, 2], name='trans_31')
@@ -96,7 +125,7 @@ class GHNet(object):
                     net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
                     net = slim.fully_connected(net, 1024, scope='fc_34')
                     net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='fc_36')
-
+        get_variables()
         return net
 
 

@@ -20,6 +20,7 @@ class CONFIG(object):
 
         self.args = args
         self.PERFORM_CV  = args.do_cv
+        self.NET_TYPE    = args.net_type
         self.PRINT_PREDS = args.print_preds
         self.CONFIG_NAME = 'grasp'
         self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'   # Tritons
@@ -80,8 +81,9 @@ class CONFIG(object):
         self.T_IMAGE_SIZE_H = 480
         self.T_IMAGE_SIZE_W = 640
         if args.shrink_images:
-            assert args.use_smaller_net and (not args.fix_pretrained_layers)
-            self.IMAGE_SIZE = 227
+            assert args.use_smaller_net and (not args.fix_pretrained_layers) \
+                    and args.net_type == 4
+            self.IMAGE_SIZE = 224
         else:
             self.IMAGE_SIZE = 448
         self.CELL_SIZE = 7
@@ -180,10 +182,10 @@ class CONFIG(object):
             bs = batchdim
 
         if self.FIX_PRETRAINED_LAYERS:
-            assert not self.SMALLER_NET
+            assert not self.SMALLER_NET and self.NET_TYPE != 2
             return np.zeros((bs, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
         else:
-            assert self.IMAGE_SIZE == 448
+            assert self.NET_TYPE != 2
             return np.zeros((bs, self.IMAGE_SIZE, self.IMAGE_SIZE, 3))
 
 
