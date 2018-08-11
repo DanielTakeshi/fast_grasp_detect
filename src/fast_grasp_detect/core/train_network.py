@@ -197,11 +197,11 @@ class Solver(object):
 
                 # New dictionary with lists of historical info, and save (w/overwriting).
                 info = {}
+                info["train"] = train_losses
                 info["test"] = test_losses
                 info["raw_test"] = raw_test_losses
                 info["success_test_correct"] = raw_test_correct
                 info["success_test_total"] = raw_test_total
-                info["train"] = train_losses
                 info["name"] = cfg.CONFIG_NAME
                 info["epoch"] = self.data.epoch
                 info["lrates"] = learning_rates
