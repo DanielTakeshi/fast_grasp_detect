@@ -138,8 +138,8 @@ class Solver(object):
                             feed_dict_t[self.net.images] = images_t
                         else:
                             feed_dict_t[self.original_yolo_input] = images_t
-
-                        test_loss, test_logits = self.sess.run([self.net.class_loss, self.net.logits], feed_dict_t)
+                        test_loss, test_logits = self.sess.run(
+                                [self.net.class_loss, self.net.logits], feed_dict_t)
                         test_losses.append(test_loss)
 
                         if cfg.CONFIG_NAME == 'grasp':
@@ -160,7 +160,8 @@ class Solver(object):
                             raw_test_total.append(K)
                             cfg.compare_preds_labels(preds=test_logits, labels=labels_t,
                                     correctness=correctness, doprint=cfg.PRINT_PREDS)
-                            print("Test loss: {:.6f}, acc: {}/{} = {:.2f}".format(test_loss, correct, K, raw_acc))
+                            print("Test loss: {:.6f}, acc: {}/{} = {:.2f}".format(
+                                    test_loss, correct, K, raw_acc))
                         else:
                             raise ValueError(self.cfg.CONFIG_NAME)
 
@@ -187,6 +188,7 @@ class Solver(object):
 
             # Save the actual model using standard `tf.Saver`s, w/global steps. Also record
             # train/test losses. For now, only save if we're not doing cross validation.
+            # TODO: we're only saving the best predictions but to be fair we should use a fixed # of iters
             if step % self.save_iter == 0:
                 if not cfg.PERFORM_CV:
                     curr_time = datetime.datetime.now().strftime('%m_%d_%H_%M_%S')
@@ -269,7 +271,11 @@ class Solver(object):
                 cfg.DROPOUT_KEEP_PROB,
                 cfg.PERFORM_CV)
 
-        head_dir = os.path.join(cfg.OUT_DIR, directory)
+        # Also prefix this with the dataset _name_, so as not to get confused.
+        data_name = ( (cfg.ROLLOUT_PATH.rstrip('/')).split('/') )[-1] # e.g., `rollouts_white_v01`
+
+        # Now, e.g., `/.../grasp/data_name/directory`.
+        head_dir = os.path.join(cfg.OUT_DIR, data_name, directory)
         if not os.path.exists(head_dir):
             os.makedirs(head_dir)
 

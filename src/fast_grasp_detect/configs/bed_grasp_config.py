@@ -31,7 +31,7 @@ class CONFIG(object):
             self.CV_HELD_OUT_INDEX = args.cv_idx
             if self.USE_CACHE:
                 print("Alert: using the cache-method for data!")
-                self.ROLLOUT_PATH = join(self.DATA_PATH,'cache_white_v01/')
+                self.ROLLOUT_PATH = join(self.DATA_PATH,'cache_h_v01/')
                 self.CV_GROUPS = sorted([x for x in os.listdir(self.ROLLOUT_PATH) if 'cv_' in x])
             else:
                 print("Alert: using the rollout-method for data!")
@@ -164,10 +164,12 @@ class CONFIG(object):
 
 
     def return_raw_labels(self, arr):
-        """Assumes `arr` is like the logits or predictions for sclaed labels."""
+        """Assumes `arr` is like the logits or predictions for scaled labels."""
         xx = np.array([self.T_IMAGE_SIZE_W, self.T_IMAGE_SIZE_H])
         raw = (0.5 + arr) * xx
-        assert np.min(raw) > 0.0
+        minv = np.min(raw)
+        if minv <= 0.0:
+            print("Caution: our net predicted min pixel value: {}".format(minv))
         return raw
 
 
