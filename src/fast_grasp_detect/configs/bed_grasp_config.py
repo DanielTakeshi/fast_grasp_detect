@@ -22,47 +22,42 @@ class CONFIG(object):
         self.PERFORM_CV  = args.do_cv
         self.NET_TYPE    = args.net_type
         self.PRINT_PREDS = args.print_preds
+        self.USE_CACHE   = args.use_cache
         self.CONFIG_NAME = 'grasp'
         self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'   # Tritons
         self.DATA_PATH   = self.ROOT_DIR+''                     # Tritons
 
-        # Adjust to each particular machine, but doesn't seem to be helpful :(
-        self.CACHE_PATH  = '/home/seita/'
-
         if self.PERFORM_CV:
-            assert args.cv_idx is not None
-            if args.use_cache:
-                self.ROLLOUT_PATH = join(self.CACHE_PATH,'rollouts_white_v01/')
-            else:
-                self.ROLLOUT_PATH = join(self.DATA_PATH,'rollouts_white_v01/')
-            self.CV_GROUPS = [
-                [ 0,   1, 80, 42,  69,   6, 77, 102, 97, 89, 60],
-                [47,   9, 86, 68, 101,  67,  3,  22, 38,  8, 46],
-                [53,  20, 92, 28,  55,  21, 41,  83, 24, 10,  2],
-                [19,  73, 13, 45,  52,  57, 32,  94, 29, 74, 71],
-                [51,  81, 88, 78,  40, 103, 34,  84, 66, 18, 26],
-                [65,  98, 49, 85,  27,  95, 79,  48, 23, 90],
-                [ 7,  56, 63, 70,  11, 100, 43,  82, 62,  5],
-                [64,  76, 72, 37,  58,  12, 30,  33, 54, 31],
-                [36,  25, 75, 87,  39,   4, 14,  15, 59, 17],
-                [61, 104, 91, 96,  44,  50, 16,  99, 93, 35]
-            ]
             self.CV_HELD_OUT_INDEX = args.cv_idx
-        else:
-            # Note: BC_HELD_OUT is not used if PERFORM_CV=True.
-            if args.use_cache:
-                self.ROLLOUT_PATH = join(self.CACHE_PATH,'rollouts_nytimes/')
-                self.BC_HELD_OUT  = join(self.CACHE_PATH,'held_out_nytimes/')
+            if self.USE_CACHE:
+                print("Alert: using the cache-method for data!")
+                self.ROLLOUT_PATH = join(self.DATA_PATH,'cache_white_v01/')
+                self.CV_GROUPS = sorted([x for x in os.listdir(self.ROLLOUT_PATH) if 'cv_' in x])
             else:
-                self.ROLLOUT_PATH = join(self.DATA_PATH,'rollouts_nytimes/')
-                self.BC_HELD_OUT  = join(self.DATA_PATH,'held_out_nytimes/')
+                print("Alert: using the rollout-method for data!")
+                self.ROLLOUT_PATH = join(self.DATA_PATH,'rollouts_white_v01/')
+                self.CV_GROUPS = [
+                    [ 0,   1, 80, 42,  69,   6, 77, 102, 97, 89, 60],
+                    [47,   9, 86, 68, 101,  67,  3,  22, 38,  8, 46],
+                    [53,  20, 92, 28,  55,  21, 41,  83, 24, 10,  2],
+                    [19,  73, 13, 45,  52,  57, 32,  94, 29, 74, 71],
+                    [51,  81, 88, 78,  40, 103, 34,  84, 66, 18, 26],
+                    [65,  98, 49, 85,  27,  95, 79,  48, 23, 90],
+                    [ 7,  56, 63, 70,  11, 100, 43,  82, 62,  5],
+                    [64,  76, 72, 37,  58,  12, 30,  33, 54, 31],
+                    [36,  25, 75, 87,  39,   4, 14,  15, 59, 17],
+                    [61, 104, 91, 96,  44,  50, 16,  99, 93, 35]
+                ]
+            assert len(self.CV_GROUPS) == 10 and args.cv_idx is not None
+        else:
+            assert not self.USE_CACHE, "Not supported for now"
+            # Note: `BC_HELD_OUT` is not used if PERFORM_CV=True.
+            # Assumes we have some fixed held-out test set, no cross validation.
+            self.ROLLOUT_PATH = join(self.DATA_PATH,'rollouts_nytimes/')
+            self.BC_HELD_OUT  = join(self.DATA_PATH,'held_out_nytimes/')
 
         # Info goes here for training grasp net. Note: order matters, OUTPUT_DIR updated.
         self.OUT_DIR = join(self.DATA_PATH, 'grasp/')
-
-        #self.STAT_DIR = join(self.OUTPUT_DIR,'stats/')
-        #self.TRAIN_STATS_DIR_G = join(self.OUTPUT_DIR,'train_stats/')
-        #self.TEST_STATS_DIR_G = join(self.OUTPUT_DIR,'test_stats/')
 
         # Pre-trained weights
         self.WEIGHTS_DIR = join(self.DATA_PATH,'weights/')
@@ -93,7 +88,8 @@ class CONFIG(object):
         self.RESOLUTION = 10
         self.DROPOUT_KEEP_PROB = args.dropout_keep_prob
         self.L2_LAMBDA = args.l2_lambda
-        self.USE_DEPTH = True # IMPORTANT!! False means RGB
+        # IMPORTANT!! False means RGB
+        self.USE_DEPTH = True
 
         # solver parameter
         # ----------------------------------------------------------------------
