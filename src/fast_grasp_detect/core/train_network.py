@@ -30,7 +30,6 @@ class Solver(object):
         self.staircase = self.cfg.STAIRCASE
         self.summary_iter = self.cfg.SUMMARY_ITER
         self.test_iter = self.cfg.TEST_ITER
-        self.save_iter = self.cfg.SAVE_ITER
         self.original_yolo_input = data.yc.images
 
         # Handle output directory, (if necessary) restore variables, and get savers, etc.
@@ -189,7 +188,7 @@ class Solver(object):
             # Save the actual model using standard `tf.Saver`s, w/global steps. Also record
             # train/test losses. For now, only save if we're not doing cross validation.
             # TODO: we're only saving the best predictions but to be fair we should use a fixed # of iters
-            if step % self.save_iter == 0:
+            if step % cfg.SAVE_ITER  == 0:
                 if not cfg.PERFORM_CV:
                     curr_time = datetime.datetime.now().strftime('%m_%d_%H_%M_%S')
                     ckpt_name = curr_time+ "_save.ckpt"
