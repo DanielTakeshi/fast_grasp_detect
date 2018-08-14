@@ -149,10 +149,6 @@ class QueryLabeler():
 
         self.label_count = 0
 
-        # for debugging
-##        self.setImage()
-##        self.loadDir()
-
 
     def loadDir(self, dbg = False):
         s = 000
@@ -207,7 +203,7 @@ class QueryLabeler():
 
 
     def get_label(self):
-        if self.image.any() == None:
+        if self.image is None:
             self.current_image = self.cam.read_color_data()
         else: 
             self.current_image = self.image
@@ -256,7 +252,7 @@ class QueryLabeler():
                 self.bboxIdList.append(tmpId)
                 #print("in `QueryLabeler.loadImage()` putting listbox with class {}".format(tmp[4]))
                 self.listbox.insert(END, '%s : (%d, %d) -> (%d, %d)' %(tmp[4],int(tmp[0]), int(tmp[1]), \
-                												  int(tmp[2]), int(tmp[3])))
+                                                                  int(tmp[2]), int(tmp[3])))
                 self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
           
 
@@ -381,8 +377,8 @@ class QueryLabeler():
         """Originally an outdated mapping. Use index 0 to indicate a SUCCESS,
         anything else is a failure.
         """
-    	#print("In QueryLabeler.setClass(), starting `self.currentLabelclass`: {}".format(self.currentLabelclass))
-    	self.currentLabelclass = self.classcandidate.get()
+        #print("In QueryLabeler.setClass(), starting `self.currentLabelclass`: {}".format(self.currentLabelclass))
+        self.currentLabelclass = self.classcandidate.get()
         #mapping = {"q": ("grasp", 0), "w": ("singulate", 1), "e": ("suction", 2), "r": ("quit",3)}
         mapping = {"q": ("success", 0), "w": ("failure", 1), "e": ("failure", 2), "r": ("failure",3)}
         self.currentLabelclass = mapping[class_label][0]
