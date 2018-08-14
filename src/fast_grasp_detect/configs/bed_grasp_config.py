@@ -31,7 +31,7 @@ class CONFIG(object):
             self.CV_HELD_OUT_INDEX = args.cv_idx
             if self.USE_CACHE:
                 print("Alert: using the cache-method for data!")
-                self.ROLLOUT_PATH = join(self.DATA_PATH,'cache_h_v01/')
+                self.ROLLOUT_PATH = join(self.DATA_PATH,'cache_h_v02/')
                 self.CV_GROUPS = sorted([x for x in os.listdir(self.ROLLOUT_PATH) if 'cv_' in x])
             else:
                 print("Alert: using the rollout-method for data!")

@@ -1,5 +1,5 @@
 import tensorflow as tf
-import os, sys, datetime
+import os, sys, datetime, time
 from fast_grasp_detect.core.timer import Timer
 import cPickle as pickle
 import numpy as np
@@ -108,6 +108,8 @@ class Solver(object):
         best_loss = np.float('inf')
         best_preds = None
         images_t, labels_t, c_imgs_list, d_imgs_list = self.data.get_test(return_imgs=True)
+        elapsed_time = []
+        start_t = time.time()
 
         for step in xrange(1, self.max_iter+1):
             # Get minibatch of images (can be features from pre-trained YOLO) and labels.
@@ -196,6 +198,9 @@ class Solver(object):
                     print("    saving tf checkpoint to {}".format(real_ckpt))
                     self.all_saver.save(self.sess, real_ckpt, global_step=self.global_step)
 
+                # Record one timer value per save_iter.
+                elapsed_time.append( time.time() - start_t )
+
                 # New dictionary with lists of historical info, and save (w/overwriting).
                 info = {}
                 info["train"] = train_losses
@@ -206,6 +211,7 @@ class Solver(object):
                 info["name"] = cfg.CONFIG_NAME
                 info["epoch"] = self.data.epoch
                 info["lrates"] = learning_rates
+                info["elapsed_time"] = elapsed_time
 
                 # Don't forget best set of predictions + true labels, so we can visualize.
                 cv_idx = cfg.CV_HELD_OUT_INDEX
