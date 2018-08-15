@@ -13,19 +13,19 @@ class data_manager(object):
 
     def __init__(self,options):
         self.cfg = cfg = options
-        self.rollout_path = self.cfg.ROLLOUT_PATH
-        self.batch_size = self.cfg.BATCH_SIZE
-        self.classes = self.cfg.CLASSES
+        self.rollout_path = cfg.ROLLOUT_PATH
+        self.batch_size = cfg.BATCH_SIZE
+        self.classes = cfg.CLASSES
         self.num_class = len(self.classes)
-        self.image_size = self.cfg.IMAGE_SIZE
+        self.image_size = cfg.IMAGE_SIZE
         self.class_to_ind = dict(zip(self.classes, xrange(len(self.classes))))
         self.cursor = 0
         self.t_cursor = 0
         self.epoch = 1
         self.gt_labels = None
 
-        # Load in data, following logic in our configuration file. Test set = held out.
-        # With CV, we make it a length-1 list to maintain compatibility with non-CV case.
+        # Load data, following logic in our configuration file. Test set = held out.
+        # With CV, make a length-1 list to maintain compatibility with non-CV case.
         num = len(cfg.CV_GROUPS)
         if cfg.PERFORM_CV:
             cidx = cfg.CV_HELD_OUT_INDEX
@@ -40,17 +40,17 @@ class data_manager(object):
             )
             if cfg.TEST_ROLLOUT_PATH is not None:
                 self.held_out_list = sorted(
-                        [join(cfg.ROLLOUT_PATH, cfg.TEST_GROUPS[c]) for c in range(num)]
+                        [join(cfg.TEST_ROLLOUT_PATH, cfg.TEST_GROUPS[c]) for c in range(num)]
                 )
 
         # Load YOLO network and set up its pre-trained weights from known file
         # Update: we'll also use this in the case of a smaller neural network.
         print("\n`data_manager` class, now calling YOLO_CONV and loading network...")
         self.yc = YOLO_CONV(self.cfg)
-        if not self.cfg.SMALLER_NET:
+        if not cfg.SMALLER_NET:
             self.yc.load_network()
 
-        # Load test & training rollouts. Make test batch fixed (i.e, don't keep shuffling).
+        # Load test & training. Make test batch fixed (i.e, don't keep shuffling).
         self.recent_batch = []
         self.test_batch_feats  = None
         self.test_batch_labels = None
@@ -66,11 +66,11 @@ class data_manager(object):
     def get(self, noise=False):
         """Creates and returns images/labels for training.
         
-        The images are features from the pre-trained YOLO network, or at least processed
-        to correct sizes.
+        The images are features from the pre-trained YOLO network, or at least
+        processed to correct sizes.
 
-        Note: `count` ensures we match batch size, use `cursor` for indexing into our data,
-        and it may overlap w/end of the epoch.
+        Note: `count` ensures we match batch size; `cursor` for indexing into data.
+        It _may_ overlap w/end of the epoch.
         """
         images = self.cfg.get_empty_state()
         labels = self.cfg.get_empty_label()
@@ -145,7 +145,10 @@ class data_manager(object):
         # Form and investigate the testing images and labels in their batch.
         K = len(self.test_labels)
         print("len(self.test_labels): {}".format(K))
-        assert K <= 500
+        if K >= 200:
+            print("We'll truncate to 200 for now. (We're using one test minibatch.)")
+            self.test_labels = self.test_labels[:200]
+            K = 200
 
         # What the network needs, inputs and labels.
         self.test_batch_feats  = cfg.get_empty_state(batchdim=K)
@@ -155,6 +158,7 @@ class data_manager(object):
         self.test_batch_c_imgs = []
         self.test_batch_d_imgs = []
 
+        # TODO: later, if very large test set, use multiple minibatches.
         for count in range(K):
             self.test_batch_feats[count, :, :, :] = self.test_labels[count]['features']
             self.test_batch_labels[count, :]      = self.test_labels[count]['label']

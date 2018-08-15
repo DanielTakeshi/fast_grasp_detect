@@ -1,0 +1,1334 @@
+
+`data_manager` class, now calling YOLO_CONV and loading network...
+
+YOLO_CONV.load_network(), pre-trained weights: /nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/YOLO_small.ckpt
+
+data_manager.load_test_set()
+loaded test data: /nfs/diskstation/seita/bed-make/cache_white_v01/grasp_list_of_dicts_nodaug_cv_0_len_21.pkl (length 21)
+loaded test data: /nfs/diskstation/seita/bed-make/cache_white_v01/grasp_list_of_dicts_nodaug_cv_1_len_21.pkl (length 21)
+loaded test data: /nfs/diskstation/seita/bed-make/cache_white_v01/grasp_list_of_dicts_nodaug_cv_2_len_21.pkl (length 21)
+loaded test data: /nfs/diskstation/seita/bed-make/cache_white_v01/grasp_list_of_dicts_nodaug_cv_3_len_21.pkl (length 21)
+loaded test data: /nfs/diskstation/seita/bed-make/cache_white_v01/grasp_list_of_dicts_nodaug_cv_4_len_21.pkl (length 21)
+loaded test data: /nfs/diskstation/seita/bed-make/cache_white_v01/grasp_list_of_dicts_nodaug_cv_5_len_21.pkl (length 21)
+loaded test data: /nfs/diskstation/seita/bed-make/cache_white_v01/grasp_list_of_dicts_nodaug_cv_6_len_21.pkl (length 21)
+loaded test data: /nfs/diskstation/seita/bed-make/cache_white_v01/grasp_list_of_dicts_nodaug_cv_7_len_21.pkl (length 21)
+loaded test data: /nfs/diskstation/seita/bed-make/cache_white_v01/grasp_list_of_dicts_nodaug_cv_8_len_21.pkl (length 21)
+loaded test data: /nfs/diskstation/seita/bed-make/cache_white_v01/grasp_list_of_dicts_nodaug_cv_9_len_21.pkl (length 21)
+len(self.test_labels): 210
+We'll truncate to 200 for now. (We're using one test minibatch.)
+test_batch_d_imgs[0].shape: (480, 640, 3)
+test_batch_feats.shape:     (200, 14, 14, 1024)
+test_batch_labels.shape:    (200, 2)
+test_batch_labels:
+[[ 0.071875 -0.008333]
+ [ 0.071875 -0.075   ]
+ [ 0.392188  0.0375  ]
+ [-0.096875 -0.122917]
+ [-0.1      -0.110417]
+ [ 0.33125  -0.01875 ]
+ [-0.001563 -0.1125  ]
+ [ 0.328125  0.03125 ]
+ [-0.070312 -0.252083]
+ [ 0.273438 -0.147917]
+ [ 0.16875  -0.25625 ]
+ [-0.210938  0.033333]
+ [-0.110938  0.033333]
+ [-0.003125 -0.120833]
+ [-0.164062 -0.272917]
+ [-0.098438 -0.083333]
+ [ 0.035937 -0.075   ]
+ [-0.120312 -0.020833]
+ [-0.129688 -0.164583]
+ [ 0.110938 -0.041667]
+ [-0.064063 -0.10625 ]
+ [ 0.346875  0.03125 ]
+ [-0.10625  -0.135417]
+ [ 0.264062  0.0125  ]
+ [-0.090625 -0.197917]
+ [ 0.292188  0.008333]
+ [ 0.375     0.010417]
+ [ 0.398438 -0.020833]
+ [-0.098438 -0.245833]
+ [ 0.082812 -0.1375  ]
+ [-0.014062 -0.110417]
+ [-0.1      -0.05625 ]
+ [-0.195312 -0.197917]
+ [ 0.010938 -0.002083]
+ [-0.235938 -0.258333]
+ [ 0.38125  -0.004167]
+ [ 0.073438 -0.133333]
+ [ 0.004687 -0.145833]
+ [ 0.05625  -0.05    ]
+ [-0.214062 -0.047917]
+ [-0.195312 -0.2625  ]
+ [ 0.11875  -0.210417]
+ [ 0.065625 -0.108333]
+ [-0.1125   -0.189583]
+ [-0.114063 -0.202083]
+ [-0.075    -0.070833]
+ [-0.307812 -0.075   ]
+ [ 0.01875  -0.135417]
+ [ 0.34375   0.0125  ]
+ [ 0.34375  -0.010417]
+ [-0.184375 -0.2125  ]
+ [-0.184375 -0.070833]
+ [ 0.265625 -0.022917]
+ [-0.270313 -0.160417]
+ [ 0.276563 -0.085417]
+ [ 0.240625  0.002083]
+ [-0.285938 -0.13125 ]
+ [-0.140625 -0.29375 ]
+ [ 0.05     -0.160417]
+ [ 0.278125 -0.110417]
+ [ 0.351562 -0.0125  ]
+ [-0.014062  0.05625 ]
+ [ 0.145312 -0.16875 ]
+ [ 0.025    -0.21875 ]
+ [ 0.071875 -0.135417]
+ [ 0.34375  -0.041667]
+ [ 0.260938  0.002083]
+ [ 0.39375  -0.045833]
+ [-0.096875 -0.1375  ]
+ [-0.175    -0.1625  ]
+ [ 0.185937  0.01875 ]
+ [-0.270313 -0.079167]
+ [-0.05     -0.264583]
+ [-0.228125 -0.147917]
+ [-0.207813 -0.13125 ]
+ [-0.05     -0.25625 ]
+ [ 0.321875 -0.133333]
+ [-0.357812 -0.120833]
+ [-0.003125 -0.0875  ]
+ [ 0.123437  0.0125  ]
+ [ 0.160937 -0.25    ]
+ [ 0.134375 -0.09375 ]
+ [-0.295312 -0.06875 ]
+ [-0.223438 -0.23125 ]
+ [ 0.346875 -0.029167]
+ [ 0.425    -0.0625  ]
+ [ 0.33125  -0.014583]
+ [ 0.10625  -0.095833]
+ [ 0.35     -0.00625 ]
+ [ 0.04375  -0.185417]
+ [ 0.375     0.004167]
+ [ 0.30625   0.01875 ]
+ [ 0.10625  -0.158333]
+ [ 0.307813  0.014583]
+ [-0.142188 -0.1875  ]
+ [ 0.015625 -0.185417]
+ [ 0.092187 -0.202083]
+ [ 0.267188 -0.177083]
+ [-0.051563 -0.035417]
+ [-0.004688 -0.089583]
+ [-0.039062 -0.114583]
+ [-0.38125  -0.191667]
+ [ 0.045312 -0.01875 ]
+ [ 0.190625 -0.0625  ]
+ [ 0.196875 -0.15625 ]
+ [-0.054688 -0.0875  ]
+ [-0.10625  -0.185417]
+ [-0.092187 -0.064583]
+ [ 0.29375  -0.058333]
+ [ 0.353125  0.033333]
+ [-0.120312 -0.129167]
+ [ 0.196875 -0.072917]
+ [ 0.342187 -0.022917]
+ [-0.1125   -0.19375 ]
+ [-0.146875 -0.216667]
+ [-0.009375 -0.23125 ]
+ [-0.1125   -0.108333]
+ [ 0.090625 -0.179167]
+ [ 0.04375  -0.164583]
+ [-0.175    -0.277083]
+ [-0.082813 -0.23125 ]
+ [-0.198437 -0.258333]
+ [ 0.04375  -0.102083]
+ [-0.021875 -0.254167]
+ [ 0.084375 -0.083333]
+ [ 0.1125   -0.14375 ]
+ [-0.078125 -0.145833]
+ [ 0.1375   -0.016667]
+ [-0.070312 -0.047917]
+ [-0.0875   -0.129167]
+ [ 0.3875   -0.0125  ]
+ [ 0.075    -0.191667]
+ [-0.14375  -0.120833]
+ [ 0.320312 -0.008333]
+ [ 0.303125  0.027083]
+ [-0.167187 -0.222917]
+ [-0.015625 -0.091667]
+ [ 0.092187 -0.064583]
+ [ 0.078125 -0.085417]
+ [ 0.107812 -0.291667]
+ [ 0.153125 -0.01875 ]
+ [-0.189063 -0.241667]
+ [-0.348438 -0.116667]
+ [ 0.       -0.08125 ]
+ [-0.221875 -0.2625  ]
+ [ 0.278125 -0.05625 ]
+ [-0.067188 -0.133333]
+ [-0.046875 -0.129167]
+ [-0.2375   -0.077083]
+ [ 0.207812 -0.016667]
+ [ 0.134375 -0.235417]
+ [ 0.089063 -0.09375 ]
+ [ 0.301562 -0.0375  ]
+ [-0.104687 -0.072917]
+ [-0.109375 -0.027083]
+ [ 0.132812 -0.01875 ]
+ [-0.2875   -0.179167]
+ [-0.3125   -0.177083]
+ [-0.065625 -0.254167]
+ [ 0.048438 -0.01875 ]
+ [ 0.09375  -0.152083]
+ [-0.021875 -0.245833]
+ [-0.29375  -0.214583]
+ [ 0.129687 -0.183333]
+ [-0.104687 -0.09375 ]
+ [ 0.1125   -0.035417]
+ [ 0.392188  0.052083]
+ [-0.134375 -0.10625 ]
+ [ 0.101562  0.      ]
+ [ 0.017188 -0.022917]
+ [ 0.090625  0.025   ]
+ [ 0.307813  0.      ]
+ [-0.145313 -0.214583]
+ [ 0.039062 -0.23125 ]
+ [ 0.373437  0.014583]
+ [-0.065625 -0.122917]
+ [ 0.370313  0.05    ]
+ [ 0.034375 -0.158333]
+ [-0.082813 -0.202083]
+ [-0.045312 -0.079167]
+ [ 0.31875  -0.025   ]
+ [-0.157813 -0.16875 ]
+ [ 0.04375  -0.185417]
+ [-0.296875 -0.19375 ]
+ [-0.154687 -0.141667]
+ [-0.235938 -0.254167]
+ [ 0.171875 -0.077083]
+ [-0.120312 -0.03125 ]
+ [-0.082813 -0.110417]
+ [-0.060937 -0.135417]
+ [-0.11875  -0.2     ]
+ [ 0.064063 -0.179167]
+ [-0.176563 -0.21875 ]
+ [-0.01875  -0.185417]
+ [-0.034375 -0.054167]
+ [-0.059375 -0.2125  ]
+ [ 0.2375   -0.058333]
+ [-0.115625 -0.122917]
+ [-0.004688 -0.0875  ]
+ [ 0.13125  -0.0125  ]]
+(raw) test_batch_labels:
+[[366. 236.]
+ [366. 204.]
+ [571. 258.]
+ [258. 181.]
+ [256. 187.]
+ [532. 231.]
+ [319. 186.]
+ [530. 255.]
+ [275. 119.]
+ [495. 169.]
+ [428. 117.]
+ [185. 256.]
+ [249. 256.]
+ [318. 182.]
+ [215. 109.]
+ [257. 200.]
+ [343. 204.]
+ [243. 230.]
+ [237. 161.]
+ [391. 220.]
+ [279. 189.]
+ [542. 255.]
+ [252. 175.]
+ [489. 246.]
+ [262. 145.]
+ [507. 244.]
+ [560. 245.]
+ [575. 230.]
+ [257. 122.]
+ [373. 174.]
+ [311. 187.]
+ [256. 213.]
+ [195. 145.]
+ [327. 239.]
+ [169. 116.]
+ [564. 238.]
+ [367. 176.]
+ [323. 170.]
+ [356. 216.]
+ [183. 217.]
+ [195. 114.]
+ [396. 139.]
+ [362. 188.]
+ [248. 149.]
+ [247. 143.]
+ [272. 206.]
+ [123. 204.]
+ [332. 175.]
+ [540. 246.]
+ [540. 235.]
+ [202. 138.]
+ [202. 206.]
+ [490. 229.]
+ [147. 163.]
+ [497. 199.]
+ [474. 241.]
+ [137. 177.]
+ [230.  99.]
+ [352. 163.]
+ [498. 187.]
+ [545. 234.]
+ [311. 267.]
+ [413. 159.]
+ [336. 135.]
+ [366. 175.]
+ [540. 220.]
+ [487. 241.]
+ [572. 218.]
+ [258. 174.]
+ [208. 162.]
+ [439. 249.]
+ [147. 202.]
+ [288. 113.]
+ [174. 169.]
+ [187. 177.]
+ [288. 117.]
+ [526. 176.]
+ [ 91. 182.]
+ [318. 198.]
+ [399. 246.]
+ [423. 120.]
+ [406. 195.]
+ [131. 207.]
+ [177. 129.]
+ [542. 226.]
+ [592. 210.]
+ [532. 233.]
+ [388. 194.]
+ [544. 237.]
+ [348. 151.]
+ [560. 242.]
+ [516. 249.]
+ [388. 164.]
+ [517. 247.]
+ [229. 150.]
+ [330. 151.]
+ [379. 143.]
+ [491. 155.]
+ [287. 223.]
+ [317. 197.]
+ [295. 185.]
+ [ 76. 148.]
+ [349. 231.]
+ [442. 210.]
+ [446. 165.]
+ [285. 198.]
+ [252. 151.]
+ [261. 209.]
+ [508. 212.]
+ [546. 256.]
+ [243. 178.]
+ [446. 205.]
+ [539. 229.]
+ [248. 147.]
+ [226. 136.]
+ [314. 129.]
+ [248. 188.]
+ [378. 154.]
+ [348. 161.]
+ [208. 107.]
+ [267. 129.]
+ [193. 116.]
+ [348. 191.]
+ [306. 118.]
+ [374. 200.]
+ [392. 171.]
+ [270. 170.]
+ [408. 232.]
+ [275. 217.]
+ [264. 178.]
+ [568. 234.]
+ [368. 148.]
+ [228. 182.]
+ [525. 236.]
+ [514. 253.]
+ [213. 133.]
+ [310. 196.]
+ [379. 209.]
+ [370. 199.]
+ [389. 100.]
+ [418. 231.]
+ [199. 124.]
+ [ 97. 184.]
+ [320. 201.]
+ [178. 114.]
+ [498. 213.]
+ [277. 176.]
+ [290. 178.]
+ [168. 203.]
+ [453. 232.]
+ [406. 127.]
+ [377. 195.]
+ [513. 222.]
+ [253. 205.]
+ [250. 227.]
+ [405. 231.]
+ [136. 154.]
+ [120. 155.]
+ [278. 118.]
+ [351. 231.]
+ [380. 167.]
+ [306. 122.]
+ [132. 137.]
+ [403. 152.]
+ [253. 195.]
+ [392. 223.]
+ [571. 265.]
+ [234. 189.]
+ [385. 240.]
+ [331. 229.]
+ [378. 252.]
+ [517. 240.]
+ [227. 137.]
+ [345. 129.]
+ [559. 247.]
+ [278. 181.]
+ [557. 264.]
+ [342. 164.]
+ [267. 143.]
+ [291. 202.]
+ [524. 228.]
+ [219. 159.]
+ [348. 151.]
+ [130. 147.]
+ [221. 172.]
+ [169. 118.]
+ [430. 203.]
+ [243. 225.]
+ [267. 187.]
+ [281. 175.]
+ [244. 144.]
+ [361. 154.]
+ [207. 135.]
+ [308. 151.]
+ [298. 214.]
+ [282. 138.]
+ [472. 212.]
+ [246. 181.]
+ [317. 198.]
+ [404. 234.]]
+loaded test set in 41.857 seconds...
+
+data_manager.load_rollouts() (i.e., training data)
+finished: /nfs/diskstation/seita/bed-make/cache_h_v02/grasp_list_of_dicts_nodaug_cv_0_len_97.pkl (len 97)
+finished: /nfs/diskstation/seita/bed-make/cache_h_v02/grasp_list_of_dicts_nodaug_cv_1_len_96.pkl (len 96)
+finished: /nfs/diskstation/seita/bed-make/cache_h_v02/grasp_list_of_dicts_nodaug_cv_2_len_96.pkl (len 96)
+finished: /nfs/diskstation/seita/bed-make/cache_h_v02/grasp_list_of_dicts_nodaug_cv_3_len_96.pkl (len 96)
+finished: /nfs/diskstation/seita/bed-make/cache_h_v02/grasp_list_of_dicts_nodaug_cv_4_len_96.pkl (len 96)
+finished: /nfs/diskstation/seita/bed-make/cache_h_v02/grasp_list_of_dicts_nodaug_cv_5_len_96.pkl (len 96)
+finished: /nfs/diskstation/seita/bed-make/cache_h_v02/grasp_list_of_dicts_nodaug_cv_6_len_96.pkl (len 96)
+finished: /nfs/diskstation/seita/bed-make/cache_h_v02/grasp_list_of_dicts_nodaug_cv_7_len_96.pkl (len 96)
+finished: /nfs/diskstation/seita/bed-make/cache_h_v02/grasp_list_of_dicts_nodaug_cv_8_len_96.pkl (len 96)
+finished: /nfs/diskstation/seita/bed-make/cache_h_v02/grasp_list_of_dicts_nodaug_cv_9_len_96.pkl (len 96)
+len(self.train_labels): 9610. Also, shuffled!
+loaded train set in 339.869 seconds...
+
+<tf.Variable 'yolo/conv_2/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/conv_2/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/weights:0' shape=(3, 3, 64, 192) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/weights:0' shape=(1, 1, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/weights:0' shape=(3, 3, 128, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/weights:0' shape=(1, 1, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/weights:0' shape=(1, 1, 512, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(12544, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(1024, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+Number of parameters: 48688706
+
+Solver.__init__(), self.variables_to_restore:
+0 yolo/conv_29/weights:0
+1 yolo/conv_29/biases:0
+2 yolo/conv_30/weights:0
+3 yolo/conv_30/biases:0
+4 yolo/fc_33/weights:0
+5 yolo/fc_33/biases:0
+6 yolo/fc_34/weights:0
+7 yolo/fc_34/biases:0
+8 yolo/fc_36/weights:0
+9 yolo/fc_36/biases:0
+
+cfg.FIX_PRETRAINED_LAYERS=True. Optimizer will adjust:
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(12544, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(1024, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+adjustable params: 16847362
+
+
+Just before training, here is `tf.trainable_variables()`:
+<tf.Variable 'yolo/conv_2/weights:0' shape=(7, 7, 3, 64) dtype=float32_ref>
+<tf.Variable 'yolo/conv_2/biases:0' shape=(64,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/weights:0' shape=(3, 3, 64, 192) dtype=float32_ref>
+<tf.Variable 'yolo/conv_4/biases:0' shape=(192,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/weights:0' shape=(1, 1, 192, 128) dtype=float32_ref>
+<tf.Variable 'yolo/conv_6/biases:0' shape=(128,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/weights:0' shape=(3, 3, 128, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_7/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/weights:0' shape=(1, 1, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_8/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_9/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_11/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_12/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_13/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_14/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_15/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_16/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/weights:0' shape=(1, 1, 512, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_17/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/weights:0' shape=(3, 3, 256, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_18/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/weights:0' shape=(1, 1, 512, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_19/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_20/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_22/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_23/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/weights:0' shape=(1, 1, 1024, 512) dtype=float32_ref>
+<tf.Variable 'yolo/conv_24/biases:0' shape=(512,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/weights:0' shape=(3, 3, 512, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_25/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/weights:0' shape=(3, 3, 1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/conv_26/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/weights:0' shape=(3, 3, 1024, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_29/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/weights:0' shape=(3, 3, 256, 256) dtype=float32_ref>
+<tf.Variable 'yolo/conv_30/biases:0' shape=(256,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/weights:0' shape=(12544, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/fc_33/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/weights:0' shape=(1024, 1024) dtype=float32_ref>
+<tf.Variable 'yolo/fc_34/biases:0' shape=(1024,) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/weights:0' shape=(1024, 2) dtype=float32_ref>
+<tf.Variable 'yolo/fc_36/biases:0' shape=(2,) dtype=float32_ref>
+
+Number of trainable variables/parameters: 48688706
+
+Start training ...
+Test loss: 0.048202 (raw: 115.58)
+08/15 12:12:31 Epoch: 1, Step: 10, L-Rate: 0.0001, Loss: 0.045237
+Speed: 0.084s/iter, Load: 0.032s/iter, Remain: 0:05:52
+Test loss: 0.037620 (raw: 101.88)
+08/15 12:12:32 Epoch: 1, Step: 20, L-Rate: 0.0001, Loss: 0.029724
+Speed: 0.063s/iter, Load: 0.032s/iter, Remain: 0:04:52
+Test loss: 0.039277 (raw: 104.23)
+08/15 12:12:33 Epoch: 1, Step: 30, L-Rate: 0.0001, Loss: 0.027767
+Speed: 0.056s/iter, Load: 0.033s/iter, Remain: 0:04:34
+Test loss: 0.041663 (raw: 106.86)
+08/15 12:12:34 Epoch: 1, Step: 40, L-Rate: 0.0001, Loss: 0.028490
+Speed: 0.054s/iter, Load: 0.033s/iter, Remain: 0:04:27
+Test loss: 0.051021 (raw: 120.12)
+08/15 12:12:35 Epoch: 1, Step: 50, L-Rate: 0.0001, Loss: 0.025940
+Speed: 0.052s/iter, Load: 0.033s/iter, Remain: 0:04:22
+Test loss: 0.042124 (raw: 107.76)
+08/15 12:12:36 Epoch: 1, Step: 60, L-Rate: 0.0001, Loss: 0.020947
+Speed: 0.051s/iter, Load: 0.033s/iter, Remain: 0:04:19
+Test loss: 0.047721 (raw: 113.36)
+08/15 12:12:37 Epoch: 1, Step: 70, L-Rate: 0.0001, Loss: 0.022052
+Speed: 0.050s/iter, Load: 0.034s/iter, Remain: 0:04:16
+Test loss: 0.042780 (raw: 106.84)
+08/15 12:12:38 Epoch: 1, Step: 80, L-Rate: 0.0001, Loss: 0.021816
+Speed: 0.050s/iter, Load: 0.034s/iter, Remain: 0:04:14
+Test loss: 0.043920 (raw: 108.64)
+08/15 12:12:39 Epoch: 1, Step: 90, L-Rate: 0.0001, Loss: 0.018344
+Speed: 0.049s/iter, Load: 0.034s/iter, Remain: 0:04:12
+Test loss: 0.044989 (raw: 110.35)
+08/15 12:12:40 Epoch: 1, Step: 100, L-Rate: 0.0001, Loss: 0.015946
+Speed: 0.049s/iter, Load: 0.034s/iter, Remain: 0:04:10
+Test loss: 0.045788 (raw: 111.96)
+08/15 12:12:41 Epoch: 1, Step: 110, L-Rate: 0.0001, Loss: 0.015256
+Speed: 0.048s/iter, Load: 0.034s/iter, Remain: 0:04:08
+Test loss: 0.047757 (raw: 113.51)
+08/15 12:12:42 Epoch: 1, Step: 120, L-Rate: 0.0001, Loss: 0.015455
+Speed: 0.048s/iter, Load: 0.034s/iter, Remain: 0:04:06
+Test loss: 0.049911 (raw: 116.37)
+08/15 12:12:43 Epoch: 1, Step: 130, L-Rate: 0.0001, Loss: 0.015633
+Speed: 0.048s/iter, Load: 0.034s/iter, Remain: 0:04:05
+Test loss: 0.050772 (raw: 116.56)
+08/15 12:12:44 Epoch: 1, Step: 140, L-Rate: 0.0001, Loss: 0.010590
+Speed: 0.048s/iter, Load: 0.034s/iter, Remain: 0:04:03
+Test loss: 0.047183 (raw: 112.77)
+08/15 12:12:46 Epoch: 1, Step: 150, L-Rate: 0.0001, Loss: 0.012205
+Speed: 0.048s/iter, Load: 0.034s/iter, Remain: 0:04:02
+Test loss: 0.046230 (raw: 111.06)
+08/15 12:12:47 Epoch: 2, Step: 160, L-Rate: 0.0001, Loss: 0.015282
+Speed: 0.048s/iter, Load: 0.034s/iter, Remain: 0:04:01
+Test loss: 0.045200 (raw: 108.92)
+08/15 12:12:47 Epoch: 2, Step: 170, L-Rate: 0.0001, Loss: 0.012434
+Speed: 0.047s/iter, Load: 0.034s/iter, Remain: 0:03:59
+Test loss: 0.047411 (raw: 113.01)
+08/15 12:12:48 Epoch: 2, Step: 180, L-Rate: 0.0001, Loss: 0.010475
+Speed: 0.047s/iter, Load: 0.034s/iter, Remain: 0:03:56
+Test loss: 0.047921 (raw: 114.38)
+08/15 12:12:49 Epoch: 2, Step: 190, L-Rate: 0.0001, Loss: 0.012714
+Speed: 0.047s/iter, Load: 0.034s/iter, Remain: 0:03:55
+Test loss: 0.049298 (raw: 115.36)
+08/15 12:12:50 Epoch: 2, Step: 200, L-Rate: 0.0001, Loss: 0.010509
+Speed: 0.047s/iter, Load: 0.033s/iter, Remain: 0:03:53
+Test loss: 0.058553 (raw: 125.93)
+08/15 12:12:51 Epoch: 2, Step: 210, L-Rate: 0.0001, Loss: 0.009134
+Speed: 0.047s/iter, Load: 0.033s/iter, Remain: 0:03:52
+Test loss: 0.050972 (raw: 117.62)
+08/15 12:12:52 Epoch: 2, Step: 220, L-Rate: 0.0001, Loss: 0.011359
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:50
+Test loss: 0.052796 (raw: 119.95)
+08/15 12:12:53 Epoch: 2, Step: 230, L-Rate: 0.0001, Loss: 0.010862
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:48
+Test loss: 0.049739 (raw: 116.44)
+08/15 12:12:54 Epoch: 2, Step: 240, L-Rate: 0.0001, Loss: 0.008211
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:47
+Test loss: 0.047931 (raw: 112.56)
+08/15 12:12:55 Epoch: 2, Step: 250, L-Rate: 0.0001, Loss: 0.008766
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:46
+Test loss: 0.048138 (raw: 112.56)
+08/15 12:12:56 Epoch: 2, Step: 260, L-Rate: 0.0001, Loss: 0.009257
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:45
+Test loss: 0.048044 (raw: 113.91)
+08/15 12:12:57 Epoch: 2, Step: 270, L-Rate: 0.0001, Loss: 0.008271
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:43
+Test loss: 0.048053 (raw: 114.33)
+08/15 12:12:58 Epoch: 2, Step: 280, L-Rate: 0.0001, Loss: 0.009269
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:42
+Test loss: 0.048471 (raw: 115.29)
+08/15 12:12:59 Epoch: 2, Step: 290, L-Rate: 0.0001, Loss: 0.007269
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:41
+Test loss: 0.051443 (raw: 118.00)
+08/15 12:13:00 Epoch: 2, Step: 300, L-Rate: 0.0001, Loss: 0.008265
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:40
+Test loss: 0.055474 (raw: 123.56)
+08/15 12:13:01 Epoch: 3, Step: 310, L-Rate: 0.0001, Loss: 0.007911
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:38
+Test loss: 0.049108 (raw: 115.32)
+08/15 12:13:02 Epoch: 3, Step: 320, L-Rate: 0.0001, Loss: 0.004696
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:37
+Test loss: 0.049055 (raw: 115.57)
+08/15 12:13:03 Epoch: 3, Step: 330, L-Rate: 0.0001, Loss: 0.007973
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:36
+Test loss: 0.053260 (raw: 120.27)
+08/15 12:13:04 Epoch: 3, Step: 340, L-Rate: 0.0001, Loss: 0.007085
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:35
+Test loss: 0.047031 (raw: 113.31)
+08/15 12:13:05 Epoch: 3, Step: 350, L-Rate: 0.0001, Loss: 0.005211
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:34
+Test loss: 0.049383 (raw: 116.65)
+08/15 12:13:06 Epoch: 3, Step: 360, L-Rate: 0.0001, Loss: 0.006580
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:33
+Test loss: 0.048636 (raw: 114.78)
+08/15 12:13:07 Epoch: 3, Step: 370, L-Rate: 0.0001, Loss: 0.006115
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:32
+Test loss: 0.047847 (raw: 114.27)
+08/15 12:13:08 Epoch: 3, Step: 380, L-Rate: 0.0001, Loss: 0.005812
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:31
+Test loss: 0.044842 (raw: 110.74)
+08/15 12:13:09 Epoch: 3, Step: 390, L-Rate: 0.0001, Loss: 0.005571
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:30
+Test loss: 0.048740 (raw: 114.90)
+08/15 12:13:10 Epoch: 3, Step: 400, L-Rate: 0.0001, Loss: 0.005204
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:29
+Test loss: 0.048832 (raw: 114.98)
+08/15 12:13:11 Epoch: 3, Step: 410, L-Rate: 0.0001, Loss: 0.003292
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:27
+Test loss: 0.047736 (raw: 114.39)
+08/15 12:13:12 Epoch: 3, Step: 420, L-Rate: 0.0001, Loss: 0.005628
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:26
+Test loss: 0.052155 (raw: 119.66)
+08/15 12:13:13 Epoch: 3, Step: 430, L-Rate: 0.0001, Loss: 0.008001
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:03:25
+Test loss: 0.051411 (raw: 118.64)
+08/15 12:13:14 Epoch: 3, Step: 440, L-Rate: 0.0001, Loss: 0.005341
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:24
+Test loss: 0.050814 (raw: 117.91)
+08/15 12:13:15 Epoch: 3, Step: 450, L-Rate: 0.0001, Loss: 0.005030
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:23
+Test loss: 0.051157 (raw: 116.70)
+08/15 12:13:16 Epoch: 4, Step: 460, L-Rate: 0.0001, Loss: 0.005121
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:22
+Test loss: 0.053616 (raw: 120.65)
+08/15 12:13:17 Epoch: 4, Step: 470, L-Rate: 0.0001, Loss: 0.003386
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:21
+Test loss: 0.051712 (raw: 118.89)
+08/15 12:13:18 Epoch: 4, Step: 480, L-Rate: 0.0001, Loss: 0.005185
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:20
+Test loss: 0.048628 (raw: 115.38)
+08/15 12:13:19 Epoch: 4, Step: 490, L-Rate: 0.0001, Loss: 0.006693
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:19
+Test loss: 0.051510 (raw: 119.30)
+08/15 12:13:20 Epoch: 4, Step: 500, L-Rate: 0.0001, Loss: 0.004833
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:18
+    saved TF model: /nfs/diskstation/seita/bed-make/grasp/cache_h_v02/grasp_1_img_depth_opt_adam_lr_0.0001_L2_0.0001_kp_1.0_cv_False/08_15_12_13_20_save.ckpt
+Test loss: 0.045607 (raw: 111.23)
+08/15 12:13:23 Epoch: 4, Step: 510, L-Rate: 0.0001, Loss: 0.003776
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:24
+Test loss: 0.055736 (raw: 123.58)
+08/15 12:13:24 Epoch: 4, Step: 520, L-Rate: 0.0001, Loss: 0.003533
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:23
+Test loss: 0.048093 (raw: 115.11)
+08/15 12:13:25 Epoch: 4, Step: 530, L-Rate: 0.0001, Loss: 0.004092
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:22
+Test loss: 0.049380 (raw: 116.04)
+08/15 12:13:25 Epoch: 4, Step: 540, L-Rate: 0.0001, Loss: 0.005094
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:21
+Test loss: 0.049968 (raw: 117.46)
+08/15 12:13:26 Epoch: 4, Step: 550, L-Rate: 0.0001, Loss: 0.003994
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:20
+Test loss: 0.053168 (raw: 120.66)
+08/15 12:13:27 Epoch: 4, Step: 560, L-Rate: 0.0001, Loss: 0.004302
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:18
+Test loss: 0.050600 (raw: 118.36)
+08/15 12:13:28 Epoch: 4, Step: 570, L-Rate: 0.0001, Loss: 0.003644
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:17
+Test loss: 0.050747 (raw: 117.84)
+08/15 12:13:29 Epoch: 4, Step: 580, L-Rate: 0.0001, Loss: 0.002351
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:16
+Test loss: 0.051297 (raw: 118.06)
+08/15 12:13:30 Epoch: 4, Step: 590, L-Rate: 0.0001, Loss: 0.003630
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:15
+Test loss: 0.046806 (raw: 112.93)
+08/15 12:13:31 Epoch: 4, Step: 600, L-Rate: 0.0001, Loss: 0.005253
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:14
+Test loss: 0.045871 (raw: 111.32)
+08/15 12:13:32 Epoch: 4, Step: 610, L-Rate: 0.0001, Loss: 0.004395
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:13
+Test loss: 0.049195 (raw: 115.86)
+08/15 12:13:33 Epoch: 5, Step: 620, L-Rate: 0.0001, Loss: 0.003117
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:12
+Test loss: 0.051713 (raw: 117.89)
+08/15 12:13:34 Epoch: 5, Step: 630, L-Rate: 0.0001, Loss: 0.002446
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:11
+Test loss: 0.051570 (raw: 117.32)
+08/15 12:13:35 Epoch: 5, Step: 640, L-Rate: 0.0001, Loss: 0.004310
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:09
+Test loss: 0.045776 (raw: 111.16)
+08/15 12:13:36 Epoch: 5, Step: 650, L-Rate: 0.0001, Loss: 0.002594
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:08
+Test loss: 0.047606 (raw: 113.83)
+08/15 12:13:37 Epoch: 5, Step: 660, L-Rate: 0.0001, Loss: 0.002895
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:07
+Test loss: 0.046592 (raw: 111.79)
+08/15 12:13:38 Epoch: 5, Step: 670, L-Rate: 0.0001, Loss: 0.002285
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:06
+Test loss: 0.051827 (raw: 119.27)
+08/15 12:13:39 Epoch: 5, Step: 680, L-Rate: 0.0001, Loss: 0.002027
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:05
+Test loss: 0.046638 (raw: 112.71)
+08/15 12:13:40 Epoch: 5, Step: 690, L-Rate: 0.0001, Loss: 0.002687
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:04
+Test loss: 0.046909 (raw: 112.77)
+08/15 12:13:41 Epoch: 5, Step: 700, L-Rate: 0.0001, Loss: 0.003081
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:03
+Test loss: 0.048384 (raw: 113.91)
+08/15 12:13:42 Epoch: 5, Step: 710, L-Rate: 0.0001, Loss: 0.003260
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:02
+Test loss: 0.048857 (raw: 114.63)
+08/15 12:13:43 Epoch: 5, Step: 720, L-Rate: 0.0001, Loss: 0.002697
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:03:00
+Test loss: 0.047796 (raw: 113.62)
+08/15 12:13:44 Epoch: 5, Step: 730, L-Rate: 0.0001, Loss: 0.002779
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:59
+Test loss: 0.047109 (raw: 112.86)
+08/15 12:13:45 Epoch: 5, Step: 740, L-Rate: 0.0001, Loss: 0.002206
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:58
+Test loss: 0.047564 (raw: 114.02)
+08/15 12:13:46 Epoch: 5, Step: 750, L-Rate: 0.0001, Loss: 0.002762
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:57
+Test loss: 0.049028 (raw: 115.97)
+08/15 12:13:47 Epoch: 5, Step: 760, L-Rate: 0.0001, Loss: 0.001808
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:56
+Test loss: 0.050092 (raw: 117.49)
+08/15 12:13:48 Epoch: 6, Step: 770, L-Rate: 0.0001, Loss: 0.001807
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:55
+Test loss: 0.047456 (raw: 114.31)
+08/15 12:13:49 Epoch: 6, Step: 780, L-Rate: 0.0001, Loss: 0.001405
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:54
+Test loss: 0.046717 (raw: 112.52)
+08/15 12:13:50 Epoch: 6, Step: 790, L-Rate: 0.0001, Loss: 0.002358
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:53
+Test loss: 0.048308 (raw: 114.29)
+08/15 12:13:51 Epoch: 6, Step: 800, L-Rate: 0.0001, Loss: 0.002705
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:52
+Test loss: 0.049067 (raw: 114.82)
+08/15 12:13:52 Epoch: 6, Step: 810, L-Rate: 0.0001, Loss: 0.002164
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:51
+Test loss: 0.050529 (raw: 116.90)
+08/15 12:13:53 Epoch: 6, Step: 820, L-Rate: 0.0001, Loss: 0.001596
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:50
+Test loss: 0.050721 (raw: 117.43)
+08/15 12:13:54 Epoch: 6, Step: 830, L-Rate: 0.0001, Loss: 0.001559
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:49
+Test loss: 0.048120 (raw: 114.11)
+08/15 12:13:55 Epoch: 6, Step: 840, L-Rate: 0.0001, Loss: 0.001587
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:47
+Test loss: 0.051794 (raw: 118.80)
+08/15 12:13:56 Epoch: 6, Step: 850, L-Rate: 0.0001, Loss: 0.000931
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:46
+Test loss: 0.050979 (raw: 118.50)
+08/15 12:13:57 Epoch: 6, Step: 860, L-Rate: 0.0001, Loss: 0.001878
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:45
+Test loss: 0.050369 (raw: 117.65)
+08/15 12:13:58 Epoch: 6, Step: 870, L-Rate: 0.0001, Loss: 0.002125
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:44
+Test loss: 0.048001 (raw: 114.73)
+08/15 12:13:59 Epoch: 6, Step: 880, L-Rate: 0.0001, Loss: 0.001251
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:43
+Test loss: 0.051905 (raw: 119.24)
+08/15 12:14:00 Epoch: 6, Step: 890, L-Rate: 0.0001, Loss: 0.001534
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:42
+Test loss: 0.049584 (raw: 115.35)
+08/15 12:14:01 Epoch: 6, Step: 900, L-Rate: 0.0001, Loss: 0.001723
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:41
+Test loss: 0.051062 (raw: 117.87)
+08/15 12:14:02 Epoch: 6, Step: 910, L-Rate: 0.0001, Loss: 0.001548
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:40
+Test loss: 0.049030 (raw: 115.19)
+08/15 12:14:03 Epoch: 7, Step: 920, L-Rate: 0.0001, Loss: 0.001875
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:39
+Test loss: 0.048132 (raw: 114.77)
+08/15 12:14:04 Epoch: 7, Step: 930, L-Rate: 0.0001, Loss: 0.001253
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:38
+Test loss: 0.049296 (raw: 115.61)
+08/15 12:14:05 Epoch: 7, Step: 940, L-Rate: 0.0001, Loss: 0.001606
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:37
+Test loss: 0.051817 (raw: 119.79)
+08/15 12:14:06 Epoch: 7, Step: 950, L-Rate: 0.0001, Loss: 0.001896
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:36
+Test loss: 0.048337 (raw: 115.83)
+08/15 12:14:07 Epoch: 7, Step: 960, L-Rate: 0.0001, Loss: 0.001699
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:35
+Test loss: 0.049799 (raw: 117.11)
+08/15 12:14:08 Epoch: 7, Step: 970, L-Rate: 0.0001, Loss: 0.001503
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:34
+Test loss: 0.050913 (raw: 117.87)
+08/15 12:14:09 Epoch: 7, Step: 980, L-Rate: 0.0001, Loss: 0.001581
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:33
+Test loss: 0.045258 (raw: 111.27)
+08/15 12:14:10 Epoch: 7, Step: 990, L-Rate: 0.0001, Loss: 0.002628
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:32
+Test loss: 0.046065 (raw: 112.46)
+08/15 12:14:11 Epoch: 7, Step: 1000, L-Rate: 0.0001, Loss: 0.002059
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:31
+    saved TF model: /nfs/diskstation/seita/bed-make/grasp/cache_h_v02/grasp_1_img_depth_opt_adam_lr_0.0001_L2_0.0001_kp_1.0_cv_False/08_15_12_14_11_save.ckpt
+Test loss: 0.048673 (raw: 115.23)
+08/15 12:14:14 Epoch: 7, Step: 1010, L-Rate: 0.0001, Loss: 0.002044
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:33
+Test loss: 0.048298 (raw: 114.87)
+08/15 12:14:15 Epoch: 7, Step: 1020, L-Rate: 0.0001, Loss: 0.002181
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:32
+Test loss: 0.046414 (raw: 112.44)
+08/15 12:14:16 Epoch: 7, Step: 1030, L-Rate: 0.0001, Loss: 0.001969
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:31
+Test loss: 0.047086 (raw: 113.38)
+08/15 12:14:17 Epoch: 7, Step: 1040, L-Rate: 0.0001, Loss: 0.001444
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:30
+Test loss: 0.047535 (raw: 113.77)
+08/15 12:14:18 Epoch: 7, Step: 1050, L-Rate: 0.0001, Loss: 0.001861
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:29
+Test loss: 0.050462 (raw: 117.66)
+08/15 12:14:19 Epoch: 7, Step: 1060, L-Rate: 0.0001, Loss: 0.001399
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:28
+Test loss: 0.049419 (raw: 115.99)
+08/15 12:14:20 Epoch: 8, Step: 1070, L-Rate: 0.0001, Loss: 0.000848
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:27
+Test loss: 0.046457 (raw: 112.74)
+08/15 12:14:21 Epoch: 8, Step: 1080, L-Rate: 0.0001, Loss: 0.001006
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:26
+Test loss: 0.048564 (raw: 115.52)
+08/15 12:14:22 Epoch: 8, Step: 1090, L-Rate: 0.0001, Loss: 0.001000
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:25
+Test loss: 0.046754 (raw: 113.44)
+08/15 12:14:23 Epoch: 8, Step: 1100, L-Rate: 0.0001, Loss: 0.001068
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:24
+Test loss: 0.047669 (raw: 114.49)
+08/15 12:14:24 Epoch: 8, Step: 1110, L-Rate: 0.0001, Loss: 0.001048
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:22
+Test loss: 0.048299 (raw: 115.49)
+08/15 12:14:25 Epoch: 8, Step: 1120, L-Rate: 0.0001, Loss: 0.001207
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:21
+Test loss: 0.049334 (raw: 116.41)
+08/15 12:14:26 Epoch: 8, Step: 1130, L-Rate: 0.0001, Loss: 0.001120
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:20
+Test loss: 0.048969 (raw: 115.99)
+08/15 12:14:27 Epoch: 8, Step: 1140, L-Rate: 0.0001, Loss: 0.001313
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:19
+Test loss: 0.048218 (raw: 115.00)
+08/15 12:14:28 Epoch: 8, Step: 1150, L-Rate: 0.0001, Loss: 0.000843
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:18
+Test loss: 0.047740 (raw: 114.36)
+08/15 12:14:29 Epoch: 8, Step: 1160, L-Rate: 0.0001, Loss: 0.001025
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:17
+Test loss: 0.047417 (raw: 113.72)
+08/15 12:14:30 Epoch: 8, Step: 1170, L-Rate: 0.0001, Loss: 0.000769
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:16
+Test loss: 0.051505 (raw: 118.45)
+08/15 12:14:31 Epoch: 8, Step: 1180, L-Rate: 0.0001, Loss: 0.001727
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:15
+Test loss: 0.048568 (raw: 115.43)
+08/15 12:14:32 Epoch: 8, Step: 1190, L-Rate: 0.0001, Loss: 0.000801
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:14
+Test loss: 0.049193 (raw: 116.15)
+08/15 12:14:33 Epoch: 8, Step: 1200, L-Rate: 0.0001, Loss: 0.001424
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:13
+Test loss: 0.051839 (raw: 118.91)
+08/15 12:14:34 Epoch: 8, Step: 1210, L-Rate: 0.0001, Loss: 0.001240
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:12
+Test loss: 0.047859 (raw: 114.29)
+08/15 12:14:35 Epoch: 8, Step: 1220, L-Rate: 0.0001, Loss: 0.001139
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:11
+Test loss: 0.048324 (raw: 114.72)
+08/15 12:14:36 Epoch: 9, Step: 1230, L-Rate: 0.0001, Loss: 0.001011
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:10
+Test loss: 0.048769 (raw: 115.54)
+08/15 12:14:37 Epoch: 9, Step: 1240, L-Rate: 0.0001, Loss: 0.001093
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:09
+Test loss: 0.048345 (raw: 114.94)
+08/15 12:14:38 Epoch: 9, Step: 1250, L-Rate: 0.0001, Loss: 0.000909
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:08
+Test loss: 0.048398 (raw: 115.00)
+08/15 12:14:39 Epoch: 9, Step: 1260, L-Rate: 0.0001, Loss: 0.001097
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:06
+Test loss: 0.045949 (raw: 112.10)
+08/15 12:14:40 Epoch: 9, Step: 1270, L-Rate: 0.0001, Loss: 0.001298
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:05
+Test loss: 0.049879 (raw: 116.56)
+08/15 12:14:41 Epoch: 9, Step: 1280, L-Rate: 0.0001, Loss: 0.000855
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:04
+Test loss: 0.047963 (raw: 114.32)
+08/15 12:14:42 Epoch: 9, Step: 1290, L-Rate: 0.0001, Loss: 0.000739
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:03
+Test loss: 0.047709 (raw: 113.97)
+08/15 12:14:43 Epoch: 9, Step: 1300, L-Rate: 0.0001, Loss: 0.000820
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:02
+Test loss: 0.045972 (raw: 111.74)
+08/15 12:14:44 Epoch: 9, Step: 1310, L-Rate: 0.0001, Loss: 0.000615
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:01
+Test loss: 0.049172 (raw: 115.78)
+08/15 12:14:45 Epoch: 9, Step: 1320, L-Rate: 0.0001, Loss: 0.001062
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:02:00
+Test loss: 0.048993 (raw: 115.15)
+08/15 12:14:46 Epoch: 9, Step: 1330, L-Rate: 0.0001, Loss: 0.000601
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:59
+Test loss: 0.047827 (raw: 114.78)
+08/15 12:14:47 Epoch: 9, Step: 1340, L-Rate: 0.0001, Loss: 0.001002
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:58
+Test loss: 0.049989 (raw: 116.65)
+08/15 12:14:48 Epoch: 9, Step: 1350, L-Rate: 0.0001, Loss: 0.000871
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:57
+Test loss: 0.049916 (raw: 116.75)
+08/15 12:14:49 Epoch: 9, Step: 1360, L-Rate: 0.0001, Loss: 0.001627
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:56
+Test loss: 0.048747 (raw: 114.89)
+08/15 12:14:50 Epoch: 9, Step: 1370, L-Rate: 0.0001, Loss: 0.000900
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:55
+Test loss: 0.048438 (raw: 114.95)
+08/15 12:14:51 Epoch: 10, Step: 1380, L-Rate: 0.0001, Loss: 0.001036
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:54
+Test loss: 0.050202 (raw: 117.30)
+08/15 12:14:52 Epoch: 10, Step: 1390, L-Rate: 0.0001, Loss: 0.000648
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:53
+Test loss: 0.048105 (raw: 114.58)
+08/15 12:14:53 Epoch: 10, Step: 1400, L-Rate: 0.0001, Loss: 0.000607
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:52
+Test loss: 0.049955 (raw: 116.93)
+08/15 12:14:54 Epoch: 10, Step: 1410, L-Rate: 0.0001, Loss: 0.000851
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:51
+Test loss: 0.049168 (raw: 115.84)
+08/15 12:14:55 Epoch: 10, Step: 1420, L-Rate: 0.0001, Loss: 0.000666
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:50
+Test loss: 0.049402 (raw: 116.49)
+08/15 12:14:56 Epoch: 10, Step: 1430, L-Rate: 0.0001, Loss: 0.000618
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:49
+Test loss: 0.047906 (raw: 114.51)
+08/15 12:14:57 Epoch: 10, Step: 1440, L-Rate: 0.0001, Loss: 0.000815
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:48
+Test loss: 0.049414 (raw: 116.42)
+08/15 12:14:58 Epoch: 10, Step: 1450, L-Rate: 0.0001, Loss: 0.000680
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:46
+Test loss: 0.049530 (raw: 116.62)
+08/15 12:14:59 Epoch: 10, Step: 1460, L-Rate: 0.0001, Loss: 0.001055
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:45
+Test loss: 0.045574 (raw: 111.54)
+08/15 12:15:00 Epoch: 10, Step: 1470, L-Rate: 0.0001, Loss: 0.000639
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:44
+Test loss: 0.045391 (raw: 111.11)
+08/15 12:15:01 Epoch: 10, Step: 1480, L-Rate: 0.0001, Loss: 0.000971
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:43
+Test loss: 0.045238 (raw: 111.09)
+08/15 12:15:02 Epoch: 10, Step: 1490, L-Rate: 0.0001, Loss: 0.000700
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:42
+Test loss: 0.045216 (raw: 110.71)
+08/15 12:15:03 Epoch: 10, Step: 1500, L-Rate: 0.0001, Loss: 0.000560
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:41
+    saved TF model: /nfs/diskstation/seita/bed-make/grasp/cache_h_v02/grasp_1_img_depth_opt_adam_lr_0.0001_L2_0.0001_kp_1.0_cv_False/08_15_12_15_03_save.ckpt
+Test loss: 0.047118 (raw: 113.27)
+08/15 12:15:06 Epoch: 10, Step: 1510, L-Rate: 0.0001, Loss: 0.000675
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:41
+Test loss: 0.048058 (raw: 114.64)
+08/15 12:15:07 Epoch: 10, Step: 1520, L-Rate: 0.0001, Loss: 0.000727
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:40
+Test loss: 0.047414 (raw: 113.94)
+08/15 12:15:08 Epoch: 11, Step: 1530, L-Rate: 0.0001, Loss: 0.000568
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:39
+Test loss: 0.048657 (raw: 115.82)
+08/15 12:15:09 Epoch: 11, Step: 1540, L-Rate: 0.0001, Loss: 0.000426
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:38
+Test loss: 0.048280 (raw: 115.19)
+08/15 12:15:10 Epoch: 11, Step: 1550, L-Rate: 0.0001, Loss: 0.000450
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:37
+Test loss: 0.049151 (raw: 116.04)
+08/15 12:15:11 Epoch: 11, Step: 1560, L-Rate: 0.0001, Loss: 0.000481
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:36
+Test loss: 0.049566 (raw: 116.53)
+08/15 12:15:12 Epoch: 11, Step: 1570, L-Rate: 0.0001, Loss: 0.000599
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:35
+Test loss: 0.047160 (raw: 113.79)
+08/15 12:15:13 Epoch: 11, Step: 1580, L-Rate: 0.0001, Loss: 0.000372
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:34
+Test loss: 0.048483 (raw: 115.31)
+08/15 12:15:14 Epoch: 11, Step: 1590, L-Rate: 0.0001, Loss: 0.000444
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:33
+Test loss: 0.051444 (raw: 118.61)
+08/15 12:15:15 Epoch: 11, Step: 1600, L-Rate: 0.0001, Loss: 0.000578
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:32
+Test loss: 0.049340 (raw: 115.85)
+08/15 12:15:16 Epoch: 11, Step: 1610, L-Rate: 0.0001, Loss: 0.000651
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:31
+Test loss: 0.050264 (raw: 117.52)
+08/15 12:15:17 Epoch: 11, Step: 1620, L-Rate: 0.0001, Loss: 0.000311
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:30
+Test loss: 0.049950 (raw: 117.15)
+08/15 12:15:18 Epoch: 11, Step: 1630, L-Rate: 0.0001, Loss: 0.000759
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:29
+Test loss: 0.048237 (raw: 114.79)
+08/15 12:15:19 Epoch: 11, Step: 1640, L-Rate: 0.0001, Loss: 0.000866
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:28
+Test loss: 0.047384 (raw: 113.54)
+08/15 12:15:20 Epoch: 11, Step: 1650, L-Rate: 0.0001, Loss: 0.000377
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:27
+Test loss: 0.049095 (raw: 115.89)
+08/15 12:15:21 Epoch: 11, Step: 1660, L-Rate: 0.0001, Loss: 0.000387
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:26
+Test loss: 0.049208 (raw: 115.68)
+08/15 12:15:22 Epoch: 11, Step: 1670, L-Rate: 0.0001, Loss: 0.000318
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:25
+Test loss: 0.048318 (raw: 114.70)
+08/15 12:15:23 Epoch: 12, Step: 1680, L-Rate: 0.0001, Loss: 0.000385
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:24
+Test loss: 0.048431 (raw: 114.84)
+08/15 12:15:24 Epoch: 12, Step: 1690, L-Rate: 0.0001, Loss: 0.000280
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:23
+Test loss: 0.049207 (raw: 116.19)
+08/15 12:15:25 Epoch: 12, Step: 1700, L-Rate: 0.0001, Loss: 0.000287
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:22
+Test loss: 0.048597 (raw: 115.52)
+08/15 12:15:27 Epoch: 12, Step: 1710, L-Rate: 0.0001, Loss: 0.000382
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:21
+Test loss: 0.046107 (raw: 112.26)
+08/15 12:15:28 Epoch: 12, Step: 1720, L-Rate: 0.0001, Loss: 0.000383
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:20
+Test loss: 0.046670 (raw: 113.22)
+08/15 12:15:29 Epoch: 12, Step: 1730, L-Rate: 0.0001, Loss: 0.000585
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:19
+Test loss: 0.047487 (raw: 114.11)
+08/15 12:15:30 Epoch: 12, Step: 1740, L-Rate: 0.0001, Loss: 0.000984
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:18
+Test loss: 0.045829 (raw: 111.91)
+08/15 12:15:31 Epoch: 12, Step: 1750, L-Rate: 0.0001, Loss: 0.000371
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:17
+Test loss: 0.047097 (raw: 113.58)
+08/15 12:15:32 Epoch: 12, Step: 1760, L-Rate: 0.0001, Loss: 0.000318
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:16
+Test loss: 0.047972 (raw: 114.59)
+08/15 12:15:33 Epoch: 12, Step: 1770, L-Rate: 0.0001, Loss: 0.000581
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:15
+Test loss: 0.048102 (raw: 114.81)
+08/15 12:15:34 Epoch: 12, Step: 1780, L-Rate: 0.0001, Loss: 0.000443
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:14
+Test loss: 0.049933 (raw: 116.90)
+08/15 12:15:35 Epoch: 12, Step: 1790, L-Rate: 0.0001, Loss: 0.000545
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:13
+Test loss: 0.049547 (raw: 116.68)
+08/15 12:15:36 Epoch: 12, Step: 1800, L-Rate: 0.0001, Loss: 0.000441
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:12
+Test loss: 0.047629 (raw: 114.27)
+08/15 12:15:37 Epoch: 12, Step: 1810, L-Rate: 0.0001, Loss: 0.000383
+Speed: 0.045s/iter, Load: 0.033s/iter, Remain: 0:01:11
+Test loss: 0.048442 (raw: 115.34)
+08/15 12:15:38 Epoch: 12, Step: 1820, L-Rate: 0.0001, Loss: 0.000207
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:01:10
+Test loss: 0.048755 (raw: 115.93)
+08/15 12:15:39 Epoch: 12, Step: 1830, L-Rate: 0.0001, Loss: 0.000413
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:01:09
+Test loss: 0.049257 (raw: 116.27)
+08/15 12:15:40 Epoch: 13, Step: 1840, L-Rate: 0.0001, Loss: 0.000570
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:01:08
+Test loss: 0.049216 (raw: 116.37)
+08/15 12:15:41 Epoch: 13, Step: 1850, L-Rate: 0.0001, Loss: 0.000414
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:01:07
+Test loss: 0.048335 (raw: 115.40)
+08/15 12:15:42 Epoch: 13, Step: 1860, L-Rate: 0.0001, Loss: 0.000462
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:01:06
+Test loss: 0.048007 (raw: 114.46)
+08/15 12:15:43 Epoch: 13, Step: 1870, L-Rate: 0.0001, Loss: 0.000426
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:01:05
+Test loss: 0.047609 (raw: 113.80)
+08/15 12:15:44 Epoch: 13, Step: 1880, L-Rate: 0.0001, Loss: 0.000350
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:01:04
+Test loss: 0.046528 (raw: 112.30)
+08/15 12:15:45 Epoch: 13, Step: 1890, L-Rate: 0.0001, Loss: 0.000344
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:01:03
+Test loss: 0.048256 (raw: 114.52)
+08/15 12:15:47 Epoch: 13, Step: 1900, L-Rate: 0.0001, Loss: 0.000622
+Speed: 0.046s/iter, Load: 0.033s/iter, Remain: 0:01:02
+Test loss: 0.049994 (raw: 116.86)
+08/15 12:15:48 Epoch: 13, Step: 1910, L-Rate: 0.0001, Loss: 0.000368
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:01:01
+Test loss: 0.048569 (raw: 115.27)
+08/15 12:15:49 Epoch: 13, Step: 1920, L-Rate: 0.0001, Loss: 0.000429
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:59
+Test loss: 0.047733 (raw: 114.02)
+08/15 12:15:50 Epoch: 13, Step: 1930, L-Rate: 0.0001, Loss: 0.000261
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:58
+Test loss: 0.048702 (raw: 115.54)
+08/15 12:15:51 Epoch: 13, Step: 1940, L-Rate: 0.0001, Loss: 0.000287
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:57
+Test loss: 0.047688 (raw: 114.32)
+08/15 12:15:52 Epoch: 13, Step: 1950, L-Rate: 0.0001, Loss: 0.000272
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:56
+Test loss: 0.047675 (raw: 114.58)
+08/15 12:15:53 Epoch: 13, Step: 1960, L-Rate: 0.0001, Loss: 0.000415
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:55
+Test loss: 0.048017 (raw: 115.20)
+08/15 12:15:54 Epoch: 13, Step: 1970, L-Rate: 0.0001, Loss: 0.000611
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:54
+Test loss: 0.045883 (raw: 112.39)
+08/15 12:15:55 Epoch: 13, Step: 1980, L-Rate: 0.0001, Loss: 0.000918
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:53
+Test loss: 0.045992 (raw: 112.21)
+08/15 12:15:56 Epoch: 14, Step: 1990, L-Rate: 0.0001, Loss: 0.000515
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:52
+Test loss: 0.046353 (raw: 112.52)
+08/15 12:15:57 Epoch: 14, Step: 2000, L-Rate: 0.0001, Loss: 0.000298
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:51
+    saved TF model: /nfs/diskstation/seita/bed-make/grasp/cache_h_v02/grasp_1_img_depth_opt_adam_lr_0.0001_L2_0.0001_kp_1.0_cv_False/08_15_12_15_57_save.ckpt
+Test loss: 0.046692 (raw: 113.22)
+08/15 12:16:00 Epoch: 14, Step: 2010, L-Rate: 0.0001, Loss: 0.000673
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:51
+Test loss: 0.047807 (raw: 114.50)
+08/15 12:16:01 Epoch: 14, Step: 2020, L-Rate: 0.0001, Loss: 0.000343
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:50
+Test loss: 0.048012 (raw: 115.14)
+08/15 12:16:02 Epoch: 14, Step: 2030, L-Rate: 0.0001, Loss: 0.000468
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:49
+Test loss: 0.050158 (raw: 117.30)
+08/15 12:16:03 Epoch: 14, Step: 2040, L-Rate: 0.0001, Loss: 0.000490
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:48
+Test loss: 0.050252 (raw: 117.37)
+08/15 12:16:04 Epoch: 14, Step: 2050, L-Rate: 0.0001, Loss: 0.000571
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:47
+Test loss: 0.049421 (raw: 116.73)
+08/15 12:16:05 Epoch: 14, Step: 2060, L-Rate: 0.0001, Loss: 0.000661
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:45
+Test loss: 0.050825 (raw: 118.68)
+08/15 12:16:06 Epoch: 14, Step: 2070, L-Rate: 0.0001, Loss: 0.000898
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:44
+Test loss: 0.050174 (raw: 117.44)
+08/15 12:16:07 Epoch: 14, Step: 2080, L-Rate: 0.0001, Loss: 0.000742
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:43
+Test loss: 0.051618 (raw: 119.57)
+08/15 12:16:08 Epoch: 14, Step: 2090, L-Rate: 0.0001, Loss: 0.000554
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:42
+Test loss: 0.050327 (raw: 117.98)
+08/15 12:16:10 Epoch: 14, Step: 2100, L-Rate: 0.0001, Loss: 0.000326
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:41
+Test loss: 0.050066 (raw: 117.30)
+08/15 12:16:11 Epoch: 14, Step: 2110, L-Rate: 0.0001, Loss: 0.000493
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:40
+Test loss: 0.049555 (raw: 116.65)
+08/15 12:16:12 Epoch: 14, Step: 2120, L-Rate: 0.0001, Loss: 0.000436
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:39
+Test loss: 0.048826 (raw: 116.01)
+08/15 12:16:13 Epoch: 14, Step: 2130, L-Rate: 0.0001, Loss: 0.000384
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:38
+Test loss: 0.047236 (raw: 114.05)
+08/15 12:16:14 Epoch: 15, Step: 2140, L-Rate: 0.0001, Loss: 0.000683
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:37
+Test loss: 0.048052 (raw: 115.04)
+08/15 12:16:15 Epoch: 15, Step: 2150, L-Rate: 0.0001, Loss: 0.000941
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:36
+Test loss: 0.049724 (raw: 117.06)
+08/15 12:16:16 Epoch: 15, Step: 2160, L-Rate: 0.0001, Loss: 0.000776
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:35
+Test loss: 0.051251 (raw: 118.55)
+08/15 12:16:17 Epoch: 15, Step: 2170, L-Rate: 0.0001, Loss: 0.000529
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:34
+Test loss: 0.049544 (raw: 116.17)
+08/15 12:16:18 Epoch: 15, Step: 2180, L-Rate: 0.0001, Loss: 0.000644
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:33
+Test loss: 0.050570 (raw: 117.47)
+08/15 12:16:19 Epoch: 15, Step: 2190, L-Rate: 0.0001, Loss: 0.000364
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:32
+Test loss: 0.049180 (raw: 116.02)
+08/15 12:16:20 Epoch: 15, Step: 2200, L-Rate: 0.0001, Loss: 0.000568
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:31
+Test loss: 0.050340 (raw: 117.54)
+08/15 12:16:21 Epoch: 15, Step: 2210, L-Rate: 0.0001, Loss: 0.000631
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:30
+Test loss: 0.050014 (raw: 117.42)
+08/15 12:16:22 Epoch: 15, Step: 2220, L-Rate: 0.0001, Loss: 0.000415
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:29
+Test loss: 0.049203 (raw: 116.35)
+08/15 12:16:23 Epoch: 15, Step: 2230, L-Rate: 0.0001, Loss: 0.000444
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:28
+Test loss: 0.049656 (raw: 117.36)
+08/15 12:16:24 Epoch: 15, Step: 2240, L-Rate: 0.0001, Loss: 0.000323
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:27
+Test loss: 0.049666 (raw: 117.39)
+08/15 12:16:25 Epoch: 15, Step: 2250, L-Rate: 0.0001, Loss: 0.000597
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:26
+Test loss: 0.049135 (raw: 116.79)
+08/15 12:16:26 Epoch: 15, Step: 2260, L-Rate: 0.0001, Loss: 0.000752
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:25
+Test loss: 0.049702 (raw: 117.29)
+08/15 12:16:28 Epoch: 15, Step: 2270, L-Rate: 0.0001, Loss: 0.000492
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:24
+Test loss: 0.048097 (raw: 114.98)
+08/15 12:16:29 Epoch: 15, Step: 2280, L-Rate: 0.0001, Loss: 0.000521
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:23
+Test loss: 0.047941 (raw: 114.54)
+08/15 12:16:30 Epoch: 16, Step: 2290, L-Rate: 0.0001, Loss: 0.000582
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:21
+Test loss: 0.048180 (raw: 114.74)
+08/15 12:16:31 Epoch: 16, Step: 2300, L-Rate: 0.0001, Loss: 0.000658
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:20
+Test loss: 0.049664 (raw: 116.87)
+08/15 12:16:32 Epoch: 16, Step: 2310, L-Rate: 0.0001, Loss: 0.000478
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:19
+Test loss: 0.049750 (raw: 117.05)
+08/15 12:16:33 Epoch: 16, Step: 2320, L-Rate: 0.0001, Loss: 0.000305
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:18
+Test loss: 0.050366 (raw: 117.80)
+08/15 12:16:34 Epoch: 16, Step: 2330, L-Rate: 0.0001, Loss: 0.000444
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:17
+Test loss: 0.050426 (raw: 117.65)
+08/15 12:16:35 Epoch: 16, Step: 2340, L-Rate: 0.0001, Loss: 0.000262
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:16
+Test loss: 0.049850 (raw: 117.23)
+08/15 12:16:36 Epoch: 16, Step: 2350, L-Rate: 0.0001, Loss: 0.000296
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:15
+Test loss: 0.049668 (raw: 116.90)
+08/15 12:16:37 Epoch: 16, Step: 2360, L-Rate: 0.0001, Loss: 0.000303
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:14
+Test loss: 0.049649 (raw: 117.20)
+08/15 12:16:38 Epoch: 16, Step: 2370, L-Rate: 0.0001, Loss: 0.000543
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:13
+Test loss: 0.047848 (raw: 114.83)
+08/15 12:16:39 Epoch: 16, Step: 2380, L-Rate: 0.0001, Loss: 0.000412
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:12
+Test loss: 0.050020 (raw: 117.79)
+08/15 12:16:40 Epoch: 16, Step: 2390, L-Rate: 0.0001, Loss: 0.000704
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:11
+Test loss: 0.051292 (raw: 119.01)
+08/15 12:16:41 Epoch: 16, Step: 2400, L-Rate: 0.0001, Loss: 0.000638
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:10
+Test loss: 0.048748 (raw: 115.93)
+08/15 12:16:42 Epoch: 16, Step: 2410, L-Rate: 0.0001, Loss: 0.000992
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:09
+Test loss: 0.047021 (raw: 114.06)
+08/15 12:16:44 Epoch: 16, Step: 2420, L-Rate: 0.0001, Loss: 0.000570
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:08
+Test loss: 0.048902 (raw: 115.89)
+08/15 12:16:45 Epoch: 16, Step: 2430, L-Rate: 0.0001, Loss: 0.000598
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:07
+Test loss: 0.053907 (raw: 122.84)
+08/15 12:16:46 Epoch: 16, Step: 2440, L-Rate: 0.0001, Loss: 0.000791
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:06
+Test loss: 0.051040 (raw: 118.90)
+08/15 12:16:47 Epoch: 17, Step: 2450, L-Rate: 0.0001, Loss: 0.000602
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:05
+Test loss: 0.051209 (raw: 118.88)
+08/15 12:16:48 Epoch: 17, Step: 2460, L-Rate: 0.0001, Loss: 0.000730
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:04
+Test loss: 0.050001 (raw: 117.08)
+08/15 12:16:49 Epoch: 17, Step: 2470, L-Rate: 0.0001, Loss: 0.000418
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:03
+Test loss: 0.047515 (raw: 114.05)
+08/15 12:16:50 Epoch: 17, Step: 2480, L-Rate: 0.0001, Loss: 0.000470
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:02
+Test loss: 0.047575 (raw: 113.85)
+08/15 12:16:51 Epoch: 17, Step: 2490, L-Rate: 0.0001, Loss: 0.000628
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:01
+Test loss: 0.047597 (raw: 113.87)
+08/15 12:16:52 Epoch: 17, Step: 2500, L-Rate: 0.0001, Loss: 0.000501
+Speed: 0.046s/iter, Load: 0.034s/iter, Remain: 0:00:00
+    saved TF model: /nfs/diskstation/seita/bed-make/grasp/cache_h_v02/grasp_1_img_depth_opt_adam_lr_0.0001_L2_0.0001_kp_1.0_cv_False/08_15_12_16_52_save.ckpt
+Done training.

@@ -16,22 +16,22 @@ class CONFIG(object):
         self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'   # Tritons
         self.DATA_PATH   = self.ROOT_DIR+''                     # Tritons
 
-        # If `PERFORM_CV` then we are doing training on a set of cached, separate data.
-        # We split data during the `data_manager` class, so OK to load all groups here.
-        # Else, train on all the cached data, with OPTIONALLY a new held-out test set.
+        # If `PERFORM_CV` then we are training on a set of cached, separate data.
+        # We split data in the `data_manager` class, so OK to load all groups here.
+        # Else, train on all the cached data, +OPTIONALLY a new held-out test set.
         if self.PERFORM_CV:
             self.CV_HELD_OUT_INDEX = args.cv_idx
             assert args.cv_idx is not None
 
-        self.ROLLOUT_PATH = join(self.DATA_PATH,'cache_white_v01/')
+        self.ROLLOUT_PATH = join(self.DATA_PATH, 'cache_h_v02/')
         self.CV_GROUPS = sorted(
                 [x for x in os.listdir(self.ROLLOUT_PATH) if 'cv_' in x]
         )
         assert len(self.CV_GROUPS) == 10
 
         # To ignore a test set, set as None. Else, load in all the groups.
-        # (We have the test set also saved as CV splits, but we'll load in everything.)
-        self.TEST_ROLLOUT_PATH = None 
+        # (We also have test set saved as CV splits, but we'll load everything.)
+        self.TEST_ROLLOUT_PATH = join(self.DATA_PATH, 'cache_white_v01/')
         if self.TEST_ROLLOUT_PATH is not None:
             self.TEST_GROUPS = sorted(
                     [x for x in os.listdir(self.TEST_ROLLOUT_PATH) if 'cv_' in x]
@@ -43,7 +43,8 @@ class CONFIG(object):
 
         # Pre-trained weights.
         self.WEIGHTS_DIR = join(self.DATA_PATH,'weights/')
-        self.PRE_TRAINED_DIR = '/nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/'
+        self.PRE_TRAINED_DIR = \
+            '/nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/'
         self.WEIGHTS_FILE = None
 
         # Classes, labels, data augmentation
