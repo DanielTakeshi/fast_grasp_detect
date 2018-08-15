@@ -191,16 +191,13 @@ class Solver(object):
 
             # Save the actual model using standard `tf.Saver`s, w/global steps. Also record
             # train/test losses. For now, only save if we're not doing cross validation.
-            # TODO: we're only saving the best predictions but to be fair we should use a fixed # of iters
             if step % cfg.SAVE_ITER  == 0:
                 if not cfg.PERFORM_CV:
                     curr_time = datetime.datetime.now().strftime('%m_%d_%H_%M_%S')
                     ckpt_name = curr_time+ "_save.ckpt"
-                    real_ckpt = os.path.join(cfg.OUT_DIR, ckpt_name)
+                    real_ckpt = os.path.join(self.HEAD_DIR, ckpt_name)
                     self.all_saver.save(self.sess, real_ckpt, global_step=self.global_step)
-                    print("    saved TF checkpoint to: {}".format(real_ckpt))
-
-                elapsed_time.append( time.time() - start_t )
+                    print("    saved TF model: {}".format(real_ckpt))
 
                 # New dictionary with lists of historical info, and save (w/overwriting).
                 info = {}
@@ -213,15 +210,16 @@ class Solver(object):
                 info["name"] = cfg.CONFIG_NAME
                 info["epoch"] = self.data.epoch
                 info["lrates"] = learning_rates
+                elapsed_time.append( time.time()-start_t )
                 info["elapsed_time"] = elapsed_time
 
                 # Don't forget best set of predictions + true labels, so we can visualize.
-                cv_idx = cfg.CV_HELD_OUT_INDEX
                 if 'grasp' in cfg.CONFIG_NAME:
                     if cfg.PERFORM_CV:
-                        info["cv_indices"] = cfg.CV_GROUPS[cv_idx]
-                    info["preds"] = best_preds
-                    info["targs"] = cfg.return_raw_labels(labels_t)
+                        info["cv_indices"] = cfg.CV_GROUPS[ cfg.CV_HELD_OUT_INDEX ]
+                    if cfg.HAVE_TEST_SET:
+                        info["preds"] = best_preds
+                        info["targs"] = cfg.return_raw_labels(labels_t)
 
                 pickle.dump(info, open(self.stats_pickle_file, 'wb'))
 
@@ -266,7 +264,6 @@ class Solver(object):
         img_type = 'rgb'
         if cfg.USE_DEPTH:
             img_type = 'depth'
-        cidx = cfg.CV_HELD_OUT_INDEX
 
         # Goes in `/.../grasp/` or `/.../success/`.
         directory = '{}_{}_img_{}_opt_{}_lr_{}_L2_{}_kp_{}_cv_{}'.format(
@@ -279,20 +276,22 @@ class Solver(object):
                 cfg.DROPOUT_KEEP_PROB,
                 cfg.PERFORM_CV)
 
-        # Also prefix this with the dataset _name_, so as not to get confused.
-        data_name = ( (cfg.ROLLOUT_PATH.rstrip('/')).split('/') )[-1] # e.g., `rollouts_white_v01`
+        # Also prefix this with the dataset _name_, e.g., `rollouts_white_v01`
+        data_name = ( (cfg.ROLLOUT_PATH.rstrip('/')).split('/') )[-1] 
 
         # Now, e.g., `/.../grasp/data_name/directory`.
-        head_dir = os.path.join(cfg.OUT_DIR, data_name, directory)
-        if not os.path.exists(head_dir):
-            os.makedirs(head_dir)
+        self.HEAD_DIR = os.path.join(cfg.OUT_DIR, data_name, directory)
+        if not os.path.exists(self.HEAD_DIR):
+            os.makedirs(self.HEAD_DIR)
 
         # Use the stats pickle file for saving results from training.
         if cfg.PERFORM_CV:
-            self.stats_pickle_file = os.path.join(head_dir, 'stats_{}.p'.format(cidx))
+            cidx = cfg.CV_HELD_OUT_INDEX
+            self.stats_pickle_file = os.path.join(self.HEAD_DIR, 'stats_{}.p'.format(cidx))
         else:
-            self.stats_pickle_file = os.path.join(head_dir, 'stats.p')
+            self.stats_pickle_file = os.path.join(self.HEAD_DIR, 'stats.p')
 
         # Also, for overall config, let's augment it with the exact time.
         c_name = 'config_{}.txt'.format( datetime.datetime.now().strftime('%Y_%m_%d_%H_%M') )
-        self.save_cfg( os.path.join(head_dir,c_name) )
+        self.save_cfg( os.path.join(self.HEAD_DIR, c_name) )
+

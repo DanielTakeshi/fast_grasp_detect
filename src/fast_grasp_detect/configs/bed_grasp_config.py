@@ -12,7 +12,6 @@ class CONFIG(object):
         self.PERFORM_CV  = args.do_cv
         self.NET_TYPE    = args.net_type
         self.PRINT_PREDS = args.print_preds
-        self.USE_CACHE   = args.use_cache
         self.CONFIG_NAME = 'grasp'
         self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'   # Tritons
         self.DATA_PATH   = self.ROOT_DIR+''                     # Tritons
@@ -24,7 +23,7 @@ class CONFIG(object):
             self.CV_HELD_OUT_INDEX = args.cv_idx
             assert args.cv_idx is not None
 
-        self.ROLLOUT_PATH = join(self.DATA_PATH,'cache_h_v01/')
+        self.ROLLOUT_PATH = join(self.DATA_PATH,'cache_white_v01/')
         self.CV_GROUPS = sorted(
                 [x for x in os.listdir(self.ROLLOUT_PATH) if 'cv_' in x]
         )

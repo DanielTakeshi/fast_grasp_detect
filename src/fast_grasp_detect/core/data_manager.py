@@ -117,11 +117,8 @@ class data_manager(object):
     def load_test_set(self):
         """ Assigns to `self.test_labels`, each element a dict w/relevant info.
 
-        If we are doing cross validation to evaluate different training criteria before hand, we'll
-        use cross validation groups and set the appropriate held-out dataset with our config file.
-
-        Also, form the test batch at the end. It won't be large with the data we have and we
-        shouldn't keep re-computing and re-shuffling since it's a test (or validation) batch.
+        Form the test batch at the end. It won't be large with the data we have and we
+        shouldn't keep re-computing and re-shuffling since it's a test batch.
         """
         s_time = time.time()
         cfg = self.cfg
@@ -177,17 +174,7 @@ class data_manager(object):
 
 
     def load_rollouts(self):
-        """ Assigns to `self.train_labels`, each element a dict w/relevant info.
-
-        Each rollout in the designated directory is broken up into 'grasp_point' dicts, which are
-        like the data dicts we used for collecting data (though w/out 'd_img'). Then for each, we
-        augment the data and then run the YOLO network on that to get pre-extracted features. Note
-        that these features are assumed to be held fixed, so if we did this in test-time execution,
-        we would need those test images passed through this same feature extractor, THEN through our
-        pre-trained weights.
-
-        Unless we trained the entire YOLO net, that is, in which case the feature extractor is
-        simply something that resizes the input for the first YOLO layer.
+        """Assigns to `self.train_labels`, each element a dict w/relevant info.
         """
         s_time = time.time()
         cfg = self.cfg
