@@ -77,7 +77,7 @@ else:
 # Configuration, then three major components; `pascal` has reference to 'yolo' network.
 bed_grasp_options = CONFIG(args)
 pascal = data_manager(bed_grasp_options)
-yolo = GHNet(bed_grasp_options, pascal)
+yolo = GHNet(bed_grasp_options, pascal.yc)
 solver = Solver(bed_grasp_options, yolo, pascal)
 
 inspect_variables()

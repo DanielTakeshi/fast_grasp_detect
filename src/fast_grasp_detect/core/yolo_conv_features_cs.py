@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 import os, cv2, sys
 slim = tf.contrib.slim
+np.set_printoptions(edgeitems=4, suppress=True, linewidth=180)
 
 
 class YOLO_CONV(object):
@@ -9,26 +10,16 @@ class YOLO_CONV(object):
     Then define fine-tuned weights in `grasp_net_cs.py` and `success_net.py`.
     """
 
-    def __init__(self, options, is_training=True):
+    def __init__(self, options):
         self.cfg = cfg = options
-        self.classes = self.cfg.CLASSES
+        self.classes = cfg.CLASSES
         self.num_class = len(self.classes)
-        self.image_size = self.cfg.IMAGE_SIZE
-        self.cell_size = self.cfg.CELL_SIZE
-        self.boxes_per_cell = self.cfg.BOXES_PER_CELL
-        self.output_size = (self.cell_size * self.cell_size) * (self.num_class + self.boxes_per_cell * 5)
-        self.scale = 1.0 * self.image_size / self.cell_size
-        self.boundary1 = self.cell_size * self.cell_size * self.num_class
-        self.boundary2 = self.boundary1 + self.cell_size * self.cell_size * self.boxes_per_cell
-        self.alpha = self.cfg.ALPHA
-
-        self.offset = np.transpose(np.reshape(np.array(
-            [np.arange(self.cell_size)] * self.cell_size * self.boxes_per_cell),
-            (self.boxes_per_cell, self.cell_size, self.cell_size)), (1, 2, 0))
+        self.image_size = int(cfg.IMAGE_SIZE)
+        self.weights_file = os.path.join(cfg.PRE_TRAINED_DIR,'YOLO_small.ckpt')
 
         # Get logits from the input. The input is (448,448) for each channel.
         self.images = tf.placeholder(tf.float32, [None, self.image_size, self.image_size, 3], name='images')
-        self.logits = self.build_network(self.images, self.output_size, self.alpha, is_training=is_training)
+        self.logits = self.build_network(self.images, cfg.ALPHA)
 
         # Use a user-specified fraction of our GPU.
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=cfg.GPU_MEM_FRAC)
@@ -40,7 +31,7 @@ class YOLO_CONV(object):
         self.img_mean = np.zeros((self.image_size, self.image_size, 3))
 
 
-    def build_network(self, images, num_outputs, alpha, keep_prob=1.0, is_training=True, scope='yolo'):
+    def build_network(self, images, alpha, scope='yolo'):
         """Builds the YOLO net. We use the last layer (self.conv_layer) for pre-trained features.
 
         After the initial input, the next few arguments for `slim.conv2d` are:
@@ -106,22 +97,30 @@ class YOLO_CONV(object):
         """Load network using slim's helpers and the standard `tf.train.Saver`.
 
         If we don't have anything to load (e.g., if using a smaller network) then this method
-        shouldn't be called.
+        shouldn't be called. Used for deployment and training IF we want pre-trained weights.
+
+        `slim.get_variables_to_restore()`: returns list of TensorFlow variables that we _just_
+        created from `build_network`. The names are important because we load them from a ckpt
+        (`self.weights_file`) which assumes the same exact naming. So, it assumes we defined
+        this class, then call this method. This matches `tf.Saver` properties, anyway.
+
+        Earlier, Michael was fiddling around with the variable to restore in case we wanted to
+        keep a subset of them, but let's just keep all of them for now.
+
+        To debug, we can do:
+
+            var = tf.trainable_variables()[k]
+            print(var)
+            print(self.sess.run(var))
+
+        where k is some index, to see the value of the weights.
+
+        By default the first '26 layers' actually take up 42 sopts in the list of variables.
         """
         assert not self.cfg.SMALLER_NET
-        self.weights_file = self.cfg.PRE_TRAINED_DIR+"YOLO_small.ckpt"
-        print('\nYOLO_CONV.load_network(), restoring pre-trained weights from: {}'.format(self.weights_file))
-        print("The variables we are restoring in `tf.train.Saver(variables_to_restore)`:")
-
-        self.variable_to_restore = slim.get_variables_to_restore()
-        count = 0
-        for var in self.variable_to_restore:
-            print str(count) + " "+ var.name
-            count += 1
-
-        print("self.layers = 0 so self.variables_to_restore: 0:45")
-        self.variables_to_restore = self.variable_to_restore[0:45]
-        self.saver = tf.train.Saver(self.variables_to_restore, max_to_keep=None)
+        print('\nYOLO_CONV.load_network(), pre-trained weights: {}'.format(self.weights_file))
+        vars_to_restore = slim.get_variables_to_restore()
+        self.saver = tf.train.Saver(vars_to_restore, max_to_keep=None)
         self.saver.restore(self.sess, self.weights_file)
 
 

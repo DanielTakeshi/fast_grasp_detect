@@ -6,22 +6,25 @@ slim = tf.contrib.slim
 
 class GHNet(object):
 
-    def __init__(self, cfg, data_m, is_training=True):
+    def __init__(self, cfg, yc, is_training=True):
         """
-        data_m: Needs to contain `data_m.yc.conv_layer` so that we get the tensorflow variable
-            representing the 26th layer of the YOLO network, in case we need to continue passing it
+        yc: Needs to contain `yc.conv_layer` so that we get the TF variable representing
+            the 26th layer of the YOLO network, in case we need to continue passing it
             through here if not fixing the 26 layers.
+        is_training: NOT for dropout/batch_norm/etc reasons but for deciding whether we
+            should make some new TF variables for the losses, etc. Should only be false
+            if we are using this during bed-making _deployment_.
         """
         self.cfg = cfg
-        self.classes = self.cfg.CLASSES
+        self.classes = cfg.CLASSES
         self.num_class = len(self.classes)
-        self.image_size = self.cfg.IMAGE_SIZE
-        self.dist_size_w = self.cfg.T_IMAGE_SIZE_W/self.cfg.RESOLUTION
-        self.dist_size_h = self.cfg.T_IMAGE_SIZE_H/self.cfg.RESOLUTION
-        self.learning_rate = self.cfg.LEARNING_RATE
-        self.batch_size = self.cfg.BATCH_SIZE
-        self.alpha = self.cfg.ALPHA
-        self.yolo_conv_layer = data_m.yc.conv_layer
+        self.image_size = int(cfg.IMAGE_SIZE)
+        self.dist_size_w = cfg.T_IMAGE_SIZE_W / cfg.RESOLUTION
+        self.dist_size_h = cfg.T_IMAGE_SIZE_H / cfg.RESOLUTION
+        self.learning_rate = cfg.LEARNING_RATE
+        self.batch_size = int(cfg.BATCH_SIZE)
+        self.alpha = cfg.ALPHA
+        self.yolo_conv_layer = yc.conv_layer
 
         # 2-D output because we are predicting (x,y) pixel coords
         self.output_size = 2
@@ -35,7 +38,9 @@ class GHNet(object):
         # Also, `logits` are not log prob of classes but simply the predicted pixels.
         if cfg.FIX_PRETRAINED_LAYERS:
             assert not cfg.SMALLER_NET
-            self.images = tf.placeholder(tf.float32, [None, cfg.FILTER_SIZE, cfg.FILTER_SIZE, cfg.NUM_FILTERS], name='images')
+            fs = int(cfg.FILTER_SIZE)
+            nf = int(cfg.NUM_FILTERS)
+            self.images = tf.placeholder(tf.float32, [None, fs, fs, nf], name='images')
             self.logits = self.build_network(self.images, self.output_size, self.alpha, self.training_mode)
         else:
             self.logits = self.build_network(self.yolo_conv_layer, self.output_size, self.alpha, self.training_mode)
@@ -53,42 +58,18 @@ class GHNet(object):
         with tf.variable_scope(scope):
             net = images
 
-            if self.cfg.NET_TYPE == 3:
+            if self.cfg.NET_TYPE == 3 or self.cfg.NET_TYPE == 4:
+                pad = 2
+                if (self.cfg.NET_TYPE == 4):
+                    pad = 1
                 assert self.cfg.SMALLER_NET
+
                 with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                     activation_fn=leaky_relu(alpha),
                                     weights_initializer=tf.truncated_normal_initializer(0.0,0.01),
                                     #weights_initializer=tf.contrib.layers.xavier_initializer(),
                                     weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
-                    net = slim.conv2d(net, 64, [7, 7], 2, padding='SAME')
-                    net = slim.conv2d(net, 128, [5, 5], 2, padding='SAME')
-                    net = slim.max_pool2d(net, [2, 2], 2)
-
-                    net = slim.conv2d(net, 128, [5, 5])
-                    net = slim.conv2d(net, 192, [3, 3], 2)
-                    net = slim.max_pool2d(net, [2, 2], 2)
-
-                    net = slim.conv2d(net, 192, [3, 3])
-                    net = slim.conv2d(net, 192, [3, 3])
-                    net = slim.conv2d(net, 128, [3, 3])
-                    net = slim.max_pool2d(net, [2, 2], 2)
-
-                    net = slim.flatten(net)
-                    net = slim.fully_connected(net, 2000)
-                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
-                    net = slim.fully_connected(net, 2000)
-                    net = slim.fully_connected(net, num_outputs, activation_fn=None)
-
-            elif self.cfg.NET_TYPE == 4:
-                # To reduce complexity, for now make this similar to the case above
-                assert self.cfg.SMALLER_NET
-                with slim.arg_scope([slim.conv2d, slim.fully_connected],
-                                    activation_fn=leaky_relu(alpha),
-                                    weights_initializer=tf.truncated_normal_initializer(0.0,0.01),
-                                    #weights_initializer=tf.contrib.layers.xavier_initializer(),
-                                    weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
-
-                    net = slim.conv2d(net, 64, [7, 7], 1, padding='SAME')
+                    net = slim.conv2d(net, 64, [7, 7], pad, padding='SAME')
                     net = slim.conv2d(net, 128, [5, 5], 2, padding='SAME')
                     net = slim.max_pool2d(net, [2, 2], 2)
 

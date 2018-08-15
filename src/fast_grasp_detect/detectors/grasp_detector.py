@@ -1,131 +1,98 @@
-import tensorflow as tf
-import numpy as np
 import os, glob, cv2, argparse, sys
 from fast_grasp_detect.networks.grasp_net_cs import GHNet
 from fast_grasp_detect.core.yolo_conv_features_cs import YOLO_CONV
-from fast_grasp_detect.configs.config import CONFIG
 from fast_grasp_detect.data_aug.draw_cross_hair import DrawPrediction
-from utils.timer import Timer
+import numpy as np
+import tensorflow as tf
 slim = tf.contrib.slim
+from tensorflow.python import pywrap_tensorflow
 
 
 class GDetector(object):
     """Loaded when _deploying_ the learned bed-making grasping policy."""
 
-    def __init__(self,net_name):
-        self.cfg = CONFIG()
-        self.yc = YOLO_CONV(self.cfg,is_training = False)
+    def __init__(self, fg_cfg, bed_cfg):
+        """To load this, we utilize two configuration files.
 
-        self.classes = self.cfg.CLASSES
+        fg_cfg: use for training, in fast_grasp_detect
+        bed_cfg: use for bed-making now, for collection or deployment
+        """
+        self.fg_cfg = fg_cfg
+        self.bed_cfg = bed_cfg
+        self.classes = fg_cfg.CLASSES
         self.num_class = len(self.classes)
-        self.image_size = self.cfg.IMAGE_SIZE
-        self.cell_size = self.cfg.CELL_SIZE
-        self.boxes_per_cell = self.cfg.BOXES_PER_CELL
-        self.threshold = self.cfg.THRESHOLD
-        self.iou_threshold = self.cfg.IOU_THRESHOLD
-
-        self.boundary1 = self.cell_size * self.cell_size * self.num_class
-        self.boundary2 = self.boundary1 + self.cell_size * self.cell_size * self.boxes_per_cell
-
-        self.yc.load_network()
-        self.count = 0
+        self.image_size = int(fg_cfg.IMAGE_SIZE)
         self.dp = DrawPrediction()
-        self.net_name = net_name
-        #self.all_data = self.precompute_features(images)
+        self.yc = YOLO_CONV(self.fg_cfg)
+        self.yc.load_network()
         self.load_trained_net()
-        #self.images_detectors()
 
 
     def load_trained_net(self):
+        """Load in network that has been trained using slim and tf.Saver.
+
+        A few odd notes. You can inspect variables stored in a checkpoint file.
+
+            reader = pywrap_tensorflow.NewCheckpointReader(trained_model_file)
+            var_to_shape_map = reader.get_variable_to_shape_map()
+            for key in var_to_shape_map:
+                print(key)
+        
+        Another way to debug:
+
+            var = tf.trainable_variables()[k]
+            print(var)
+            print(self.sess.run(var))
+
+        However, the YOLO_CONV and this class have their own TensorFlow sessions.
+        With multiple sessions, they have different values for same-named variables.
+        Oddly, when I restore our trained model file, the first 26 layers (if we're
+        using fixed weights) are NOT loaded correctly. But fortunately the ones after
+        are correctly loaded and that's all we need, because in this class, we do not
+        call the first 26 layers but instead refer to the YOLO_CONV class (and thus
+        the YOLO_CONV's TensorFlow session.
+        """
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
-        self.net = GHNet(self.cfg,is_training = False)
 
-        trained_model_file = self.cfg.GRASP_OUTPUT_DIR+ self.net_name
-        print('GDetector.load_trained_net(), Restoring weights from: {}'.format(trained_model_file))
-        self.variable_to_restore = slim.get_variables_to_restore()
-        count = 0
-        for var in self.variable_to_restore:
-            print str(count) + " "+ var.name
-            count += 1
+        self.net = GHNet(cfg=self.fg_cfg, yc=self.yc, is_training=False)
+        trained_model_file = self.bed_cfg.GRASP_NET_PATH
+        vars_to_restore = slim.get_variables_to_restore()
 
-        self.variables_to_restore = self.variable_to_restore[42:]
-        self.saver_f = tf.train.Saver(self.variables_to_restore, max_to_keep=None)
+        print('GDetector.load_trained_net(), Restoring:\n{}'.format(trained_model_file))
+        print("num vars to restore: {}".format(len(vars_to_restore)))
+        self.saver_f = tf.train.Saver(vars_to_restore, max_to_keep=None)
         self.saver_f.restore(self.sess, trained_model_file)
 
 
-    def precompute_features(self,images):
-        """TODO: delete later, shouldn't be precomputing features during deployment."""
-        all_data = []
-        for image in images:
-            features = self.yc.extract_conv_features(image)
-            data = {}
-            data['image'] = image
-            data['features'] = features
-            all_data.append(data)
-        return all_data
+    def predict(self, image):
+        """Called during deployment code! Maps [-1,1] to raw pixels.
 
-
-    def detect(self,inputs,image):
-        img_h, img_w, _ = image.shape
-        net_output = self.sess.run(self.net.logits, feed_dict={self.net.images: inputs})
-        return net_output
-
-
-    def predict(self,image):
-        """Called during deployment code! Maps [-1,1] to raw pixels."""
+        As expected, we must pass it through the SAME processing code, inside the YOLO class and
+        `extract_conv_features`. This will run it through the YOLO's TensorFlow session if we
+        decided to use their pre-trained features!
+        """
         features = self.yc.extract_conv_features(image)
-        result = self.detect(features,image)
-        x = self.cfg.T_IMAGE_SIZE_W*(result[0,0]+0.5)
-        y = self.cfg.T_IMAGE_SIZE_H*(result[0,1]+0.5)
+        result = self.detect(features, image)
+        x = self.fg_cfg.T_IMAGE_SIZE_W * (result[0,0] + 0.5)
+        y = self.fg_cfg.T_IMAGE_SIZE_H * (result[0,1] + 0.5)
         pose = [x,y]
-        img = self.dp.draw_prediction(image,pose)
+
+        # Might want to change, this draws a large cross hair over the image.
+        img = self.dp.draw_prediction(image, pose)
         cv2.imshow('detected_result',img)
         cv2.waitKey(30)
         return pose
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', default="YOLO_small.ckpt", type=str)
-    parser.add_argument('--weight_dir', default='weights', type=str)
-    parser.add_argument('--data_dir', default="data", type=str)
-    parser.add_argument('--gpu', default='', type=str)
-    args = parser.parse_args()
-
-    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
-
-   
-    weight_file = "/home/autolab/Workspaces/michael_working/yolo_tensorflow/data/pascal_voc/output07_20_09_37_29save.ckpt-15000"
-    #weight_file = '/home/autolab/Workspaces/michael_working/yolo_tensorflow/data/pascal_voc/weights/save.ckpt-100'#os.path.join(args.data_dir, args.weight_dir, args.weights)
-    #weight_file = os.path.join(args.data_dir, args.weight_dir, args.weights)
-
-    imageList = glob.glob(os.path.join(cfg.IMAGE_PATH, '*.png'))
-    labelListOrig = glob.glob(os.path.join(cfg.LABEL_PATH, '*.p'))
-    labelList = [os.path.split(label)[-1].split('.')[0] for label in labelListOrig]
-    #remove labeled images
-    #imageList = [img for img in imageList if os.path.split(img)[-1].split('.')[0] not in labelList]
-
-    #imname = cfg.IMAGE_PATH + 'frame_1000.png'
-    #imname = 'test/person.jpg' 
-    #IPython.embed()
-    images = []
-    c = 0
-
-    detector = Detector(weight_file,images)
-    for imname in imageList:
-
-        detector.image_detector(imname)
-    
-
-    # detect from camera
-    # cap = cv2.VideoCapture(-1)
-    # detector.camera_detector(cap)
-
-    # detect from held out image file
-
-    
+    def detect(self, inputs, image):
+        """Called (class internally only?) to run through the post-YOLO network.
+        """
+        img_h, img_w, _ = image.shape
+        feed = {self.net.images: inputs, self.net.training_mode: False}
+        net_output = self.sess.run(self.net.logits, feed)
+        return net_output
 
 
 if __name__ == '__main__':
-    main()
+    pass
