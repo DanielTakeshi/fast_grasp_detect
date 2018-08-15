@@ -19,33 +19,29 @@ class data_manager(object):
         self.num_class = len(self.classes)
         self.image_size = self.cfg.IMAGE_SIZE
         self.class_to_ind = dict(zip(self.classes, xrange(len(self.classes))))
-        #self.flipped = self.cfg.FLIPPED
-        #self.noise = self.cfg.LIGHTING_NOISE
         self.cursor = 0
         self.t_cursor = 0
         self.epoch = 1
         self.gt_labels = None
 
-        # For cross-validation. Use self.training_list to hold single list of all training
-        # rollouts. That way I can ignore rollouts in the same target directory simply by
-        # removing the index in the configuration files rather than moving the rollout file.
+        # Load in data, following logic in our configuration file. Test set = held out.
+        # With CV, we make it a length-1 list to maintain compatibility with non-CV case.
+        num = len(cfg.CV_GROUPS)
         if cfg.PERFORM_CV:
             cidx = cfg.CV_HELD_OUT_INDEX
-            num = len(cfg.CV_GROUPS)
-            self.held_out_list = cfg.CV_GROUPS[cidx]
-            if cfg.USE_CACHE:
-                self.held_out_list = join(self.rollout_path, self.held_out_list)
-                self.training_list = sorted(
-                    [join(self.rollout_path,cfg.CV_GROUPS[c]) for c in range(num) if c != cidx]
+            self.training_list = sorted(
+                    [join(cfg.ROLLOUT_PATH, cfg.CV_GROUPS[c]) for c in range(num) if c != cidx]
+            )
+            self.held_out_list = [ join(cfg.ROLLOUT_PATH, cfg.CV_GROUPS[cidx]) ]
+        else:
+            # In this case, we may or may not have a held-out test set.
+            self.training_list = sorted(
+                    [join(cfg.ROLLOUT_PATH, cfg.CV_GROUPS[c]) for c in range(num)]
+            )
+            if cfg.TEST_ROLLOUT_PATH is not None:
+                self.held_out_list = sorted(
+                        [join(cfg.ROLLOUT_PATH, cfg.TEST_GROUPS[c]) for c in range(num)]
                 )
-            else:
-                self.training_list = sorted(
-                    sum([cfg.CV_GROUPS[c] for c in range(num) if c != cidx], [])
-                )
-                self.held_out_rollouts = [join(self.rollout_path,'rollout_'+str(rr))
-                    for rr in self.held_out_list]
-                self.training_rollouts = [join(self.rollout_path,'rollout_'+str(rr))
-                    for rr in self.training_list]
 
         # Load YOLO network and set up its pre-trained weights from known file
         # Update: we'll also use this in the case of a smaller neural network.
@@ -62,7 +58,8 @@ class data_manager(object):
         self.test_batch_d_imgs = None
         self.train_labels = []  # All training data goes here
         self.test_labels = []   # All testing data goes here
-        self.load_test_set()
+        if cfg.HAVE_TEST_SET:
+            self.load_test_set()
         self.load_rollouts()
 
 
@@ -128,16 +125,15 @@ class data_manager(object):
         """
         s_time = time.time()
         cfg = self.cfg
-        cv_idx = cfg.CV_HELD_OUT_INDEX
+        print("\ndata_manager.load_test_set()")
 
-        if cfg.USE_CACHE:
-            print("\ndata_manager.load_test_set(), cv idx: {}, path:".format(cv_idx))
-            print(self.held_out_list)
-            with open(self.held_out_list, 'r') as f:
+        for test_list in self.held_out_list:
+            with open(test_list, 'r') as f:
                 data = pickle.load(f)
-            print("loaded data, has length {}".format(len(data)))
+            print("loaded test data: {} (length {})".format(test_list, len(data)))
 
-            # Now we iterate in a similar fashion as the non-cache data loading option.
+            # Iterate and load data. NO data augmentation! (It's the test set!)
+            # We still go through the same feature extraction process.
             for idx,item in enumerate(data):
                 data_pt = {}
                 if cfg.USE_DEPTH:
@@ -148,37 +144,6 @@ class data_manager(object):
                 data_pt['d_img'] = item['d_img']
                 data_pt['label'] = cfg.compute_label(item)
                 self.test_labels.append(data_pt)
-
-        else:
-            if cfg.PERFORM_CV:
-                print("\ndata_manager.load_test_set(), held-out: {} (cv {}) from {}".format(
-                        self.held_out_list, cv_idx, self.rollout_path))
-                rollouts = list(self.held_out_rollouts)
-            else:
-                print("\ndata_manager.load_test_set(): {}".format(cfg.BC_HELD_OUT))
-                rollouts = glob.glob(join(cfg.BC_HELD_OUT, '*_*'))
-
-            # Oops, bad naming, `grasp_rollout` could also contain the success, but w/e.
-            for rollout_p in rollouts:
-                rollout = pickle.load(open(rollout_p+'/rollout.p'))
-                grasp_rollout = cfg.break_up_rollouts(rollout)
-                print("{},  len(relevant)={},  w/len(rollout)={} [TEST]".format(
-                        rollout_p, len(grasp_rollout), len(rollout)))
-
-                for grasp_point in grasp_rollout:
-                    data_pt = {}
-                    # Run the YOLO network w/pre-trained weights!!
-                    # No data augmentation, since we're on the test set.
-                    # Also the datum_to_net_dim only changes 'd_img'.
-                    grasp_point[0] = datum_to_net_dim(grasp_point[0])
-                    if cfg.USE_DEPTH:
-                        data_pt['features'] = self.yc.extract_conv_features(grasp_point[0]['d_img'])
-                    else:
-                        data_pt['features'] = self.yc.extract_conv_features(grasp_point[0]['c_img'])
-                    data_pt['c_img'] = grasp_point[0]['c_img']
-                    data_pt['d_img'] = grasp_point[0]['d_img']
-                    data_pt['label'] = cfg.compute_label(grasp_point[0])
-                    self.test_labels.append(data_pt)
 
         # Form and investigate the testing images and labels in their batch.
         K = len(self.test_labels)
@@ -198,7 +163,6 @@ class data_manager(object):
             self.test_batch_labels[count, :]      = self.test_labels[count]['label']
             self.test_batch_c_imgs.append( self.test_labels[count]['c_img'] )
             self.test_batch_d_imgs.append( self.test_labels[count]['d_img'] )
-
         print("test_batch_d_imgs[0].shape: {}".format(self.test_batch_d_imgs[0].shape))
         print("test_batch_feats.shape:     {}".format(self.test_batch_feats.shape))
         print("test_batch_labels.shape:    {}".format(self.test_batch_labels.shape))
@@ -227,60 +191,28 @@ class data_manager(object):
         """
         s_time = time.time()
         cfg = self.cfg
-        cv_idx = cfg.CV_HELD_OUT_INDEX
+        print("\ndata_manager.load_rollouts() (i.e., training data)")
 
-        if cfg.USE_CACHE:
-            print("\ndata_manager.load_rollouts(), ignoring cv_idx: {}".format(cv_idx))
-            for t_list in self.training_list:
-                with open(t_list, 'r') as f:
-                    t_list_data = pickle.load(f)
-                for data in t_list_data:
-                    c_img = data['c_img']
-                    d_img = data['d_img']
-                    # Data augmentation magic. Note: no need to process depth, I did it beforehand
-                    data_a = augment_data(data, cfg.USE_DEPTH) 
-                    for d_idx,datum_a in enumerate(data_a):
-                        data_pt = {}
-                        data_pt['features'] = self.yc.extract_conv_features(datum_a['img'])
-                        data_pt['label'] = cfg.compute_label(datum_a)
-                        self.train_labels.append(data_pt)
-                print("finished: {} (len {})".format(t_list, len(t_list_data)))
-
-        else:
-            if cfg.PERFORM_CV:
-                print("\ndata_manager.load_rollouts(), {} (held-out ignored: {}, idx {})".format(
-                        self.rollout_path, self.held_out_list, cv_idx))
-                rollouts = list(self.training_rollouts)
-            else:
-                print("\ndata_manager.load_rollouts(), path: {}".format(self.rollout_path))
-                rollouts = glob.glob(os.path.join(self.rollout_path, '*_*'))
-
-            # Oops, bad naming, `grasp_rollout` could also contain the success, but w/e.
-            for rollout_p in rollouts:
-                rollout = pickle.load(open(rollout_p+'/rollout.p'))
-                grasp_rollout = cfg.break_up_rollouts(rollout)
-                print("{},  len(relevant)={},  w/len(rollout)={}".format(
-                        rollout_p, len(grasp_rollout), len(rollout)))
-
-                for grasp_point in grasp_rollout:
-                    for data in grasp_point:
-                        c_img = data['c_img']
-                        d_img = data['d_img']
-                        data = datum_to_net_dim(data) # always do _before_ data augmentation!!
-                        data_a = augment_data(data, cfg.USE_DEPTH) # data augmentation magic.
-                        for d_idx,datum_a in enumerate(data_a):
-                            data_pt = {}
-                            # ---------------------------------------------------------------
-                            # Run the YOLO network w/pre-trained weights! 
-                            # features.shape: (1, 14, 14, 1024)
-                            # labels: for grasps, alternate between (x,y) and (-x,y)
-                            # Note that `datum_a['img']` could represent c_img OR d_img.
-                            # But when we call the network, it really 'sees' the `features`.
-                            # This is where we scale pixels, resize image, etc.
-                            # ---------------------------------------------------------------
-                            data_pt['features'] = self.yc.extract_conv_features(datum_a['img'])
-                            data_pt['label'] = cfg.compute_label(datum_a)
-                            self.train_labels.append(data_pt)
+        for t_list in self.training_list:
+            with open(t_list, 'r') as f:
+                t_list_data = pickle.load(f)
+            for data in t_list_data:
+                # Data augmentation magic. No need to process depth, I did it beforehand.
+                data_a = augment_data(data, cfg.USE_DEPTH)
+                for d_idx,datum_a in enumerate(data_a):
+                    data_pt = {}
+                    # ---------------------------------------------------------------
+                    # Run YOLO network w/pre-trained weights! If we run through YOLO:
+                    #       features.shape: (1, 14, 14, 1024)
+                    # labels: for grasps, alternate between (x,y) and (-x,y)
+                    # Note that `datum_a['img']` could represent c_img OR d_img.
+                    # But when we call the network, it really 'sees' the `features`.
+                    # This is where we scale pixels, resize image, etc.
+                    # ---------------------------------------------------------------
+                    data_pt['features'] = self.yc.extract_conv_features(datum_a['img'])
+                    data_pt['label'] = cfg.compute_label(datum_a)
+                    self.train_labels.append(data_pt)
+            print("finished: {} (len {})".format(t_list, len(t_list_data)))
 
         # Can do this because labels and images/features are paired in the same dict items.
         np.random.shuffle(self.train_labels)

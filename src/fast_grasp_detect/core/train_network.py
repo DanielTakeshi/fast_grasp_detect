@@ -37,7 +37,6 @@ class Solver(object):
         if not cfg.SMALLER_NET:
             self.restore()
         self.all_saver  = tf.train.Saver()
-        #self.ckpt_file  = os.path.join(self.output_dir, 'save.ckpt')
         self.summary_op = tf.summary.merge_all()
 
         # Support a decaying learning rate, hence use a TF placeholder.
@@ -95,7 +94,8 @@ class Solver(object):
 
 
     def train(self):
-        """Called during outer script to do training!!"""
+        """The training run.
+        """
         cfg = self.cfg
         train_timer = Timer()
         load_timer = Timer()
@@ -107,7 +107,8 @@ class Solver(object):
         raw_test_total = []   # success net
         best_loss = np.float('inf')
         best_preds = None
-        images_t, labels_t, c_imgs_list, d_imgs_list = self.data.get_test(return_imgs=True)
+        if cfg.HAVE_TEST_SET:
+            images_t, labels_t, c_imgs_list, d_imgs_list = self.data.get_test(return_imgs=True)
         elapsed_time = []
         start_t = time.time()
 
@@ -133,7 +134,7 @@ class Solver(object):
                     learning_rates.append(self.learning_rate.eval(session=self.sess))
 
                     # Normally we set `test_iter=1` so we always test when doing a summary...
-                    if step % self.test_iter == 0:
+                    if (step % self.test_iter == 0) and cfg.HAVE_TEST_SET:
                         feed_dict_t = {self.net.labels: labels_t, self.net.training_mode: False}
                         if cfg.FIX_PRETRAINED_LAYERS:
                             feed_dict_t[self.net.images] = images_t
@@ -166,17 +167,18 @@ class Solver(object):
                         else:
                             raise ValueError(self.cfg.CONFIG_NAME)
 
+                    # Report _training_-based statistics (_not_ test-based).
                     log_str = ('{} Epoch: {}, Step: {}, L-Rate: {},'
-                        ' Loss: {:.6f}\nSpeed: {:.3f}s/iter,'
-                        ' Load: {:.3f}s/iter, Remain: {}').format(
-                        datetime.datetime.now().strftime('%m/%d %H:%M:%S'),
-                        self.data.epoch,
-                        int(step),
-                        round(self.learning_rate.eval(session=self.sess), 6),
-                        loss,
-                        train_timer.average_time,
-                        load_timer.average_time,
-                        train_timer.remain(step, self.max_iter))
+                            ' Loss: {:.6f}\nSpeed: {:.3f}s/iter,'
+                            ' Load: {:.3f}s/iter, Remain: {}').format(
+                            datetime.datetime.now().strftime('%m/%d %H:%M:%S'),
+                            self.data.epoch,
+                            int(step),
+                            round(self.learning_rate.eval(session=self.sess), 6),
+                            loss,
+                            train_timer.average_time,
+                            load_timer.average_time,
+                            train_timer.remain(step, self.max_iter))
                     print(log_str)
                 else:
                     train_timer.tic()
@@ -195,19 +197,19 @@ class Solver(object):
                     curr_time = datetime.datetime.now().strftime('%m_%d_%H_%M_%S')
                     ckpt_name = curr_time+ "_save.ckpt"
                     real_ckpt = os.path.join(cfg.OUT_DIR, ckpt_name)
-                    print("    saving tf checkpoint to {}".format(real_ckpt))
                     self.all_saver.save(self.sess, real_ckpt, global_step=self.global_step)
+                    print("    saved TF checkpoint to: {}".format(real_ckpt))
 
-                # Record one timer value per save_iter.
                 elapsed_time.append( time.time() - start_t )
 
                 # New dictionary with lists of historical info, and save (w/overwriting).
                 info = {}
+                if cfg.HAVE_TEST_SET:
+                    info["test"] = test_losses
+                    info["raw_test"] = raw_test_losses
+                    info["success_test_correct"] = raw_test_correct
+                    info["success_test_total"] = raw_test_total
                 info["train"] = train_losses
-                info["test"] = test_losses
-                info["raw_test"] = raw_test_losses
-                info["success_test_correct"] = raw_test_correct
-                info["success_test_total"] = raw_test_total
                 info["name"] = cfg.CONFIG_NAME
                 info["epoch"] = self.data.epoch
                 info["lrates"] = learning_rates
@@ -224,9 +226,10 @@ class Solver(object):
                 pickle.dump(info, open(self.stats_pickle_file, 'wb'))
 
         # Add test-set images (should be in order) so we can visualize later.
-        name = (self.stats_pickle_file).replace('.p', '_raw_imgs.p')
-        imgs = {'c_imgs_list':c_imgs_list, 'd_imgs_list':d_imgs_list}
-        pickle.dump(imgs, open(name, 'wb'))
+        if cfg.HAVE_TEST_SET:
+            name = (self.stats_pickle_file).replace('.p', '_raw_imgs.p')
+            imgs = {'c_imgs_list':c_imgs_list, 'd_imgs_list':d_imgs_list}
+            pickle.dump(imgs, open(name, 'wb'))
 
 
     def restore(self):

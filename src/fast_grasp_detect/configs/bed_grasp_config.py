@@ -6,18 +6,8 @@ import numpy as np
 class CONFIG(object):
 
     def __init__(self, args):
-        """Some manual work needed for CV to put groupings here.
-
-        But external code can loop through the CV indices.
-        To find 10-fold CV for a group of N rollouts, do:
-
-            [list(x) for x in np.array_split( np.random.permutation(N) , 10) ]
-
-        and paste the result in `CV_GROUPS`.
+        """For datasets, they should all have been processed into groups beforehand.
         """
-        # TODO: I thinkt his has to do with the deployment pipeline. Double check!!
-        #self.NET_NAME    = '08_28_01_37_11save.ckpt-30300'
-
         self.args = args
         self.PERFORM_CV  = args.do_cv
         self.NET_TYPE    = args.net_type
@@ -27,50 +17,38 @@ class CONFIG(object):
         self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'   # Tritons
         self.DATA_PATH   = self.ROOT_DIR+''                     # Tritons
 
+        # If `PERFORM_CV` then we are doing training on a set of cached, separate data.
+        # We split data during the `data_manager` class, so OK to load all groups here.
+        # Else, train on all the cached data, with OPTIONALLY a new held-out test set.
         if self.PERFORM_CV:
             self.CV_HELD_OUT_INDEX = args.cv_idx
-            if self.USE_CACHE:
-                print("Alert: using the cache-method for data!")
-                self.ROLLOUT_PATH = join(self.DATA_PATH,'cache_h_v02/')
-                self.CV_GROUPS = sorted([x for x in os.listdir(self.ROLLOUT_PATH) if 'cv_' in x])
-            else:
-                print("Alert: using the rollout-method for data!")
-                self.ROLLOUT_PATH = join(self.DATA_PATH,'rollouts_white_v01/')
-                self.CV_GROUPS = [
-                    [ 0,   1, 80, 42,  69,   6, 77, 102, 97, 89, 60],
-                    [47,   9, 86, 68, 101,  67,  3,  22, 38,  8, 46],
-                    [53,  20, 92, 28,  55,  21, 41,  83, 24, 10,  2],
-                    [19,  73, 13, 45,  52,  57, 32,  94, 29, 74, 71],
-                    [51,  81, 88, 78,  40, 103, 34,  84, 66, 18, 26],
-                    [65,  98, 49, 85,  27,  95, 79,  48, 23, 90],
-                    [ 7,  56, 63, 70,  11, 100, 43,  82, 62,  5],
-                    [64,  76, 72, 37,  58,  12, 30,  33, 54, 31],
-                    [36,  25, 75, 87,  39,   4, 14,  15, 59, 17],
-                    [61, 104, 91, 96,  44,  50, 16,  99, 93, 35]
-                ]
-            assert len(self.CV_GROUPS) == 10 and args.cv_idx is not None
-        else:
-            assert not self.USE_CACHE, "Not supported for now"
-            # Note: `BC_HELD_OUT` is not used if PERFORM_CV=True.
-            # Assumes we have some fixed held-out test set, no cross validation.
-            self.ROLLOUT_PATH = join(self.DATA_PATH,'rollouts_nytimes/')
-            self.BC_HELD_OUT  = join(self.DATA_PATH,'held_out_nytimes/')
+            assert args.cv_idx is not None
 
-        # Info goes here for training grasp net. Note: order matters, OUTPUT_DIR updated.
+        self.ROLLOUT_PATH = join(self.DATA_PATH,'cache_h_v01/')
+        self.CV_GROUPS = sorted(
+                [x for x in os.listdir(self.ROLLOUT_PATH) if 'cv_' in x]
+        )
+        assert len(self.CV_GROUPS) == 10
+
+        # To ignore a test set, set as None. Else, load in all the groups.
+        # (We have the test set also saved as CV splits, but we'll load in everything.)
+        self.TEST_ROLLOUT_PATH = None 
+        if self.TEST_ROLLOUT_PATH is not None:
+            self.TEST_GROUPS = sorted(
+                    [x for x in os.listdir(self.TEST_ROLLOUT_PATH) if 'cv_' in x]
+            )
+        self.HAVE_TEST_SET = (self.PERFORM_CV or self.TEST_ROLLOUT_PATH is not None)
+
+        # Training info (stats, checkpoints, etc.), goes here for grasp net.
         self.OUT_DIR = join(self.DATA_PATH, 'grasp/')
 
-        # Pre-trained weights
+        # Pre-trained weights.
         self.WEIGHTS_DIR = join(self.DATA_PATH,'weights/')
         self.PRE_TRAINED_DIR = '/nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/'
         self.WEIGHTS_FILE = None
-        ## WEIGHTS_FILE = join(DATA_PATH, 'weights', 'YOLO_small.ckpt')
 
         # Classes, labels, data augmentation
         self.CLASSES = ['success_grasp','fail_grasp']
-        ## self.NUM_LABELS = len(self.CLASSES)
-        ## self.FLIPPED = False
-        ## self.LIGHTING_NOISE = True
-        ## self.QUICK_DEBUG = True
 
         # Model parameters. The USE_DEPTH is a critical one to test!
         self.T_IMAGE_SIZE_H = 480
@@ -88,7 +66,8 @@ class CONFIG(object):
         self.RESOLUTION = 10
         self.DROPOUT_KEEP_PROB = args.dropout_keep_prob
         self.L2_LAMBDA = args.l2_lambda
-        # IMPORTANT!! False means RGB
+
+        # IMPORTANT !!!!!!! False means RGB, which we normally DON'T want.
         self.USE_DEPTH = True
 
         # solver parameter
