@@ -42,6 +42,8 @@ pp.add_argument('--gpu_frac', type=float, default=0.75,
         help='Use a value less than 0.9 to leave some memory available.')
 pp.add_argument('--net_type', type=int,
         help='1=fix26 448x448, 2=all26 448x448, 3=smaller 448x448, 4=smaller 227x227')
+pp.add_argument('--batch_size', type=int, default=32,
+        help='Usual batch size, w/64 it may result in lots of memory allocation')
 
 # Booleans. For network design we'll use an integer and then pick values.
 pp.add_argument('--do_cv', action='store_true', default=False,

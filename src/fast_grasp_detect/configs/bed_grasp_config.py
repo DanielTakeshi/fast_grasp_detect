@@ -23,7 +23,7 @@ class CONFIG(object):
             self.CV_HELD_OUT_INDEX = args.cv_idx
             assert args.cv_idx is not None
 
-        self.ROLLOUT_PATH = join(self.DATA_PATH, 'cache_h_v02/')
+        self.ROLLOUT_PATH = join(self.DATA_PATH, 'cache_d_v01/')
         self.CV_GROUPS = sorted(
                 [x for x in os.listdir(self.ROLLOUT_PATH) if 'cv_' in x]
         )
@@ -98,7 +98,7 @@ class CONFIG(object):
         self.DECAY_STEPS = 10000
         self.DECAY_RATE = 0.1
         self.STAIRCASE = True
-        self.BATCH_SIZE = 64
+        self.BATCH_SIZE = args.batch_size
         self.MAX_ITER = args.max_iters
         self.SUMMARY_ITER = 1
         self.TEST_ITER = 1
