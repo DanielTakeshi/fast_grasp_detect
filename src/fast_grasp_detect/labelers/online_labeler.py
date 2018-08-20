@@ -8,14 +8,11 @@ from __future__ import division
 from Tkinter import *
 import tkMessageBox
 from PIL import Image, ImageTk
-import ttk
-import os
-import glob
+import ttk, os, glob, random, IPython, cv2
 import cPickle as pickle
+import numpy as np
 from fast_grasp_detect.configs.config import CONFIG
-import random
-import IPython
-import cv2
+from fast_grasp_detect.data_aug.depth_preprocess import depth_to_net_dim
 
 # colors for the bboxes
 COLORS = ['red', 'blue', 'cyan', 'green', 'black']
@@ -93,14 +90,14 @@ class QueryLabeler():
         self.classcandidate = ttk.Combobox(self.frame, state='readonly', textvariable=self.classname)
         self.classcandidate.grid(row=1,column=2)
         self.cla_can_temp = self.cfg.CLASSES
-        print("QueryLabeler.__init__(). Classes in it: {}".format(self.cla_can_temp))
+        #print("QueryLabeler.__init__(). Classes in it: {}".format(self.cla_can_temp))
 
         self.classcandidate['values'] = self.cla_can_temp
         self.classcandidate.current(0)
         self.currentLabelclass = self.classcandidate.get() #init
         self.btnclass = Button(self.frame, text = 'ComfirmClass', command = self.setClass)
         self.btnclass.grid(row=2,column=2,sticky = W+E)
-        print("QueryLabeler.__init__(). self.classcandidate.get(): {}".format(self.classcandidate.get()))
+        #print("QueryLabeler.__init__(). self.classcandidate.get(): {}".format(self.classcandidate.get()))
 
         # showing bbox info & delete bbox
         self.lb1 = Label(self.frame, text = 'Bounding boxes:')
@@ -176,7 +173,7 @@ class QueryLabeler():
         # default to the 1st image in the collection
         self.cur = 1
         self.total = len(self.imageList)
-         # set up output dir
+        # set up output dir
         self.outDir = self.cfg.LABEL_PATH
 
         # load example bboxes
@@ -205,8 +202,32 @@ class QueryLabeler():
     def get_label(self):
         if self.image is None:
             self.current_image = self.cam.read_color_data()
+            tmp_depth = self.cam.read_depth_data()
         else: 
             self.current_image = self.image
+
+        if False:
+            # ----------------------------------------------------------------------
+            # Temporary debugging to get viewpoints to align w/H's data, as needed.
+            # Will save the image(s) based on what the robot sees during the click interface.
+            # For depth cutoff, note that the HSR uses *millimeters*.
+            # ----------------------------------------------------------------------
+            kk = len([x for x in os.listdir('imgs/') if 'view_close_rgb' in x])
+            img_name = 'imgs/view_close_rgb_{}.png'.format(str(kk).zfill(2))
+            cv2.imwrite(img_name, self.current_image)
+
+            kk = len([x for x in os.listdir('imgs/') if 'view_close_depth' in x])
+            img_name = 'imgs/view_close_depth_{}.png'.format(str(kk).zfill(2))
+
+            # save tmp_depth to look at histograms later, etc.
+            numpy_name = 'temp_depth_{}.txt'.format(kk)
+            np.savetxt(numpy_name, tmp_depth)
+            print("just saved {}".format(numpy_name))
+
+            d_img = depth_to_net_dim(tmp_depth, cutoff=1250)
+            cv2.imwrite(img_name, d_img)
+            # ----------------------------------------------------------------------
+
         self.tkimg = ImageTk.PhotoImage(Image.fromarray(self.current_image))
         self.mainPanel.config(width = max(self.tkimg.width(), 400), height = max(self.tkimg.height(), 400))
         self.mainPanel.create_image(0, 0, image = self.tkimg, anchor=NW)
