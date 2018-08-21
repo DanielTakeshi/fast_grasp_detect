@@ -107,6 +107,9 @@ class Solver(object):
         raw_test_total = []   # success net
         best_loss = np.float('inf')
         best_preds = None
+        best_snet_acc = -1
+        best_snet_preds = None
+        best_snet_correctness = None
         if cfg.HAVE_TEST_SET:
             images_t, labels_t, c_imgs_list, d_imgs_list = self.data.get_test(return_imgs=True)
         elapsed_time = []
@@ -164,6 +167,10 @@ class Solver(object):
                                     correctness=correctness, doprint=cfg.PRINT_PREDS)
                             print("Test loss: {:.6f}, acc: {}/{} = {:.2f}".format(
                                     test_loss, correct, K, raw_acc))
+                            if raw_acc > best_snet_acc:
+                                best_snet_acc = raw_acc
+                                best_snet_preds = test_logits
+                                best_snet_correctness = correctness
                         else:
                             raise ValueError(self.cfg.CONFIG_NAME)
 
@@ -214,13 +221,16 @@ class Solver(object):
                 info["elapsed_time"] = elapsed_time
 
                 # Don't forget best set of predictions + true labels, so we can visualize.
-                if 'grasp' in cfg.CONFIG_NAME:
-                    if cfg.PERFORM_CV:
-                        info["cv_indices"] = cfg.CV_GROUPS[ cfg.CV_HELD_OUT_INDEX ]
-                    if cfg.HAVE_TEST_SET:
+                if cfg.PERFORM_CV:
+                    info["cv_indices"] = cfg.CV_GROUPS[ cfg.CV_HELD_OUT_INDEX ]
+                if cfg.HAVE_TEST_SET:
+                    if 'grasp' in cfg.CONFIG_NAME:
                         info["preds"] = best_preds
                         info["targs"] = cfg.return_raw_labels(labels_t)
-
+                    elif 'success' in cfg.CONFIG_NAME:
+                        info["best_snet_acc"] = best_snet_acc
+                        info["best_snet_preds"] = best_snet_preds
+                        info["best_snet_correctness"] = best_snet_correctness
                 pickle.dump(info, open(self.stats_pickle_file, 'wb'))
 
         # Add test-set images (should be in order) so we can visualize later.

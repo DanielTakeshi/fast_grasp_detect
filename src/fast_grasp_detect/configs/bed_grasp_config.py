@@ -31,7 +31,8 @@ class CONFIG(object):
 
         # To ignore a test set, set as None. Else, load in all the groups.
         # (We also have test set saved as CV splits, but we'll load everything.)
-        self.TEST_ROLLOUT_PATH = join(self.DATA_PATH, 'cache_white_v01/')
+        #self.TEST_ROLLOUT_PATH = join(self.DATA_PATH, 'cache_white_v01/')
+        self.TEST_ROLLOUT_PATH = None
         if self.TEST_ROLLOUT_PATH is not None:
             self.TEST_GROUPS = sorted(
                     [x for x in os.listdir(self.TEST_ROLLOUT_PATH) if 'cv_' in x]
