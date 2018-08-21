@@ -6,31 +6,44 @@ slim = tf.contrib.slim
 
 class SNet(object):
 
-    def __init__(self, cfg, data_m, is_training=True):
+    def __init__(self, cfg, yc, is_training=True):
         """
-        data_m: Needs to contain `data_m.yc.conv_layer` so that we get the tensorflow variable
-            representing the 26th layer of the YOLO network, in case we need to continue passing it
+        yc: Needs to contain `yc.conv_layer` so that we get the TF variable representing
+            the 26th layer of the YOLO network, in case we need to continue passing it
             through here if not fixing the 26 layers.
+        is_training: NOT for dropout/batch_norm/etc reasons but for deciding whether we
+            should make some new TF variables for the losses, etc. Should only be false
+            if we are using this during bed-making _deployment_.
         """
         self.cfg = cfg
-        self.classes = self.cfg.CLASSES
+        self.classes = cfg.CLASSES
         self.num_class = len(self.classes)
-        self.image_size = self.cfg.IMAGE_SIZE
-        self.dist_size_w = self.cfg.T_IMAGE_SIZE_W/self.cfg.RESOLUTION
-        self.dist_size_h = self.cfg.T_IMAGE_SIZE_H/self.cfg.RESOLUTION
-        self.learning_rate = self.cfg.LEARNING_RATE
-        self.batch_size = self.cfg.BATCH_SIZE
-        self.alpha = self.cfg.ALPHA
-        self.yolo_conv_layer = data_m.yc.conv_layer
+        self.image_size = int(cfg.IMAGE_SIZE)
+        self.dist_size_w = cfg.T_IMAGE_SIZE_W / cfg.RESOLUTION
+        self.dist_size_h = cfg.T_IMAGE_SIZE_H / cfg.RESOLUTION
+        self.learning_rate = cfg.LEARNING_RATE
+        self.batch_size = int(cfg.BATCH_SIZE)
+        self.alpha = cfg.ALPHA
+        self.yolo_conv_layer = yc.conv_layer
+
+        # 2D output where [1,0] means 100 % probability for class 0 (success), etc.
         self.output_size = 2
 
-        # Like w/grasp net, `images` are features. Also, logits _might_ be output AFTER a softmax op.
+        # In case we want to apply dropout. Training only! Currently confusing since there is
+        # another `is_training` from earlier. This here helps to see _validation_ performance.
+        self.training_mode = tf.placeholder(tf.bool, name='training_mode')
+        self.keep_prob = cfg.DROPOUT_KEEP_PROB
+
+        # Despite the name, `images` could be features from YOLO stem. Also, `logits` may
+        # be the output before or after a softmax op depending on the loss.
         if cfg.FIX_PRETRAINED_LAYERS:
             assert not cfg.SMALLER_NET
-            self.images = tf.placeholder(tf.float32, [None, cfg.FILTER_SIZE, cfg.FILTER_SIZE, cfg.NUM_FILTERS], name='images')
-            self.logits = self.build_network(self.images, self.output_size, self.alpha, is_training=is_training)
+            fs = int(cfg.FILTER_SIZE)
+            nf = int(cfg.NUM_FILTERS)
+            self.images = tf.placeholder(tf.float32, [None, fs, fs, nf], name='images')
+            self.logits = self.build_network(self.images, self.output_size, self.alpha, self.training_mode)
         else:
-            self.logits = self.build_network(self.yolo_conv_layer, self.output_size, self.alpha, is_training=is_training)
+            self.logits = self.build_network(self.yolo_conv_layer, self.output_size, self.alpha, self.training_mode)
 
         if is_training:
             self.labels = tf.placeholder(tf.float32, [None, 2])
@@ -39,47 +52,77 @@ class SNet(object):
             tf.summary.scalar('total_loss', self.total_loss)
 
 
-    def build_network(self, images, num_outputs, alpha, keep_prob=1.0, is_training=True, scope='yolo'):
-        """Extra layers built on _top_ of the YOLO stem (first 26 layers)."""
-        with tf.variable_scope(scope, reuse=tf.AUTO_REUSE):
+    def build_network(self, images, num_outputs, alpha, training_mode, scope='yolo'):
+        """Extra layers built on _top_ of the YOLO stem (first 26 layers).
+        
+        Try Xavier init for end-to-end training, truncated normal for YOLO?
+        """
+        with tf.variable_scope(scope):
             net = images
-            
-            if self.cfg.SMALLER_NET:
+
+            if self.cfg.NET_TYPE == 3 or self.cfg.NET_TYPE == 4:
+                pad = 2
+                if (self.cfg.NET_TYPE == 4):
+                    pad = 1
+                assert self.cfg.SMALLER_NET
+
                 with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                     activation_fn=leaky_relu(alpha),
-                                    weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
+                                    #weights_initializer=tf.truncated_normal_initializer(0.0,0.01),
+                                    weights_initializer=tf.contrib.layers.xavier_initializer(),
                                     weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
-                    net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='lastfc')
+                    net = slim.conv2d(net, 64, [7, 7], pad, padding='SAME')
+                    net = slim.conv2d(net, 128, [5, 5], 2, padding='SAME')
+                    net = slim.max_pool2d(net, [2, 2], 2)
+
+                    net = slim.conv2d(net, 128, [5, 5])
+                    net = slim.conv2d(net, 192, [3, 3], 2)
+                    net = slim.max_pool2d(net, [2, 2], 2)
+
+                    net = slim.conv2d(net, 192, [3, 3])
+                    net = slim.conv2d(net, 192, [3, 3])
+                    net = slim.conv2d(net, 128, [3, 3])
+                    net = slim.max_pool2d(net, [2, 2], 2)
+
+                    net = slim.flatten(net)
+                    net = slim.fully_connected(net, 2000)
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
+                    net = slim.fully_connected(net, 2000)
+                    net = slim.fully_connected(net, num_outputs, activation_fn=None)
 
             else:
-                # Michael's old way.
+                assert not self.cfg.SMALLER_NET
+                assert self.cfg.NET_TYPE == 1 or self.cfg.NET_TYPE == 2
                 with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                     activation_fn=leaky_relu(alpha),
-                                    weights_initializer=tf.truncated_normal_initializer(0.0, 0.01),
+                                    weights_initializer=tf.truncated_normal_initializer(0.0,0.01),
+                                    #weights_initializer=tf.contrib.layers.xavier_initializer(),
                                     weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
-                    net = tf.pad(net, np.array([[0, 0], [1, 1], [1, 1], [0, 0]]), name='pad_27')
-                    net = slim.conv2d(net, 1024, 3, 2, padding='VALID', scope='conv_28')
-                    net = slim.conv2d(net, 1024, 3, scope='conv_29')
-                    net = slim.conv2d(net, 1024, 3, scope='conv_30')
+                    net = slim.conv2d(net, 256, 3, stride=2, scope='conv_29')
+                    net = slim.conv2d(net, 256, 3, scope='conv_30')
                     net = tf.transpose(net, [0, 3, 1, 2], name='trans_31')
                     net = slim.flatten(net, scope='flat_32')
-                    net = slim.fully_connected(net, 512, scope='fc_33')
-                    net = slim.fully_connected(net, 4096, scope='fc_34')
-                    net = slim.dropout(net, keep_prob=keep_prob, is_training=is_training, scope='dropout_35')
-                    net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='fc_36')
 
-            # Note the softmax, which is NOT in the grasp net. Ignore if using cross ent.
-            if not self.cfg.CROSS_ENT_LOSS:
-                net = tf.nn.softmax(net)
+                    # The YOLO paper only did a dropout after the first FC layer.
+                    net = slim.fully_connected(net, 1024, scope='fc_33')
+                    net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
+                    net = slim.fully_connected(net, 1024, scope='fc_34')
+                    net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='fc_36')
+        get_variables()
         return net
 
 
     def loss_layer(self, predict_classes, classes, scope='loss_layer'):
-        """ For transitions, the loss is also L2, or we can do cross entropy which I added."""
+        """For transitions, the loss is CE or soft-L2
+
+        `predict_classes` are logits for former, softmax(logits) for latter.
+        """
         with tf.variable_scope(scope):
             if self.cfg.CROSS_ENT_LOSS:
                 self.class_loss = tf.reduce_mean(
-                    tf.nn.softmax_cross_entropy_with_logits_v2(logits=predict_classes, labels=classes)
+                    tf.nn.softmax_cross_entropy_with_logits_v2(
+                            logits=predict_classes, labels=classes),
+                    name='class_loss'
                 )
             else:
                 class_delta = (predict_classes - classes)

@@ -6,7 +6,7 @@ import numpy as np
 class CONFIG(object):
 
     def __init__(self, args):
-        """For datasets, they should all have been processed into groups beforehand.
+        """For datasets, they should have been processed into groups beforehand.
         """
         self.args = args
         self.PERFORM_CV  = args.do_cv
@@ -153,7 +153,7 @@ class CONFIG(object):
 
 
     def get_empty_state(self, batchdim=None):
-        """Each time we call a batch during training/testing, initialize with this."""
+        """Each time we call a batch during training/testing, init w/this."""
         bs = self.BATCH_SIZE
         if batchdim is not None:
             bs = batchdim
@@ -167,19 +167,8 @@ class CONFIG(object):
 
 
     def get_empty_label(self, batchdim=None):
-        """Each time we call a batch during training/testing, initialize with this."""
+        """Each time we call a batch during training/testing, init w/this."""
         if batchdim is not None:
             return np.zeros((batchdim, 2))
         else:
             return np.zeros((self.BATCH_SIZE, 2))
-
-
-    def break_up_rollouts(self,rollout):
-        """I changed it to a way that makes more sense, a list of one-item lists."""
-        grasp_rollout = []
-        for data in rollout:
-            if type(data) is list:
-                continue
-            if data['type'] == 'grasp':
-                grasp_rollout.append( [data] )
-        return grasp_rollout

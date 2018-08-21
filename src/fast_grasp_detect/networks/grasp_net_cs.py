@@ -54,7 +54,10 @@ class GHNet(object):
 
 
     def build_network(self, images, num_outputs, alpha, training_mode, scope='yolo'):
-        """Extra layers built on _top_ of the YOLO stem (first 26 layers)."""
+        """Extra layers built on _top_ of the YOLO stem (first 26 layers).
+
+        Try Xavier init for end-to-end training, truncated normal for YOLO?
+        """
         with tf.variable_scope(scope):
             net = images
 
@@ -66,8 +69,8 @@ class GHNet(object):
 
                 with slim.arg_scope([slim.conv2d, slim.fully_connected],
                                     activation_fn=leaky_relu(alpha),
-                                    weights_initializer=tf.truncated_normal_initializer(0.0,0.01),
-                                    #weights_initializer=tf.contrib.layers.xavier_initializer(),
+                                    #weights_initializer=tf.truncated_normal_initializer(0.0,0.01),
+                                    weights_initializer=tf.contrib.layers.xavier_initializer(),
                                     weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
                     net = slim.conv2d(net, 64, [7, 7], pad, padding='SAME')
                     net = slim.conv2d(net, 128, [5, 5], 2, padding='SAME')

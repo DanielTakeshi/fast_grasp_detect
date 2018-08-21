@@ -1,100 +1,89 @@
 import os
+from os.path import join
 import numpy as np
 
 
 class CONFIG(object):
 
     def __init__(self, args):
-        """Some manual work needed for CV to put groupings here.
-
-        But external code can loop through the CV indices.
-        To find 10-fold CV for a group of N rollouts, do:
-
-            [list(x) for x in np.array_split( np.random.permutation(N) , 10) ]
-
-        and paste the result in `CV_GROUPS`.
+        """For documentation, see the grasping configuration file.
         """
         self.args = args
-        self.PERFORM_CV = args.do_cv
+        self.PERFORM_CV  = args.do_cv
+        self.NET_TYPE    = args.net_type
         self.PRINT_PREDS = args.print_preds
-
         self.CONFIG_NAME = 'success'
         self.ROOT_DIR    = '/nfs/diskstation/seita/bed-make/'   # Tritons
         self.DATA_PATH   = self.ROOT_DIR+''                     # Tritons
-        self.NET_NAME    = '08_28_01_37_11save.ckpt-30300'
 
+        # If `PERFORM_CV` then we are training on a set of cached, separate data.
+        # We split data in the `data_manager` class, so OK to load all groups here.
+        # Else, train on all the cached data, +OPTIONALLY a new held-out test set.
         if self.PERFORM_CV:
-            assert args.cv_idx is not None
-            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_white_v01/'
-            self.CV_GROUPS = [
-                [52, 60, 95, 94, 82, 1, 28, 10, 65, 32, 7],
-                [50, 42, 92, 96, 9, 22, 97, 56, 2, 69, 91],
-                [99, 98, 13, 79, 38, 76, 88, 15, 17, 27, 72],
-                [61, 23, 29, 21, 19, 84, 102, 5, 41, 68],
-                [14, 37, 62, 31, 34, 35, 77, 44, 71, 12],
-                [48, 70, 100, 39, 24, 81, 57, 86, 85, 16],
-                [66, 45, 40, 6, 67, 93, 54, 43, 101, 49],
-                [51, 55, 80, 90, 75, 59, 20, 73, 25, 3],
-                [33, 4, 83, 58, 26, 47, 53, 78, 46, 89],
-                [87, 74, 8, 36, 63, 18, 11, 30, 0, 64]
-            ]
             self.CV_HELD_OUT_INDEX = args.cv_idx
-        else:
-            # Now do this if I have a fixed held-out directory, as with Michael's data.
-            # Note: BC_HELD_OUT is not used if PERFORM_CV=True.
-            self.ROLLOUT_PATH = self.DATA_PATH+'rollouts_nytimes/'
-            self.BC_HELD_OUT  = self.DATA_PATH+'held_out_nytimes/'
+            assert args.cv_idx is not None
 
-        # Other paths now.
-        self.IMAGE_PATH   = self.DATA_PATH+'images/'
-        self.LABEL_PATH   = self.DATA_PATH+'labels/'
-        self.CACHE_PATH   = self.DATA_PATH+'cache/'
-        self.OUTPUT_DIR   = self.DATA_PATH+'output/'
+        self.ROLLOUT_PATH = join(self.DATA_PATH, 'cache_d_v01_success/')
+        self.CV_GROUPS = sorted(
+                [x for x in os.listdir(self.ROLLOUT_PATH) if 'cv_' in x]
+        )
+        assert len(self.CV_GROUPS) == 10
 
-        # If training success net, info goes here. Order matters, OUTPUT_DIR is updated.
-        self.OUTPUT_DIR        = self.DATA_PATH+'transition_output/'
-        self.STAT_DIR          = self.OUTPUT_DIR+'stats/'
-        self.TRAIN_STATS_DIR_G = self.OUTPUT_DIR+'train_stats/'
-        self.TEST_STATS_DIR_G  = self.OUTPUT_DIR+'test_stats/'
+        # To ignore a test set, set as None. Else, load in all the groups.
+        # (We also have test set saved as CV splits, but we'll load everything.)
+        self.TEST_ROLLOUT_PATH = None
+        if self.TEST_ROLLOUT_PATH is not None:
+            self.TEST_GROUPS = sorted(
+                    [x for x in os.listdir(self.TEST_ROLLOUT_PATH) if 'cv_' in x]
+            )
+        self.HAVE_TEST_SET = (self.PERFORM_CV or self.TEST_ROLLOUT_PATH is not None)
 
-        # Weights
-        self.WEIGHTS_DIR = self.DATA_PATH+'weights/'
-        self.PRE_TRAINED_DIR = '/nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/'
+        # Training info (stats, checkpoints, etc.), goes here for success net.
+        self.OUT_DIR = join(self.DATA_PATH, 'success/')
+
+        # Pre-trained weights.
+        self.WEIGHTS_DIR = join(self.DATA_PATH,'weights/')
+        self.PRE_TRAINED_DIR = \
+            '/nfs/diskstation/seita/yolo_tensorflow/data/pascal_voc/weights/'
         self.WEIGHTS_FILE = None
-        # WEIGHTS_FILE = os.path.join(DATA_PATH, 'weights', 'YOLO_small.ckpt')
 
         # Classes, labels, data augmentation
-        self.CLASSES = ['success','failure']
-        self.NUM_LABELS = len(self.CLASSES)
-        ## self.FLIPPED = False
-        ## self.LIGHTING_NOISE = True
-        ## self.QUICK_DEBUG = True
+        self.CLASSES = ['success_grasp','fail_grasp']
 
         # Model parameters. The USE_DEPTH is a critical one to test!
         self.T_IMAGE_SIZE_H = 480
         self.T_IMAGE_SIZE_W = 640
-        self.IMAGE_SIZE = 448
+        if args.shrink_images:
+            assert args.use_smaller_net and (not args.fix_pretrained_layers) \
+                    and args.net_type == 4
+            self.IMAGE_SIZE = 224
+        else:
+            self.IMAGE_SIZE = 448
         self.CELL_SIZE = 7
         self.BOXES_PER_CELL = 2
         self.ALPHA = 0.1
         self.DISP_CONSOLE = True
         self.RESOLUTION = 10
-        self.USE_DEPTH = True # False means RGB
+        self.DROPOUT_KEEP_PROB = args.dropout_keep_prob
         self.L2_LAMBDA = args.l2_lambda
+
+        # IMPORTANT !!!!!!! False means RGB, which we normally DON'T want.
+        self.USE_DEPTH = True
 
         # solver parameter
         # ----------------------------------------------------------------------
         # If 'fixing', this means 'images' effectively turn into (fs,fs,channels),
         # e.g., shape (14,14,1024). If False, train from normal (480,640,3)-size data.
         # Technically 'pre-trained' is more like 'pre-initialized' (from Pascal task).
-        # Update: if we use a smaller network, `FIX_PRETRAINED_LAYERS` is _ignored_.
+        # Update: if we use a smaller network, `FIX_PRETRAINED_LAYERS==False`.
         # ----------------------------------------------------------------------
-        self.FIX_PRETRAINED_LAYERS = False
-        self.SMALLER_NET = True
+        self.FIX_PRETRAINED_LAYERS = args.fix_pretrained_layers
+        self.SMALLER_NET = args.use_smaller_net
+        assert not (self.SMALLER_NET and self.FIX_PRETRAINED_LAYERS)
 
         self.OPT_ALGO = 'ADAM'
         if self.OPT_ALGO == 'ADAM':
-            if args.lrate > 0.01:
+            if args.lrate >= 0.01:
                 print("Don't run Adam with high LR")
                 sys.exit()
             self.LEARNING_RATE = args.lrate
@@ -109,23 +98,30 @@ class CONFIG(object):
         self.DECAY_STEPS = 10000
         self.DECAY_RATE = 0.1
         self.STAIRCASE = True
-        self.BATCH_SIZE = 64
+        self.BATCH_SIZE = args.batch_size
         self.MAX_ITER = args.max_iters
         self.SUMMARY_ITER = 1
         self.TEST_ITER = 1
-        self.SAVE_ITER = 100
+        self.SAVE_ITER = 500
         self.VIZ_DEBUG_ITER = 400
-        self.CROSS_ENT_LOSS = True # Michael did 'softened L2' earlier
+        self.GPU_MEM_FRAC = args.gpu_frac
 
         # fast params
         self.FILTER_SIZE = 14
         self.NUM_FILTERS = 1024
-        self.FILTER_SIZE_L1 = 7
-        self.SIZE_L2 = 50176
+
+        # fast params
+        self.FILTER_SIZE = 14
+        self.NUM_FILTERS = 1024
+
+        # Unique to success net. Note that Michael did 'softened L2' earlier.
+        self.CROSS_ENT_LOSS = True
 
 
     def compute_label(self,datum):
-        """Interesting, Michael smoothed the label for his loss (L2^2, NOT the cross ent)."""
+        """Interesting, Michael smoothed the label for his loss.
+        (L2^2, NOT the cross ent).
+        """
         clss = datum['class']
         label = np.zeros(2)
         if self.CROSS_ENT_LOSS:
@@ -145,32 +141,22 @@ class CONFIG(object):
 
 
     def get_empty_state(self, batchdim=None):
-        """Each time we call a batch during training/testing, initialize with this."""
+        """Each time we call a batch during training/testing, init w/this."""
         bs = self.BATCH_SIZE
         if batchdim is not None:
             bs = batchdim
 
         if self.FIX_PRETRAINED_LAYERS:
+            assert not self.SMALLER_NET and self.NET_TYPE != 2
             return np.zeros((bs, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
         else:
-            assert self.IMAGE_SIZE == 448
+            assert self.NET_TYPE != 2
             return np.zeros((bs, self.IMAGE_SIZE, self.IMAGE_SIZE, 3))
 
 
     def get_empty_label(self, batchdim=None):
-        """Each time we call a batch during training/testing, initialize with this."""
+        """Each time we call a batch during training/testing, init w/this."""
         if batchdim is not None:
             return np.zeros((batchdim, 2))
         else:
             return np.zeros((self.BATCH_SIZE, 2))
-
-
-    def break_up_rollouts(self,rollout):
-        """I changed it to a way that makes more sense, a list of one-item lists."""
-        success_rollout = []
-        for data in rollout:
-            if type(data) is list:
-                continue
-            if data['type'] == 'success':
-                success_rollout.append( [data] )
-        return success_rollout

@@ -40,18 +40,16 @@ pp.add_argument('--l2_lambda', type=float, default=0.00010,
         help='Standard L2 regularization term.')
 pp.add_argument('--gpu_frac', type=float, default=0.75,
         help='Use a value less than 0.9 to leave some memory available.')
-pp.add_argument('--net_type', type=int,
-        help='1=fix26 448x448, 2=all26 448x448, 3=smaller 448x448, 4=smaller 227x227')
 pp.add_argument('--batch_size', type=int, default=32,
         help='Usual batch size, w/64 it may result in lots of memory allocation')
 
 # Booleans. For network design we'll use an integer and then pick values.
 pp.add_argument('--do_cv', action='store_true', default=False,
-        help='If not doing cv, then assumes we have a fixed held-out directory of test data')
+        help='If not cv, then we may or may not have (held-out) test data')
 pp.add_argument('--print_preds', action='store_true', default=False,
-        help='For printing actual predictions during validation. I\'d avoid this for now.')
-pp.add_argument('--use_cache', action='store_true', default=False,
-        help='Use this if possible to avoid loading rollouts from /nfs/diskstation.')
+        help='For printing actual predictions during validation. I\'d avoid for now.')
+pp.add_argument('--net_type', type=int,
+        help='1=yolo-fix26, 2=yolo-all, 3=a-net 448x448, 4=a-net 227x227')
 
 args = pp.parse_args()
 set_seed(args.seed)
@@ -76,7 +74,7 @@ elif int(args.net_type) == 4:
 else:
     raise ValueError(args.net_type)
 
-# Configuration, then three major components; `pascal` has reference to 'yolo' network.
+# Config, then three major components; `pascal` has reference to 'yolo' network.
 bed_grasp_options = CONFIG(args)
 pascal = data_manager(bed_grasp_options)
 yolo = GHNet(bed_grasp_options, pascal.yc)
