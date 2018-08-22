@@ -1,47 +1,31 @@
-import tensorflow as tf
-import numpy as np
 import os, glob, cv2, argparse, sys
 from fast_grasp_detect.networks.success_net import SNet
 from fast_grasp_detect.core.yolo_conv_features_cs import YOLO_CONV
-from fast_grasp_detect.configs.config import CONFIG
 from fast_grasp_detect.data_aug.draw_cross_hair import DrawPrediction
-from utils.timer import Timer
+import tensorflow as tf
+import numpy as np
 slim = tf.contrib.slim
+from tensorflow.python import pywrap_tensorflow
 
 
 class SDetector(object):
+    """Loaded when _deploying_ the learned success/transition policy."""
 
-    def __init__(self, net_name, yc=None):
-        self.cfg = CONFIG()
-        if yc is None:
-            self.yc = YOLO_CONV(self.cfg, is_training=False)
-        else:
-            self.yc = yc
-        self.classes = self.cfg.CLASSES
+    def __init__(self, fg_cfg, bed_cfg):
+        """To load this, we utilize two configuration files.
+
+        fg_cfg: use for training, in fast_grasp_detect
+        bed_cfg: use for bed-making now, for collection or deployment
+        """
+        self.fg_cfg = fg_cfg
+        self.bed_cfg = bed_cfg
+        self.classes = fg_cfg.CLASSES
         self.num_class = len(self.classes)
-        self.image_size = self.cfg.IMAGE_SIZE
-        self.cell_size = self.cfg.CELL_SIZE
-        self.boxes_per_cell = self.cfg.BOXES_PER_CELL
-        self.threshold = self.cfg.THRESHOLD
-        self.iou_threshold = self.cfg.IOU_THRESHOLD
-
-
-        self.boundary1 = self.cell_size * self.cell_size * self.num_class
-        self.boundary2 = self.boundary1 + self.cell_size * self.cell_size * self.boxes_per_cell
-
-        self.yc.load_network()
-        self.count = 0
+        self.image_size = int(fg_cfg.IMAGE_SIZE)
         self.dp = DrawPrediction()
-
-
-        self.net_name = net_name
-
-        #self.all_data = self.precompute_features(images)
-
+        self.yc = YOLO_CONV(self.fg_cfg)
+        self.yc.load_network()
         self.load_trained_net()
-
-        #self.images_detectors()
-
        
 
     def load_trained_net(self):
@@ -55,54 +39,35 @@ class SDetector(object):
         for var in self.variable_to_restore:
             print str(count) + " "+ var.name
             count += 1
-        
         self.variables_to_restore = self.variable_to_restore[40:]
         self.saver_f = tf.train.Saver(self.variables_to_restore, max_to_keep=None)
-
         self.saver_f.restore(self.sess, trained_model_file)
 
         
     def precompute_features(self,images):
-
         all_data = []
         for image in images:
-
             features = self.yc.extract_conv_features(image)
-
             data = {}
             data['image'] = image
             data['features'] = features
             all_data.append(data)
-
         return all_data
-
 
 
     def detect(self,inputs,image):
         img_h, img_w, _ = image.shape
-    
         net_output = self.sess.run(self.net.logits,
                                    feed_dict={self.net.images: inputs})
-        #IPython.embed()
-       
         return net_output
-
-   
 
 
     def predict(self,image):
-       
-
         features = self.yc.extract_conv_features(image)
-   
         result = self.detect(features,image)
-
-
         return result
 
     
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', default="YOLO_small.ckpt", type=str)
@@ -113,7 +78,6 @@ def main():
 
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
 
-   
     weight_file = "/home/autolab/Workspaces/michael_working/yolo_tensorflow/data/pascal_voc/output07_20_09_37_29save.ckpt-15000"
     #weight_file = '/home/autolab/Workspaces/michael_working/yolo_tensorflow/data/pascal_voc/weights/save.ckpt-100'#os.path.join(args.data_dir, args.weight_dir, args.weights)
     #weight_file = os.path.join(args.data_dir, args.weight_dir, args.weights)
