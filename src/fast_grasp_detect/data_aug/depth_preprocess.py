@@ -35,13 +35,20 @@ def depth_scaled_to_255(img):
     return img
 
 
-def depth_to_net_dim(img, cutoff=1.25):
+def depth_to_net_dim(img, robot):
+    """This should be the ONLY place we set the cutoff!!!"""
+    assert robot in ['Fetch', 'HSR']
+    if robot == 'HSR':
+        cutoff = 1400
+    elif robot == 'Fetch':
+        cutoff = 1.4
     img = depth_to_3ch(img, cutoff)
     img = depth_scaled_to_255(img)
     return img
 
 
-def datum_to_net_dim(datum, cutoff=1.25):
+def datum_to_net_dim(datum, robot):
     """ (480,640) -> (480,640,3) """
-    datum['d_img'] = depth_to_net_dim(datum['d_img'], cutoff)
+    assert robot in ['Fetch', 'HSR']
+    datum['d_img'] = depth_to_net_dim(datum['d_img'], robot)
     return datum
