@@ -1,5 +1,10 @@
 This document lists the shapes of the network inputs, along with variables.
 
+UPDATE August 22, 2018: I changed the naming scopes so that any TF neural network weight AFTER the
+`yolo/conv_26` uses `grasp/...` or `success/...` depending on the network type. This should make it
+easier to load both networks for deployment by avoiding name clashes. For the grasping and success
+net, the outer scope is now always `grasp` and `success`, respectively.
+
 **************
 * NET TYPE 1 *
 **************

@@ -11,7 +11,7 @@ from tensorflow.python import pywrap_tensorflow
 class SDetector(object):
     """Loaded when _deploying_ the learned success/transition policy."""
 
-    def __init__(self, fg_cfg, bed_cfg):
+    def __init__(self, fg_cfg, bed_cfg, yc=None):
         """To load this, we utilize two configuration files.
 
         fg_cfg: use for training, in fast_grasp_detect
@@ -23,91 +23,55 @@ class SDetector(object):
         self.num_class = len(self.classes)
         self.image_size = int(fg_cfg.IMAGE_SIZE)
         self.dp = DrawPrediction()
-        self.yc = YOLO_CONV(self.fg_cfg)
-        self.yc.load_network()
+
+        # If yc is NOT none, then we've already built + loaded elsewhere.
+        if yc is None:
+            self.yc = YOLO_CONV(fg_cfg)
+            self.yc.load_network()
+        else:
+            self.yc = yc
+
+        # Now load the part _specific_ to the success net.
         self.load_trained_net()
        
 
     def load_trained_net(self):
+        """Similar to the corresponding method in `GDetector` class.
+        
+        Only restoring if 'success' is in the name.
+        """
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
-        self.net = SNet(self.cfg,is_training = False)
-        trained_model_file = self.cfg.TRAN_OUTPUT_DIR+ self.net_name
-        print 'Restoring weights from: ' + trained_model_file
-        self.variable_to_restore = slim.get_variables_to_restore()
-        count = 0
-        for var in self.variable_to_restore:
-            print str(count) + " "+ var.name
-            count += 1
-        self.variables_to_restore = self.variable_to_restore[40:]
-        self.saver_f = tf.train.Saver(self.variables_to_restore, max_to_keep=None)
+
+        self.net = SNet(cfg=self.fg_cfg, yc=self.yc, is_training=False)
+        trained_model_file = self.bed_cfg.SUCC_NET_PATH
+        vars_to_restore = [x for x in slim.get_variables_to_restore()
+                if 'success' in x.name]
+
+        print('\nSDetector.load_trained_net(), Restoring:\n{}'.format(
+                trained_model_file))
+        print("num vars to restore: {}".format(len(vars_to_restore)))
+        self.saver_f = tf.train.Saver(vars_to_restore, max_to_keep=None)
         self.saver_f.restore(self.sess, trained_model_file)
 
+
+    def predict(self, image):
+        """Call during deployment code. Similar to GDetector's method.
         
-    def precompute_features(self,images):
-        all_data = []
-        for image in images:
-            features = self.yc.extract_conv_features(image)
-            data = {}
-            data['image'] = image
-            data['features'] = features
-            all_data.append(data)
-        return all_data
-
-
-    def detect(self,inputs,image):
-        img_h, img_w, _ = image.shape
-        net_output = self.sess.run(self.net.logits,
-                                   feed_dict={self.net.images: inputs})
-        return net_output
-
-
-    def predict(self,image):
+        THE DEPTH IMAGES MUST BE PRE-PROCESSED BEFOREHAND!!!
+        """
         features = self.yc.extract_conv_features(image)
-        result = self.detect(features,image)
+        result = self.detect(features, image)
         return result
 
-    
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', default="YOLO_small.ckpt", type=str)
-    parser.add_argument('--weight_dir', default='weights', type=str)
-    parser.add_argument('--data_dir', default="data", type=str)
-    parser.add_argument('--gpu', default='', type=str)
-    args = parser.parse_args()
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
-
-    weight_file = "/home/autolab/Workspaces/michael_working/yolo_tensorflow/data/pascal_voc/output07_20_09_37_29save.ckpt-15000"
-    #weight_file = '/home/autolab/Workspaces/michael_working/yolo_tensorflow/data/pascal_voc/weights/save.ckpt-100'#os.path.join(args.data_dir, args.weight_dir, args.weights)
-    #weight_file = os.path.join(args.data_dir, args.weight_dir, args.weights)
-
-    imageList = glob.glob(os.path.join(self.cfg.IMAGE_PATH, '*.png'))
-    labelListOrig = glob.glob(os.path.join(self.cfg.LABEL_PATH, '*.p'))
-    labelList = [os.path.split(label)[-1].split('.')[0] for label in labelListOrig]
-    #remove labeled images
-    #imageList = [img for img in imageList if os.path.split(img)[-1].split('.')[0] not in labelList]
-
-    #imname = self.cfg.IMAGE_PATH + 'frame_1000.png'
-    #imname = 'test/person.jpg' 
-    #IPython.embed()
-    images = []
-    c = 0
-
-    detector = Detector(weight_file,images)
-    for imname in imageList:
-
-        detector.image_detector(imname)
-    
-
-    # detect from camera
-    # cap = cv2.VideoCapture(-1)
-    # detector.camera_detector(cap)
-
-    # detect from held out image file
+    def detect(self, inputs, image):
+        """Called internally only."""
+        img_h, img_w, _ = image.shape
+        feed = {self.net.images: inputs, self.net.training_mode: False}
+        net_output = self.sess.run(self.net.logits, feed)
+        return net_output
 
     
-
-
 if __name__ == '__main__':
-    main()
+    pass

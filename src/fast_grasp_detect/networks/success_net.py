@@ -108,7 +108,7 @@ class SNet(object):
                     net = slim.dropout(net, keep_prob=self.keep_prob, is_training=training_mode)
                     net = slim.fully_connected(net, 1024, scope='fc_34')
                     net = slim.fully_connected(net, num_outputs, activation_fn=None, scope='fc_36')
-        get_variables()
+        #get_variables()
         return net
 
 
