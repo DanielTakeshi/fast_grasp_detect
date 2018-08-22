@@ -44,13 +44,14 @@ class GDetector(object):
             print(var)
             print(self.sess.run(var))
 
-        However, the YOLO_CONV and this class have their own TensorFlow sessions.
-        With multiple sessions, they have different values for same-named variables.
-        Oddly, when I restore our trained model file, the first 26 layers (if we're
-        using fixed weights) are NOT loaded correctly. But fortunately the ones after
-        are correctly loaded and that's all we need, because in this class, we do not
-        call the first 26 layers but instead refer to the YOLO_CONV class (and thus
-        the YOLO_CONV's TensorFlow session.
+        However, YOLO_CONV and this class have their own TensorFlow sessions.
+        With multiple sessions, they have different values for same-named
+        variables.  Oddly, when I restore our trained model file, the first 26
+        layers (if we're using fixed weights) are NOT loaded correctly.  But
+        fortunately the ones after are correctly loaded and that's all we need,
+        because in this class, we do not call the first 26 layers but instead
+        refer to the YOLO_CONV class (and thus the YOLO_CONV's TensorFlow
+        session).
         """
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
@@ -68,9 +69,10 @@ class GDetector(object):
     def predict(self, image):
         """Called during deployment code! Maps [-1,1] to raw pixels.
 
-        As expected, we must pass it through the SAME processing code, inside the YOLO class and
-        `extract_conv_features`. This will run it through the YOLO's TensorFlow session if we
-        decided to use their pre-trained features!
+        As expected, we must pass it through the SAME processing code, inside
+        the YOLO class and `extract_conv_features`. This will run it through the
+        YOLO's TensorFlow session if we decided to use their pre-trained
+        features!
         """
         features = self.yc.extract_conv_features(image)
         result = self.detect(features, image)

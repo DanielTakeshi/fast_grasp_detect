@@ -52,12 +52,12 @@ class SNet(object):
             tf.summary.scalar('total_loss', self.total_loss)
 
 
-    def build_network(self, images, num_outputs, alpha, training_mode, scope='yolo'):
+    def build_network(self, images, num_outputs, alpha, training_mode):
         """Extra layers built on _top_ of the YOLO stem (first 26 layers).
         
         Try Xavier init for end-to-end training, truncated normal for YOLO?
         """
-        with tf.variable_scope(scope):
+        with tf.variable_scope('success'):
             net = images
 
             if self.cfg.NET_TYPE == 3 or self.cfg.NET_TYPE == 4:
@@ -67,7 +67,7 @@ class SNet(object):
                 assert self.cfg.SMALLER_NET
 
                 with slim.arg_scope([slim.conv2d, slim.fully_connected],
-                                    activation_fn=leaky_relu(alpha),
+                                    activation_fn=tf.nn.relu,
                                     #weights_initializer=tf.truncated_normal_initializer(0.0,0.01),
                                     weights_initializer=tf.contrib.layers.xavier_initializer(),
                                     weights_regularizer=slim.l2_regularizer(self.cfg.L2_LAMBDA)):
