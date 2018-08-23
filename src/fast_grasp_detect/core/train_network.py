@@ -13,10 +13,11 @@ class Solver(object):
         """
         cfg: A configuration file, have separate ones for the two tasks.
         net: Either `GHNet` or `SNet` depending on which task we're doing.
-        data: A `data_manager`, which is what takes in the original raw images (from cameras) and
-            provides features to the task-specific `net`. Note, it has a `yc` argument (actually, a
-            TF placeholder) that we can use to refer to the ORIGINAL input to the YOLO net, and NOT
-            the pre-trained features.  For those, use `net.images`.
+        data: A `data_manager`, which is what takes in the original raw images (from
+            cameras) and provides features to the task-specific `net`. Note, it has a
+            `yc` argument (actually, a TF placeholder) that we can use to refer to the
+            ORIGINAL input to the YOLO net, and NOT the pre-trained features. For
+            those, use `net.images`.
         """
         self.cfg = cfg
         self.net = net
@@ -46,13 +47,14 @@ class Solver(object):
                 self.initial_learning_rate, self.global_step, self.decay_steps,
                 self.decay_rate, self.staircase, name='learning_rate')
 
-        # Loss function from `self.net`. Also adding the variable list we want to optimize over.
+        # Loss function from `self.net`. Also, the variable list we want to optimize over.
         self.var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
         self.grads = tf.gradients(self.net.class_loss, self.var_list)
 
         if cfg.FIX_PRETRAINED_LAYERS:
             self.var_list = [x for x in self.var_list if x.name in self.vars_restored]
-        print("\ncfg.FIX_PRETRAINED_LAYERS={}. Optimizer will adjust:".format(cfg.FIX_PRETRAINED_LAYERS))
+        print("\ncfg.FIX_PRETRAINED_LAYERS={}. Optimizer will adjust:".format(
+                cfg.FIX_PRETRAINED_LAYERS))
         numv = 0
         for item in self.var_list:
             print(item)
@@ -89,10 +91,6 @@ class Solver(object):
         self.sess.run(tf.global_variables_initializer())
 
 
-    def variables_to_restore(self):
-        return
-
-
     def train(self):
         """The training run.
         """
@@ -112,6 +110,7 @@ class Solver(object):
         best_snet_correctness = None
         if cfg.HAVE_TEST_SET:
             images_t, labels_t, c_imgs_list, d_imgs_list = self.data.get_test(return_imgs=True)
+            test_data_sources = self.data.get_data_sources()
         elapsed_time = []
         start_t = time.time()
 
@@ -157,7 +156,7 @@ class Solver(object):
                                 best_loss = test_loss_raw
                                 best_preds = cfg.return_raw_labels(test_logits)
                         elif cfg.CONFIG_NAME == 'success':
-                            correctness = np.argmax(test_logits,axis=1) == np.argmax(labels_t,axis=1)
+                            correctness = np.argmax(test_logits,1) == np.argmax(labels_t,1)
                             correct = float(np.sum(correctness))
                             K = len(correctness)
                             raw_acc = correct / K
@@ -231,6 +230,8 @@ class Solver(object):
                         info["best_snet_acc"] = best_snet_acc
                         info["best_snet_preds"] = best_snet_preds
                         info["best_snet_correctness"] = best_snet_correctness
+                    if len(test_data_sources) > 0:
+                        info["test_data_sources"] = test_data_sources
                 pickle.dump(info, open(self.stats_pickle_file, 'wb'))
 
         # Add test-set images (should be in order) so we can visualize later.

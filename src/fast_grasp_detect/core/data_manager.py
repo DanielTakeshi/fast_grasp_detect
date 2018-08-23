@@ -56,8 +56,9 @@ class data_manager(object):
         self.test_batch_labels = None
         self.test_batch_c_imgs = None
         self.test_batch_d_imgs = None
-        self.train_labels = []  # All training data goes here
-        self.test_labels = []   # All testing data goes here
+        self.train_labels = []   # All training data goes here
+        self.test_labels = []    # All testing data goes here
+        self.test_d_sources = [] # For combined dataset sources
         if cfg.HAVE_TEST_SET:
             self.load_test_set()
         self.load_rollouts()
@@ -91,6 +92,12 @@ class data_manager(object):
                 self.cursor = 0
                 self.epoch += 1
         return images, labels
+
+
+    def get_data_sources(self):
+        """Return data source if we have it.
+        """
+        return self.test_d_sources
 
 
     def get_test(self, return_imgs=False):
@@ -141,14 +148,15 @@ class data_manager(object):
                 data_pt['d_img'] = item['d_img']
                 data_pt['label'] = cfg.compute_label(item)
                 self.test_labels.append(data_pt)
+                self.test_d_sources.append( item['data_source'] )
 
         # Form and investigate the testing images and labels in their batch.
         K = len(self.test_labels)
         print("len(self.test_labels): {}".format(K))
-        if K >= 200:
-            print("We'll truncate to 200 for now. (We're using one test minibatch.)")
-            self.test_labels = self.test_labels[:200]
-            K = 200
+        if K >= 205:
+            print("We'll truncate to 205 for now. (We're using one test minibatch.)")
+            self.test_labels = self.test_labels[:205]
+            K = 205
 
         # What the network needs, inputs and labels.
         self.test_batch_feats  = cfg.get_empty_state(batchdim=K)
@@ -188,7 +196,7 @@ class data_manager(object):
             with open(t_list, 'r') as f:
                 t_list_data = pickle.load(f)
             for data in t_list_data:
-                # Data augmentation magic. No need to process depth, I did it beforehand.
+                # Data augmentation magic. No need to process depth; did beforehand.
                 data_a = augment_data(data, cfg.USE_DEPTH)
                 for d_idx,datum_a in enumerate(data_a):
                     data_pt = {}
@@ -205,9 +213,9 @@ class data_manager(object):
                     self.train_labels.append(data_pt)
             print("finished: {} (len {})".format(t_list, len(t_list_data)))
 
-        # Can do this because labels and images/features are paired in the same dict items.
+        # Labels and images/features are paired in the same dict items. :-)
         np.random.shuffle(self.train_labels)
-        print("len(self.train_labels): {}. Also, shuffled!".format(len(self.train_labels)))
+        print("len(self.train_labels): {}. Shuffled!".format(len(self.train_labels)))
         e_time = (time.time() - s_time)
         print("loaded train set in {:.3f} seconds...".format(e_time))
 
