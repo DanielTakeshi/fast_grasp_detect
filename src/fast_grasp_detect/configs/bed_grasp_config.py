@@ -23,7 +23,7 @@ class CONFIG(object):
             self.CV_HELD_OUT_INDEX = args.cv_idx
             assert args.cv_idx is not None
 
-        self.ROLLOUT_PATH = join(self.DATA_PATH, 'cache_d_v01/')
+        self.ROLLOUT_PATH = join(self.DATA_PATH, 'cache_h_v03/')
         self.CV_GROUPS = sorted(
                 [x for x in os.listdir(self.ROLLOUT_PATH) if 'cv_' in x]
         )
