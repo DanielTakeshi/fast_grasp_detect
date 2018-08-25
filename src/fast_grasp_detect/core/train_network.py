@@ -277,7 +277,7 @@ class Solver(object):
             img_type = 'depth'
 
         # Goes in `/.../grasp/` or `/.../success/`.
-        directory = '{}_{}_img_{}_opt_{}_lr_{}_L2_{}_kp_{}_cv_{}'.format(
+        directory = '{}_{}_img_{}_opt_{}_lr_{}_L2_{}_kp_{}_steps_{}_cv_{}'.format(
                 cfg.CONFIG_NAME,
                 cfg.NET_TYPE,
                 img_type,
@@ -285,6 +285,7 @@ class Solver(object):
                 self.initial_learning_rate,
                 cfg.L2_LAMBDA,
                 cfg.DROPOUT_KEEP_PROB,
+                cfg.MAX_ITER,
                 cfg.PERFORM_CV)
 
         # Also prefix this with the dataset _name_, e.g., `rollouts_white_v01`
