@@ -148,7 +148,8 @@ class data_manager(object):
                 data_pt['d_img'] = item['d_img']
                 data_pt['label'] = cfg.compute_label(item)
                 self.test_labels.append(data_pt)
-                self.test_d_sources.append( item['data_source'] )
+                if 'data_source' in item:
+                    self.test_d_sources.append( item['data_source'] )
 
         # Form and investigate the testing images and labels in their batch.
         K = len(self.test_labels)
