@@ -37,7 +37,7 @@ class Solver(object):
         self.prepare_output_directory()
         if not cfg.SMALLER_NET:
             self.restore()
-        self.all_saver  = tf.train.Saver()
+        self.all_saver  = tf.train.Saver(max_to_keep=None)
         self.summary_op = tf.summary.merge_all()
 
         # Support a decaying learning rate, hence use a TF placeholder.
