@@ -77,7 +77,7 @@ class GDetector(object):
         self.saver_f.restore(self.sess, trained_model_file)
 
 
-    def predict(self, image):
+    def predict(self, image, draw_cross_hair=False):
         """Called during deployment code! Maps [-1,1] prediction to raw pixels.
 
         As expected, we must pass it through the SAME processing code, inside
@@ -91,12 +91,13 @@ class GDetector(object):
         result = self.detect(features, image)
         x = self.fg_cfg.T_IMAGE_SIZE_W * (result[0,0] + 0.5)
         y = self.fg_cfg.T_IMAGE_SIZE_H * (result[0,1] + 0.5)
-        pose = [x,y]
+        pose = np.array([x,y])
 
-        # Might want to change, this draws a large cross hair over the image.
-        img = self.dp.draw_prediction(image, pose)
-        cv2.imshow('detected_result',img)
-        cv2.waitKey(30)
+        # Draws a large cross hair over the image. Should be handled outside.
+        if draw_cross_hair:
+            img = self.dp.draw_prediction(image, pose)
+            cv2.imshow('detected_result',img)
+            cv2.waitKey(30)
         return pose
 
 
