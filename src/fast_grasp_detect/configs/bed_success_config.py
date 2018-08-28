@@ -23,7 +23,7 @@ class CONFIG(object):
             self.CV_HELD_OUT_INDEX = args.cv_idx
             assert args.cv_idx is not None
 
-        self.ROLLOUT_PATH = join(self.DATA_PATH, 'cache_d_v01_success/')
+        self.ROLLOUT_PATH = join(self.DATA_PATH, 'cache_combo_v01_success/')
         self.CV_GROUPS = sorted(
                 [x for x in os.listdir(self.ROLLOUT_PATH) if 'cv_' in x]
         )
@@ -31,6 +31,7 @@ class CONFIG(object):
 
         # To ignore a test set, set as None. Else, load in all the groups.
         # (We also have test set saved as CV splits, but we'll load everything.)
+        #self.TEST_ROLLOUT_PATH = join(self.DATA_PATH, '...')
         self.TEST_ROLLOUT_PATH = None
         if self.TEST_ROLLOUT_PATH is not None:
             self.TEST_GROUPS = sorted(
@@ -105,10 +106,6 @@ class CONFIG(object):
         self.SAVE_ITER = 500
         self.VIZ_DEBUG_ITER = 400
         self.GPU_MEM_FRAC = args.gpu_frac
-
-        # fast params
-        self.FILTER_SIZE = 14
-        self.NUM_FILTERS = 1024
 
         # fast params
         self.FILTER_SIZE = 14
