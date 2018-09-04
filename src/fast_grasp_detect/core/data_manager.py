@@ -144,8 +144,9 @@ class data_manager(object):
                     data_pt['features'] = self.yc.extract_conv_features(item['d_img'])
                 else:
                     data_pt['features'] = self.yc.extract_conv_features(item['c_img'])
-                data_pt['c_img'] = item['c_img']
-                data_pt['d_img'] = item['d_img']
+                # Can take a lot of memory so consider commenting out sometimes.
+                #data_pt['c_img'] = item['c_img']
+                #data_pt['d_img'] = item['d_img']
                 data_pt['label'] = cfg.compute_label(item)
                 self.test_labels.append(data_pt)
                 if 'data_source' in item:
