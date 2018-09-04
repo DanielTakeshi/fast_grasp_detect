@@ -171,10 +171,11 @@ class data_manager(object):
         for count in range(K):
             self.test_batch_feats[count, :, :, :] = self.test_labels[count]['features']
             self.test_batch_labels[count, :]      = self.test_labels[count]['label']
-            # TODO: commenting this out to save memory.
-            #self.test_batch_c_imgs.append( self.test_labels[count]['c_img'] )
-            #self.test_batch_d_imgs.append( self.test_labels[count]['d_img'] )
-        #print("test_batch_d_imgs[0].shape: {}".format(self.test_batch_d_imgs[0].shape))
+            # TODO: commenting this out to save memory, plus the next debug print.
+            self.test_batch_c_imgs.append( self.test_labels[count]['c_img'] )
+            self.test_batch_d_imgs.append( self.test_labels[count]['d_img'] )
+        print("test_batch_d_imgs[0].shape: {}".format(self.test_batch_d_imgs[0].shape))
+
         print("test_batch_feats.shape:     {}".format(self.test_batch_feats.shape))
         print("test_batch_labels.shape:    {}".format(self.test_batch_labels.shape))
         print("test_batch_labels:\n{}".format(self.test_batch_labels))
