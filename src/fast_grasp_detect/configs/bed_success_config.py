@@ -147,7 +147,7 @@ class CONFIG(object):
             assert not self.SMALLER_NET and self.NET_TYPE != 2
             return np.zeros((bs, self.FILTER_SIZE, self.FILTER_SIZE, self.NUM_FILTERS))
         else:
-            assert self.NET_TYPE != 2
+            assert self.NET_TYPE != 1
             return np.zeros((bs, self.IMAGE_SIZE, self.IMAGE_SIZE, 3))
 
 
