@@ -126,8 +126,6 @@ class data_manager(object):
 
         Form the test batch at the end. It won't be large with the data we have and we
         shouldn't keep re-computing and re-shuffling since it's a test batch.
-
-        Update: actually for cutting down memory usage let's try minibatches.
         """
         s_time = time.time()
         cfg = self.cfg
@@ -156,77 +154,36 @@ class data_manager(object):
         # Form and investigate the testing images and labels in their batch.
         K = len(self.test_labels)
         print("len(self.test_labels): {}".format(K))
+        if K >= 205:
+            print("We'll truncate to 205 for now. (We're using one test minibatch.)")
+            self.test_labels = self.test_labels[:205]
+            K = 205
 
-        # Keep batch size at some smaller value, like 16, to reduce memory allocation.
-        # For simplicity, ignore the last minibatch which usually has smaller size.
-        BB = 16
-        self.test_batch_feats_list = []
-        self.test_batch_labels_list = []
-        for _ in range( int(K/16) ):
-            self.test_batch_feats_list.append( cfg.get_empty_state(batchdim=BB) )
-            self.test_batch_labels_list.append( cfg.get_empty_state(batchdim=BB) )
+        # What the network needs, inputs and labels.
+        self.test_batch_feats  = cfg.get_empty_state(batchdim=K)
+        self.test_batch_labels = cfg.get_empty_label(batchdim=K)
 
         # Useful if we want to later visualize/plot test-set predictions.
         self.test_batch_c_imgs = []
         self.test_batch_d_imgs = []
 
-        for mb in range( len(self.test_batch_feats_list) ):
-            mb_size = self.test_batch_feats_list[mb].shape[0]
-            assert mb_size == BB
-            for count in range( mb*BB, (mb+1)*BB ):
-                self.test_batch_feats_list[mb][count, :, :, :] = \
-                        self.test_labels[count]['features']
-                self.test_batch_labels_list[mb][count, :] = \
-                        self.test_labels[count]['label']
-                # NOTE: commenting this out to save memory, plus the next debug print.
-                self.test_batch_c_imgs.append( self.test_labels[count]['c_img'] )
-                self.test_batch_d_imgs.append( self.test_labels[count]['d_img'] )
+        # TODO: later, if very large test set, use multiple minibatches.
+        for count in range(K):
+            self.test_batch_feats[count, :, :, :] = self.test_labels[count]['features']
+            self.test_batch_labels[count, :]      = self.test_labels[count]['label']
+            # TODO: commenting this out to save memory, plus the next debug print.
+            self.test_batch_c_imgs.append( self.test_labels[count]['c_img'] )
+            self.test_batch_d_imgs.append( self.test_labels[count]['d_img'] )
+        print("test_batch_d_imgs[0].shape: {}".format(self.test_batch_d_imgs[0].shape))
 
-        # NOTE: comment this out if the test images were not saved.
-        #print("test_batch_d_imgs[0].shape: {}".format(self.test_batch_d_imgs[0].shape))
-        print("len(test_batch_feats_list):      {}".format(len(self.test_batch_feats_list)))
-        print("test_batch_feats_list[0].shape:  {}".format(self.test_batch_feats_list[0].shape))
-        print("test_batch_labels_list[0].shape: {}".format(self.test_batch_labels_list[0].shape))
-        print("test_batch_labels:")
-        for test_mb_labels in self.test_batch_labels_list:
-            print(test_mb_labels)
+        print("test_batch_feats.shape:     {}".format(self.test_batch_feats.shape))
+        print("test_batch_labels.shape:    {}".format(self.test_batch_labels.shape))
+        print("test_batch_labels:\n{}".format(self.test_batch_labels))
 
-        print("(raw) test_batch_labels:")
         if 'grasp' in cfg.CONFIG_NAME:
             W, H = cfg.T_IMAGE_SIZE_W, cfg.T_IMAGE_SIZE_H
-            for test_mb_labels in self.test_batch_labels_list:
-                raw_labels = (test_mb_labels + 0.5) * np.array([W,H])
-            print(raw_labels)
-
-        ## # ----------------------
-        ## # older code starts here
-        ## # ----------------------
-
-        ## # What the network needs, inputs and labels.
-        ## self.test_batch_feats  = cfg.get_empty_state(batchdim=K)
-        ## self.test_batch_labels = cfg.get_empty_label(batchdim=K)
-
-        ## # Useful if we want to later visualize/plot test-set predictions.
-        ## self.test_batch_c_imgs = []
-        ## self.test_batch_d_imgs = []
-
-        ## # TODO: later, if very large test set, use multiple minibatches.
-        ## for count in range(K):
-        ##     self.test_batch_feats[count, :, :, :] = self.test_labels[count]['features']
-        ##     self.test_batch_labels[count, :]      = self.test_labels[count]['label']
-        ##     # TODO: commenting this out to save memory, plus the next debug print.
-        ##     self.test_batch_c_imgs.append( self.test_labels[count]['c_img'] )
-        ##     self.test_batch_d_imgs.append( self.test_labels[count]['d_img'] )
-        ## print("test_batch_d_imgs[0].shape: {}".format(self.test_batch_d_imgs[0].shape))
-
-        ## print("test_batch_feats.shape:     {}".format(self.test_batch_feats.shape))
-        ## print("test_batch_labels.shape:    {}".format(self.test_batch_labels.shape))
-        ## print("test_batch_labels:\n{}".format(self.test_batch_labels))
-
-        ## if 'grasp' in cfg.CONFIG_NAME:
-        ##     W, H = cfg.T_IMAGE_SIZE_W, cfg.T_IMAGE_SIZE_H
-        ##     raw_labels = (self.test_batch_labels + 0.5) * np.array([W,H])
-        ##     print("(raw) test_batch_labels:\n{}".format(raw_labels))
+            raw_labels = (self.test_batch_labels + 0.5) * np.array([W,H])
+            print("(raw) test_batch_labels:\n{}".format(raw_labels))
         e_time = (time.time() - s_time)
         print("loaded test set in {:.3f} seconds...".format(e_time))
 

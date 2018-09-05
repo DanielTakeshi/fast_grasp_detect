@@ -69,7 +69,7 @@ class CONFIG(object):
         self.L2_LAMBDA = args.l2_lambda
 
         # IMPORTANT !!!!!!! False means RGB, which we normally DON'T want.
-        self.USE_DEPTH = False
+        self.USE_DEPTH = True
 
         # solver parameter
         # ----------------------------------------------------------------------
