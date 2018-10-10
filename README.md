@@ -8,8 +8,8 @@ This is a snapshot of the code used for:
 - https://arxiv.org/abs/1809.09810
 
 **This repository will not be updated further, to ensure that code can be re-run as needed to
-reproduce results**. To see any follow-up work, check out the BerkeleyAutomation version of this
-repository (use a separate virtualenv).
+reproduce results**. To see any follow-up work, [check out the BerkeleyAutomation version][4] of
+this repository (use a separate virtualenv).
 
 ## install 
 
@@ -86,3 +86,4 @@ so that we can inspect the output later.
 [1]:https://github.com/DanielTakeshi/fast_grasp_detect/blob/master/src/fast_grasp_detect/configs/bed_grasp_config.py
 [2]:https://github.com/DanielTakeshi/fast_grasp_detect/blob/master/src/fast_grasp_detect/configs/bed_success_config.py
 [3]:https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/slim
+[4]:https://github.com/BerkeleyAutomation/fast_grasp_detect
