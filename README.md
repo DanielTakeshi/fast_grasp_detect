@@ -1,5 +1,16 @@
 # fast_grasp_detect
 
+This is a snapshot of the code used for:
+
+- Robot Bed-Making: Deep Transfer Learning Using Depth Sensing of Deformable Fabric
+- Daniel Seita, Nawid Jamali, Michael Laskey, Ron Berenstein, Ajay Kumar Tanwani, Prakash Baskaran,
+  Soshi Iba, John Canny, Ken Goldberg
+- https://arxiv.org/abs/1809.09810
+
+**This repository will not be updated further, to ensure that code can be re-run as needed to
+reproduce results**. To see any follow-up work, check out the BerkeleyAutomation version of this
+repository (use a separate virtualenv).
+
 ## install 
 
 ```
@@ -26,9 +37,6 @@ features, so that the two networks can simply fine-tune.
 
 The networks use TF slim. [Documentation here][3].
 
-I think Michael may have trained the YOLO network end-to-end, also using
-`train_network.py`, which appears to be flexible enough to handle both.
-
 **Probably better to run for now**: use the scripts `main/grasp.sh` and `main/success.sh` since
 these iterate through all indices in a cross validation set, and then put the output to a file, such
 as in:
@@ -38,7 +46,6 @@ as in:
 ```
 
 so that we can inspect the output later.
-
 
 
 ## src
