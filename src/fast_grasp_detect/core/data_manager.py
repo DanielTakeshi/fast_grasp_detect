@@ -33,6 +33,9 @@ class data_manager(object):
                     [join(cfg.ROLLOUT_PATH, cfg.CV_GROUPS[c]) for c in range(num) if c != cidx]
             )
             self.held_out_list = [ join(cfg.ROLLOUT_PATH, cfg.CV_GROUPS[cidx]) ]
+            # XXX CHANGE FOR ABLATION
+            print("length of training list before we chop things off: {}".format(len(self.training_list)))
+            self.training_list = self.training_list[8:]
         else:
             # In this case, we may or may not have a held-out test set.
             self.training_list = sorted(
