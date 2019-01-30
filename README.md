@@ -1,5 +1,6 @@
 # fast_grasp_detect
 
+
 This is a snapshot of the code used for:
 
 - Robot Bed-Making: Deep Transfer Learning Using Depth Sensing of Deformable Fabric
