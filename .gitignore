@@ -1,3 +1,5 @@
 *.pyc
 *.swo
 *.swp
+
+src/fast_grasp_detect.egg-info/
