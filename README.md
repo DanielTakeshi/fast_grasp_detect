@@ -36,7 +36,7 @@ difference is that `yolo` can be the output from `networks/grasp_net_cs.py` or
 `networks/success_net.py`. The `pascal` portion handles the YOLO pre-trained
 features, so that the two networks can simply fine-tune.
 
-The networks use TF slim. [Documentation here][3].
+The networks use TF slim. [Documentation here][3]. (Update April 2021: never mind, seems like it's deprecated. :( )
 
 **Probably better to run for now**: use the scripts `main/grasp.sh` and `main/success.sh` since
 these iterate through all indices in a cross validation set, and then put the output to a file, such
